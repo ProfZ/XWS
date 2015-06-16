@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.project.xml/MT103" xmlns:MT103="http://www.project.xml/MT103"
+    xmlns:global="http://www.project.xml/globals">
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd"/>
+       <xs:element name="MT103">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="ID_poruke" type="global:ID_poruke"> </xs:element>
+            	<xs:element name="Banka_Duznik" type="global:TBanke"/>
+            	<xs:element name="Banka_Poverilac" type="global:TBanke"/>
+            	<xs:element name="Datum_Valute" type="xs:date"/>
+            	<xs:element name="Duznik_nalogodavac" type="global:TOsobe"/>
+	            <xs:element name="Primalac_poverilac" type="global:TOsobe"/>
+	            <xs:element name="Svrha_placanja">
+	                    <xs:simpleType>
+	                        <xs:restriction base="xs:string">
+	                            <xs:maxLength value="255"/>
+	                            <xs:minLength value="3"/>
+	                        </xs:restriction>
+	                    </xs:simpleType>
+	             </xs:element>
+	             <xs:element name="Datum_naloga" type="xs:date"/>
+	             <xs:element name="Iznos" type="global:TIznos"/>
+	             <xs:element name="Duznik_nalogodavac" type="global:TOsobe"/>
+	             <xs:element name="Valuta" type="global:TOznakaValute"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://www.project.xml/wsdl/bwsdl"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ws="http://www.project.xml/wsdl/bwsdl"
+    xmlns:utils="http://www.project.xml/BankaUtils"
+    xmlns:MT900="http://www.project.xml/MT900"
+    xmlns:MT910="http://www.project.xml/MT910"
+    xmlns:MT103="http://www.project.xml/MT103"
+    xmlns:MT102="http://www.project.xml/MT102"
+    xmlns:globals="http://www.project.xml/globals" 
+    xmlns:presek="http://www.project.xml/presek"
+    xmlns:uplatnica="http://www.project.xml/uplatnica"
+    xmlns:izvod="http://www.project.xml/zahtev_za_izovd">
+    <wsdl:types>
+        <xs:schema targetNamespace="http://www.project.xml/BankaUtils">
+            <xs:import schemaLocation="../xsd/Globals.xsd" namespace="http://www.project.xml/globals"></xs:import>
+            <xs:import schemaLocation="../xsd/MT103.xsd" namespace="http://www.project.xml/MT103"></xs:import>
+            <xs:import schemaLocation="../xsd/MT900.xsd" namespace="http://www.project.xml/MT900"></xs:import>
+            <xs:import schemaLocation="../xsd/MT910.xsd" namespace="http://www.project.xml/MT910"></xs:import>
+            <xs:import schemaLocation="../xsd/MT102.xsd" namespace="http://www.project.xml/MT102"></xs:import>
+            <xs:import schemaLocation="../xsd/Presek.xsd" namespace="http://www.project.xml/presek"></xs:import>
+            <xs:import schemaLocation="../xsd/nalogzaprenos.xsd" namespace="http://www.project.xml/uplatnica"></xs:import>
+            <xs:import schemaLocation="../xsd/Zahtev_za_izvod.xsd" namespace="http://www.project.xml/zahtev_za_izovd"></xs:import>
+        </xs:schema>
+    </wsdl:types>
+    
+    <wsdl:message name="primiNalogRequest">
+        <wsdl:part name="nalogZaPrenos" element="uplatnica:NalogZaPrenos"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="primiNalogResponse">
+        <wsdl:part name="NewPart" element="globals:statusCode"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="traziIzvodRequest">
+        <wsdl:part name="zaDatum" element="izvod:zahtev"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="traziIzvodResponse">
+        <wsdl:part name="izvod" element="presek:presek"></wsdl:part>
+    </wsdl:message> 
+    
+    <wsdl:message name="acceptMT103msg">
+        <wsdl:part name="MT103" element="MT103:MT103"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="acceptMT103response">
+        <wsdl:part name="return" element="globals:statusCode"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="acceptMT910msg">
+        <wsdl:part name="MT910" element="MT910:MT910"></wsdl:part>   
+    </wsdl:message>
+    <wsdl:message name="acceptMT910response">
+        <wsdl:part name="return" element="globals:statusCode"></wsdl:part>  
+    </wsdl:message>
+    
+    <wsdl:message name="doClearingRequest"></wsdl:message>
+    <wsdl:message name="doClearingResponse">
+        <wsdl:part name="return" element="globals:statusCode"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="acceptMT102msg">
+        <wsdl:part name="MT102" element="MT102:MT102"></wsdl:part>   
+    </wsdl:message>   
+    <wsdl:message name="sendMT102Fault">
+        <wsdl:part name="fault" element="globals:statusCode"></wsdl:part>
+    </wsdl:message>
+    
+   
+    <wsdl:portType name="FirmaBanci">
+    	<wsdl:operation name="primiNalog">
+    		<wsdl:input message="ws:primiNalogRequest"></wsdl:input>
+    	    <wsdl:output name="status" message="ws:primiNalogResponse"></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="acceptMT103">
+            <wsdl:input message="ws:acceptMT103msg"></wsdl:input>
+            <wsdl:output message="ws:acceptMT103response"></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="acceptMT910">
+            <wsdl:input message="ws:acceptMT910msg"></wsdl:input>
+            <wsdl:output message="ws:acceptMT910response"></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="doClearing">
+            <wsdl:input message="ws:doClearingRequest"></wsdl:input>
+            <wsdl:output message="ws:doClearingResponse"></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="acceptMT102">
+            <wsdl:input message="ws:acceptMT102msg"></wsdl:input>
+            <wsdl:output name="sendMT102Fault" message="ws:sendMT102Fault"></wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="traziIzvod">
+            <wsdl:input message="ws:traziIzvodRequest"></wsdl:input>
+            <wsdl:output message="ws:traziIzvodResponse"></wsdl:output>
+        </wsdl:operation>
+        
+    </wsdl:portType>
+    
+    
+    <wsdl:binding name="FirmaBanciBinding" type="ws:FirmaBanci">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="primiNalog">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="traziIzvod">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="acceptMT102">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="acceptMT103">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="acceptMT910">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="doClearing">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:service name="FirmaBankaService">
+        <wsdl:port name="FirmaBanci" binding="ws:FirmaBanciBinding">
+    	    <soap:address location="http://localhost:8080/FirmaBanci"/>
+    	</wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.project.xml/MT900"
+    targetNamespace="http://www.project.xml/MT900" elementFormDefault="qualified"
+    xmlns:global="http://www.project.xml/globals">
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd"/>
+    <xs:element name="MT900">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="ID_poruke" type="global:ID_poruke"> </xs:element>
+            	<xs:element name="Banka_Duznik" type="global:TBanke"/>
+            	<xs:element name="Datum_Valute" type="xs:date"/>
+            	<xs:element name="Iznos" type="global:TIznos"/>
+            	<xs:element name="Sifra_valute" type="global:TOznakaValute"/>
+                <xs:element name="Datum" type="xs:date"/>
+                <xs:element name="ID_poruke_naloga" type="global:ID_poruke"> </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
