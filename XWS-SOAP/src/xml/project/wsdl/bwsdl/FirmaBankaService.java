@@ -2,6 +2,8 @@ package xml.project.wsdl.bwsdl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.xml.namespace.QName;
@@ -31,8 +33,8 @@ public class FirmaBankaService extends Service {
         try {
             url = new URL("file:/C:/Fakultet/8. semestar/XML-project/XWS-Project/WEB-INF/wsdl/Banka.wsdl");
         } catch (MalformedURLException e) {
-            java.util.logging.Logger.getLogger(FirmaBankaService.class.getName())
-                .log(java.util.logging.Level.INFO, 
+            Logger.getLogger(FirmaBankaService.class.getName())
+                .log(Level.INFO, 
                      "Can not initialize the default wsdl from {0}", "file:/C:/Fakultet/8. semestar/XML-project/XWS-Project/WEB-INF/wsdl/Banka.wsdl");
         }
         WSDL_LOCATION = url;

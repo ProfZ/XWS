@@ -12,14 +12,14 @@ import javax.xml.ws.Endpoint;
  
 public class FirmaBanci_FirmaBanci_Server{
 
-    protected FirmaBanci_FirmaBanci_Server() throws java.lang.Exception {
+    protected FirmaBanci_FirmaBanci_Server() throws Exception {
         System.out.println("Starting Server");
         Object implementor = new FirmaBanciImpl();
         String address = "http://localhost:8080/FirmaBanci";
         Endpoint.publish(address, implementor);
     }
     
-    public static void main(String args[]) throws java.lang.Exception { 
+    public static void main(String args[]) throws Exception { 
         new FirmaBanci_FirmaBanci_Server();
         System.out.println("Server ready..."); 
         
