@@ -43,6 +43,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link StatusCode }
+     * 
+     */
+    public StatusCode createStatusCode() {
+        return new StatusCode();
+    }
+
+    /**
      * Create an instance of {@link TBanke }
      * 
      */
@@ -64,14 +72,6 @@ public class ObjectFactory {
      */
     public TOsobe createTOsobe() {
         return new TOsobe();
-    }
-
-    /**
-     * Create an instance of {@link StatusCode }
-     * 
-     */
-    public StatusCode createStatusCode() {
-        return new StatusCode();
     }
 
     /**
