@@ -3,8 +3,6 @@ package rs.ac.uns.ftn.xws.sessionbeans.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.List;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 

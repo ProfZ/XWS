@@ -105,7 +105,7 @@
                         <xs:sequence>
                             <xs:element name="Redni_broj">
                                 <xs:simpleType>
-                                    <xs:restriction base="xs:decimal">
+                                    <xs:restriction base="xs:long">
                                         <xs:fractionDigits value="0"/>
                                         <xs:totalDigits value="3"/>
                                         <xs:minInclusive value="000"/>

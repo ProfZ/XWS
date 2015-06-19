@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import rs.ac.uns.ftn.xws.entities.payments.Invoice;
 import rs.ac.uns.ftn.xws.sessionbeans.payments.InvoiceDaoLocal;
 import rs.ac.uns.ftn.xws.util.Authenticate;
+import xml.project.faktura.Faktura;
 
 @Path("/invoice")
 public class InvoiceService {
@@ -32,8 +33,8 @@ public class InvoiceService {
 	@GET 
     @Produces(MediaType.APPLICATION_JSON)
 	@Authenticate
-	public List<Invoice> findByAll() {
-		List<Invoice> retVal = null;
+	public List<Faktura> findByAll() {
+		List<Faktura> retVal = null;
 		try {
 			retVal = invoiceDao.findAll();
 		} catch (Exception e) {
@@ -46,8 +47,8 @@ public class InvoiceService {
 	@Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
 	@Authenticate
-    public Invoice findById(@PathParam("id") String id) {
-		Invoice retVal = null;
+    public Faktura findById(@PathParam("id") String id) {
+		Faktura retVal = null;
 		try {
 			retVal = invoiceDao.findById(Long.parseLong(id));
 		} catch (Exception e) {
@@ -60,9 +61,9 @@ public class InvoiceService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Authenticate
-    public Invoice create(Invoice entity) {
+    public Faktura create(Faktura entity) {
 		log.info("POST");
-    	Invoice retVal = null;
+		Faktura retVal = null;
 		try {
 			System.out.println("entity: "+entity);
 			retVal = invoiceDao.persist(entity);
@@ -77,9 +78,9 @@ public class InvoiceService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Authenticate
-    public Invoice update(Invoice entity) {
+    public Faktura update(Faktura entity) {
     	log.info("PUT");
-    	Invoice retVal = null;
+    	Faktura retVal = null;
         try {
         	retVal = invoiceDao.merge(entity, entity.getId());
         } catch (Exception e) {

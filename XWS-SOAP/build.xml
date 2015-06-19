@@ -9,6 +9,7 @@
 	<property name="gen.dir" value="${basedir}/gen"/>
 	<property name="webinf.dir" value="${basedir}/WEB-INF"/>
 	<property name="wsdl.dir" value="WEB-INF/wsdl"/>
+	<property name="xsd.dir" value="WEB-INF/xsd"/>
 	
 	<target name="check-war-name" unless="war.name">
 		<fail>
@@ -89,10 +90,17 @@
             </java>
         </sequential>
     </macrodef>
+	
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+	  <classpath>
+	    <fileset dir="${lib.dir}" includes="*.jar" />
+	  </classpath>
+	</taskdef>
 		
 	<target name="generate-code">
 		<echo level="info" message="Generating code using wsdl2java..."/>
 		
+		<xjc schema="${xsd.dir}/Faktura.xsd" destdir="${gen.dir}" package="xml.project.faktura"/>
 		<wsdl2java file="${wsdl.dir}/CentralnaBanka.wsdl"/>
 		<wsdl2java file="${wsdl.dir}/Banka.wsdl"/>
 		
