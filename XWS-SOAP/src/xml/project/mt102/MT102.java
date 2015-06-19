@@ -4,6 +4,7 @@ package xml.project.mt102;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -11,6 +12,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.basex.rest.Identifiable;
+
 import xml.project.globals.TBanke;
 import xml.project.globals.TSequence;
 
@@ -55,7 +59,7 @@ import xml.project.globals.TSequence;
     "datum"
 })
 @XmlRootElement(name = "MT102")
-public class MT102 {
+public class MT102 extends Identifiable {
 
     @XmlElement(name = "ID_poruke", required = true)
     protected String idPoruke;
@@ -272,5 +276,15 @@ public class MT102 {
     public void setDatum(XMLGregorianCalendar value) {
         this.datum = value;
     }
+
+	@Override
+	public Long getId() {
+		return Long.valueOf(getIDPoruke());
+	}
+
+	@Override
+	public void setId(Long id) {
+		setIDPoruke(String.valueOf(id));
+	}
 
 }

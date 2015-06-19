@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
 
+import org.basex.rest.Identifiable;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @Entity
 @Where(clause = "deleted = 'false'")
 @JsonInclude(Include.NON_NULL)
-public class InvoiceItem implements Serializable{
+public class InvoiceItem extends Identifiable implements Serializable{
 
 	public InvoiceItem() {
 		super();
@@ -28,7 +29,7 @@ public class InvoiceItem implements Serializable{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    protected long id;
+    protected String id;
 	
     protected boolean deleted = false;
 
@@ -55,13 +56,6 @@ public class InvoiceItem implements Serializable{
     
     protected double totalTax;
     
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	public boolean isDeleted() {
 		return deleted;
@@ -157,5 +151,16 @@ public class InvoiceItem implements Serializable{
 
 	public void setTotalTax(double totalTax) {
 		this.totalTax = totalTax;
+	}
+	
+
+	@Override
+	public Long getId() {
+		return Long.valueOf(id);
+	}
+
+	@Override
+	public void setId(Long id) {
+		this.id = String.valueOf(id);
 	}
 }

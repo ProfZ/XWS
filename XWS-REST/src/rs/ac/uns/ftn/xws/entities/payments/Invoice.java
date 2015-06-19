@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Version;
 
+import org.basex.rest.Identifiable;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @Entity
 @Where(clause = "deleted = 'false'")
 @JsonInclude(Include.NON_NULL)
-public class Invoice implements Serializable{
+public class Invoice extends Identifiable implements Serializable{
 
 	public Invoice() {
 		super();
@@ -35,7 +36,7 @@ public class Invoice implements Serializable{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
-    protected long id;
+    protected String id;
 	
     protected boolean deleted = false;
 
@@ -108,14 +109,6 @@ public class Invoice implements Serializable{
 
 	public void setAcountNumber(int acountNumber) {
 		this.acountNumber = acountNumber;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public boolean isDeleted() {
@@ -230,4 +223,13 @@ public class Invoice implements Serializable{
 		this.currencyDate = currencyDate;
 	}
 
+	@Override
+	public Long getId() {
+		return Long.valueOf(id);
+	}
+
+	@Override
+	public void setId(Long id) {
+		this.id = String.valueOf(id);
+	}
 }

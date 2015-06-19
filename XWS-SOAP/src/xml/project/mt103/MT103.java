@@ -2,6 +2,7 @@
 package xml.project.mt103;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -9,6 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.basex.rest.Identifiable;
+
 import xml.project.globals.TBanke;
 import xml.project.globals.TOsobe;
 
@@ -62,7 +66,7 @@ import xml.project.globals.TOsobe;
     "valuta"
 })
 @XmlRootElement(name = "MT103")
-public class MT103 {
+public class MT103 extends Identifiable {
 
     @XmlElement(name = "ID_poruke", required = true)
     protected String idPoruke;
@@ -326,5 +330,15 @@ public class MT103 {
     public void setValuta(String value) {
         this.valuta = value;
     }
+
+	@Override
+	public Long getId() {
+		return Long.valueOf(getIDPoruke());
+	}
+
+	@Override
+	public void setId(Long id) {
+		setIDPoruke(String.valueOf(id));
+	}
 
 }

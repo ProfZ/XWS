@@ -14,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 
 import rs.ac.uns.ftn.xws.entities.payments.Invoice;
 import rs.ac.uns.ftn.xws.entities.payments.InvoiceItem;
-import xml.project.presek.Presek.Stavka;
 
 public class RestService implements RestServerRemote{
 

@@ -81,7 +81,7 @@ public class InvoiceService {
     	log.info("PUT");
     	Invoice retVal = null;
         try {
-        	retVal = invoiceDao.merge(entity);
+        	retVal = invoiceDao.merge(entity, entity.getId());
         } catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
