@@ -3,6 +3,8 @@ package xml.project.presek;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -60,7 +62,7 @@ import xml.project.globals.IzgledUplatnice;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element name="Stavka">
+ *         &lt;element name="Stavka" maxOccurs="unbounded">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
@@ -105,7 +107,7 @@ public class Presek {
     @XmlElement(name = "Zaglavlje", required = true)
     protected Presek.Zaglavlje zaglavlje;
     @XmlElement(name = "Stavka", required = true)
-    protected Presek.Stavka stavka;
+    protected List<Presek.Stavka> stavka;
 
     /**
      * Gets the value of the zaglavlje property.
@@ -134,25 +136,30 @@ public class Presek {
     /**
      * Gets the value of the stavka property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Presek.Stavka }
-     *     
-     */
-    public Presek.Stavka getStavka() {
-        return stavka;
-    }
-
-    /**
-     * Sets the value of the stavka property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the stavka property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Presek.Stavka }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getStavka().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Presek.Stavka }
+     * 
+     * 
      */
-    public void setStavka(Presek.Stavka value) {
-        this.stavka = value;
+    public List<Presek.Stavka> getStavka() {
+        if (stavka == null) {
+            stavka = new ArrayList<Presek.Stavka>();
+        }
+        return this.stavka;
     }
 
 

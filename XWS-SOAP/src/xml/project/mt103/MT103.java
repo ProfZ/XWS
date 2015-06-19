@@ -330,7 +330,6 @@ public class MT103 extends Identifiable {
     public void setValuta(String value) {
         this.valuta = value;
     }
-
 	@Override
 	public Long getId() {
 		return Long.valueOf(getIDPoruke());
@@ -340,5 +339,4 @@ public class MT103 extends Identifiable {
 	public void setId(Long id) {
 		setIDPoruke(String.valueOf(id));
 	}
-
 }

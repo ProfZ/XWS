@@ -124,8 +124,8 @@ public class NalogZaPrenos {
     @XmlElement(name = "Iznos", required = true)
     protected BigDecimal iznos;
     @XmlElementRefs({
-        @XmlElementRef(name = "Poziv_na_broj", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
         @XmlElementRef(name = "Broj_modela", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
+        @XmlElementRef(name = "Poziv_na_broj", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
         @XmlElementRef(name = "Racun", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class)
     })
     protected List<JAXBElement<? extends Serializable>> brojModelaAndPozivNaBrojAndRacun;
@@ -322,8 +322,8 @@ public class NalogZaPrenos {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link BigInteger }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
      * 
      * 

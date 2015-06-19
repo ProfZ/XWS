@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:MT910 xmlns="http://basex.org/rest" xmlns:ns2="http://www.project.xml/MT910" xmlns:ns3="http://www.project.xml/globals">
+    <id>5</id>
+    <ns2:ID_poruke>5</ns2:ID_poruke>
+    <ns2:Banka_Poverilac>
+        <ns3:SWIFT_kod_banke></ns3:SWIFT_kod_banke>
+        <ns3:Obracunski_racun_banke></ns3:Obracunski_racun_banke>
+    </ns2:Banka_Poverilac>
+    <ns2:Datum_Valute>2015-12-11+01:00</ns2:Datum_Valute>
+    <ns2:Iznos>45000</ns2:Iznos>
+    <ns2:Sifra_valute>RSD</ns2:Sifra_valute>
+    <ns2:Datum>2015-09-18+02:00</ns2:Datum>
+    <ns2:ID_poruke_naloga>6</ns2:ID_poruke_naloga>
+</ns2:MT910>

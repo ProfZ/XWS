@@ -59,7 +59,7 @@ import xml.project.globals.TSequence;
     "datum"
 })
 @XmlRootElement(name = "MT102")
-public class MT102 extends Identifiable {
+public class MT102 extends Identifiable{
 
     @XmlElement(name = "ID_poruke", required = true)
     protected String idPoruke;

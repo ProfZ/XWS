@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:MT102 xmlns="http://basex.org/rest" xmlns:ns2="http://www.project.xml/MT102" xmlns:ns3="http://www.project.xml/globals">
+    <id>2</id>
+    <ns2:ID_poruke>2</ns2:ID_poruke>
+    <ns2:Banka_Duznik>
+        <ns3:SWIFT_kod_banke></ns3:SWIFT_kod_banke>
+        <ns3:Obracunski_racun_banke></ns3:Obracunski_racun_banke>
+    </ns2:Banka_Duznik>
+    <ns2:Banka_Poverilac>
+        <ns3:SWIFT_kod_banke></ns3:SWIFT_kod_banke>
+        <ns3:Obracunski_racun_banke></ns3:Obracunski_racun_banke>
+    </ns2:Banka_Poverilac>
+    <ns2:Datum_Valute>2015-08-11+02:00</ns2:Datum_Valute>
+    <ns2:Ukupan_Iznos>54000</ns2:Ukupan_Iznos>
+    <ns2:Sifra_valute>RSD</ns2:Sifra_valute>
+    <ns2:Datum>2015-07-18+02:00</ns2:Datum>
+</ns2:MT102>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:MT103 xmlns="http://basex.org/rest" xmlns:ns2="http://www.project.xml/MT103" xmlns:ns3="http://www.project.xml/globals">
+    <id>1</id>
+    <ns2:ID_poruke>1</ns2:ID_poruke>
+    <ns2:Banka_Duznik>
+        <ns3:SWIFT_kod_banke></ns3:SWIFT_kod_banke>
+        <ns3:Obracunski_racun_banke></ns3:Obracunski_racun_banke>
+    </ns2:Banka_Duznik>
+    <ns2:Banka_Poverilac>
+        <ns3:SWIFT_kod_banke></ns3:SWIFT_kod_banke>
+        <ns3:Obracunski_racun_banke></ns3:Obracunski_racun_banke>
+    </ns2:Banka_Poverilac>
+    <ns2:Datum_Valute>2015-11-11+01:00</ns2:Datum_Valute>
+    <ns2:Duznik_nalogodavac>
+        <ns3:Naziv>Fred</ns3:Naziv>
+        <ns3:Racun>123-2345-123-123</ns3:Racun>
+        <ns3:Model>1234</ns3:Model>
+    </ns2:Duznik_nalogodavac>
+    <ns2:Primalac_poverilac>
+        <ns3:Naziv>Bob</ns3:Naziv>
+        <ns3:Racun>123-5556-123-09</ns3:Racun>
+        <ns3:Model>1234</ns3:Model>
+    </ns2:Primalac_poverilac>
+    <ns2:Svrha_placanja>Overa</ns2:Svrha_placanja>
+    <ns2:Datum_naloga>2015-09-18+02:00</ns2:Datum_naloga>
+    <ns2:Iznos>45000</ns2:Iznos>
+    <ns2:Valuta>RSD</ns2:Valuta>
+</ns2:MT103>

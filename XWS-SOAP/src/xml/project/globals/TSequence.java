@@ -53,13 +53,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class TSequence {
 
     @XmlElementRefs({
+        @XmlElementRef(name = "Svrha_placanja", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Iznos", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "Primalac_poverilac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "Duznik_nalogodavac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Iznos", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Datum_naloga", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "ID_naloga_za_placanje", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Svrha_placanja", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Valuta", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Datum_naloga", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "Valuta", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<?>> content;
 
@@ -91,13 +91,13 @@ public class TSequence {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
-     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * {@link JAXBElement }{@code <}{@link BigDecimal }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
+     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
      * {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
      * 
      * 
      */
