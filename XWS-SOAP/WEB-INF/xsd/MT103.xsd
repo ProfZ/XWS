@@ -22,7 +22,6 @@
 	             </xs:element>
 	             <xs:element name="Datum_naloga" type="xs:date"/>
 	             <xs:element name="Iznos" type="global:TIznos"/>
-	             <xs:element name="Duznik_nalogodavac" type="global:TOsobe"/>
 	             <xs:element name="Valuta" type="global:TOznakaValute"/>
             </xs:sequence>
         </xs:complexType>
