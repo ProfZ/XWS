@@ -6,11 +6,14 @@
 
 package xml.project.wsdl.bwsdl;
 
+import java.io.InputStream;
 import java.util.logging.Logger;
 
+import rest.bundle.RequestMethod;
+import rest.util.RESTUtil;
+import xml.project.faktura.Faktura.ZaglavljeFakture.Racun;
 import xml.project.globals.StatusCode;
 import xml.project.globals.TBanke;
-import xml.project.globals.TOsobe;
 import xml.project.mt102.MT102;
 import xml.project.mt103.MT103;
 import xml.project.mt910.MT910;
@@ -37,9 +40,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	TBanke banka;
     private static final Logger LOG = Logger.getLogger(FirmaBanciImpl.class.getName());
 
-    public void init(){
-    	this.banka = new TBanke();
-    }
+    
     /* (non-Javadoc)
      * @see xml.project.wsdl.bwsdl.FirmaBanci#doClearing(*
      */
@@ -96,8 +97,11 @@ public class FirmaBanciImpl implements FirmaBanci {
         BankaChecker bc = new BankaChecker();
         try {
             StatusCode _return = new StatusCode();
-            if(bc.checkTOsoba(mt103.getDuznikNalogodavac()) || bc.checkTOsoba(mt103.getPrimalacPoverilac())){
-            	throw new Exception("Invalid partisipants in transaction.");
+            if(bc.checkTBanka(mt103.getBankaDuznik()) && bc.checkTBanka(mt103.getBankaPoverilac())) {
+            	throw new Exception("Invalid banks in transaction.");
+            }
+            if(bc.checkTOsoba(mt103.getDuznikNalogodavac()) && bc.checkTOsoba(mt103.getPrimalacPoverilac())) {
+            	throw new Exception("Invalid participants in transaction.");
             }
             
             return _return;
@@ -137,8 +141,19 @@ public class FirmaBanciImpl implements FirmaBanci {
         }
     }
     
+    public void init(){
+    	this.banka = new TBanke();
+    	try {
+    		InputStream in = RESTUtil.retrieveResource("//Racuni", "Banka/Racuni", RequestMethod.GET);
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
     public static void main(String[] args){
-    	
+    	FirmaBanciImpl imp = new FirmaBanciImpl();
+    	imp.init();
     }
 
 }
