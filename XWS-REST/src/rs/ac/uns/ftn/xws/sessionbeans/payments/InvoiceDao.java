@@ -40,6 +40,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public String removeInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
 		Faktura invoice;
 		invoice = findById(idInvoice);
+		if(invoice==null){
+			return "404";
+		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
 		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
@@ -60,6 +63,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem, Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
 		Faktura invoice;
 		invoice = findById(idInvoice);
+		if(invoice==null){
+			return "404";
+		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
 		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
@@ -82,6 +88,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
 		Faktura invoice;
 		invoice = findById(idInvoice);
+		if(invoice==null){
+			return null;
+		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		if(!invoice.getZaglavljeFakture().getKupac().equals(idDobavljaca)){
 			return null;
