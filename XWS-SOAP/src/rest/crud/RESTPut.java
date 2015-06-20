@@ -49,7 +49,7 @@ public final class RESTPut {
 		System.out.println("=== PUT: create a new database ===");
 
 		/* URL konekcije ka konkretnom resursu - semi baze */
-		URL url = new URL(REST_URL + "CB/"+baza);
+		URL url = new URL(REST_URL + "Banka/"+baza);
 		System.out.println("\n* URL: " + url);
 		InputStream in = url.openStream();
 		Document doc = DocumentBuilderFactory.newInstance()
@@ -72,7 +72,7 @@ public final class RESTPut {
 				.transform(xmlSource, outputTarget);
 		InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
 
-		RESTUtil.createResource("CB",baza, is);
+		RESTUtil.createResource("Banka",baza, is);
 
 	}
 
@@ -80,7 +80,7 @@ public final class RESTPut {
 		System.out.println("=== PUT: create a new database ===");
 
 		/* URL konekcije ka konkretnom resursu - semi baze */
-		URL url = new URL(REST_URL + "CB/"+baza);
+		URL url = new URL(REST_URL + "Banka/"+baza);
 		System.out.println("\n* URL: " + url);
 		InputStream in = url.openStream();
 		Document doc = DocumentBuilderFactory.newInstance()
@@ -103,12 +103,12 @@ public final class RESTPut {
 				.transform(xmlSource, outputTarget);
 		InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
 
-		RESTUtil.createResource("CB",baza, is);
+		RESTUtil.createResource("Banka",baza, is);
 
 	}
 	public static void main(String[] args) {
 		try {
-			run("Racuni","//kod_banke[@id='AAAARS01']/stanje_racuna","111.00");
+			run("Racuni","//SWIFT_kod_banke[@id='AMAARS23']/stanje_racuna","999.00");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

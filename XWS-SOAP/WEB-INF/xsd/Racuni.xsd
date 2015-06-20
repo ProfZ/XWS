@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.project.xml/racuni" elementFormDefault="qualified">
+	<xs:element name="Racuni">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Firma_Racun" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Naziv">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="50" />
+										<xs:minLength value="3" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Raspolozivi_novac">
+								<xs:simpleType>
+									<xs:restriction base="xs:long">
+										<xs:minInclusive value="0" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Racun">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Broj_racuna">
+											<xs:simpleType>
+												<xs:restriction base="xs:positiveInteger">
+													<xs:totalDigits value="18" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Datum_racuna" type="xs:date" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Valuta">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:pattern value="([A-Z]|[a-z]){1,3}" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
