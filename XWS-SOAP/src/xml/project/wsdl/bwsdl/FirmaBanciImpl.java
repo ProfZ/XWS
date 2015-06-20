@@ -6,6 +6,7 @@
 
 package xml.project.wsdl.bwsdl;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.logging.Logger;
@@ -14,6 +15,10 @@ import java.util.logging.Logger;
 
 
 
+
+
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import rest.bundle.RequestMethod;
 import rest.util.RESTUtil;
@@ -159,7 +164,15 @@ public class FirmaBanciImpl implements FirmaBanci {
     public void init(){
     	this.banka = new TBanke();
     	try {
-    		InputStream in = RESTUtil.retrieveResource("//Racuni", "Banka/Racuni", RequestMethod.GET);
+    		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    		InputStream is = new ByteArrayInputStream(outputStream.toByteArray());
+    		
+    		MT910 test = new MT910();
+    		test.setIDPoruke("12345");
+    		test.setSifraValute("gf");
+    		//RESTUtil.createResource("Banka/Racuni", test.getIDPoruke(), is);
+    		RESTUtil.objectToDB("Banka", test.getIDPoruke(), test);
+    		InputStream in = RESTUtil.retrieveResource("//12345", "Banka", RequestMethod.GET);
     		
     	} catch (Exception e) {
     		e.printStackTrace();
