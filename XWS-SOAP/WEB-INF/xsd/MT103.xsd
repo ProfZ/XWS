@@ -6,7 +6,7 @@
        <xs:element name="MT103">
         <xs:complexType>
             <xs:sequence>
-            	<xs:element name="ID_poruke" type="global:ID_poruke"> </xs:element>
+            	<xs:element name="ID_poruke" type="global:ID_poruke"/>
             	<xs:element name="Banka_Duznik" type="global:TBanke"/>
             	<xs:element name="Banka_Poverilac" type="global:TBanke"/>
             	<xs:element name="Datum_Valute" type="xs:date"/>

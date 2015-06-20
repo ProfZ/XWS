@@ -1,126 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified"
-    targetNamespace="http://www.project.xml/uplatnica"
-    xmlns:upl="http://www.project.xml/uplatnica" xmlns:globals="http://www.project.xml/globals">
-    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd"/>
-    <xs:element name="NalogZaPrenos">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Duznik" type="upl:TLice"/>
-                <xs:element name="Svrha_placanja">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                            <xs:maxLength value="200"/>
-                            <xs:minLength value="3"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="Primalac" type="upl:TLice"/>
-                <xs:element name="Podaci_o_uplati"/>
-                <xs:element name="Sifra_placanja" type="xs:positiveInteger"/>
-                <xs:element name="Valuta">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                            <xs:pattern value="[A-Z]3"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="Iznos">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:decimal">
-                            <xs:totalDigits value="15"/>
-                            <xs:fractionDigits value="2"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:sequence maxOccurs="2" minOccurs="1">
-                    <xs:element name="Broj_modela">
-                        <xs:simpleType>
-                            <xs:restriction base="xs:positiveInteger">
-                                <xs:totalDigits value="2"/>
-                            </xs:restriction>
-                        </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="Poziv_na_broj">
-                        <xs:simpleType>
-                            <xs:restriction base="xs:string">
-                                <xs:maxLength value="20"/>
-                                <xs:pattern value=""/>
-                            </xs:restriction>
-                        </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="Racun" type="globals:TBrojRacuna"/>
-                </xs:sequence>
-                <xs:element ref="upl:Mesto_Datum_prijema"/>
-                <xs:element minOccurs="0" name="Pecat_potpis_nalogodavaca"/>
-            </xs:sequence>
-            <xs:attribute name="Hitno">
-                <xs:simpleType>
-                    <xs:restriction base="xs:string">
-                        <xs:whiteSpace value="preserve"/>
-                        <xs:enumeration value="DA"/>
-                        <xs:enumeration value="NE"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:attribute>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="Adresa">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Mesto" type="xs:string"/>
-                <xs:element name="Postanski_broj">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:int">
-                            <xs:maxInclusive value="40000"/>
-                            <xs:minInclusive value="10000"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="Ulica" type="xs:string"/>
-                <xs:element name="Broj">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:int">
-                            <xs:minInclusive value="0"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element minOccurs="0" name="Sprat" type="xs:positiveInteger"/>
-                <xs:element minOccurs="0" name="Stan" type="xs:positiveInteger"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:complexType name="TLice">
-        <xs:sequence>
-            <xs:element ref="upl:Adresa"/>
-        </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="TPravnoLice">
-        <xs:complexContent>
-            <xs:extension base="upl:TLice">
-                <xs:sequence>
-                    <xs:element name="Naziv" type="xs:string"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    <xs:complexType name="TFicikoLice">
-        <xs:complexContent>
-            <xs:extension base="upl:TLice">
-                <xs:sequence>
-                    <xs:element name="Ime" type="xs:string"/>
-                    <xs:element name="Prezme" type="xs:string"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-    <xs:element name="Mesto_Datum_prijema">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="Mesto" type="xs:string"/>
-                <xs:element name="Datum" type="xs:date"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+	xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+	elementFormDefault="qualified" targetNamespace="http://www.project.xml/uplatnica"
+	xmlns:upl="http://www.project.xml/uplatnica" xmlns:global="http://www.project.xml/globals">
+	<xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd" />
+	<xs:element name="NalogZaPrenos">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ID_poruke" type="global:ID_poruke"/>
+				<xs:element name="Duznik_nalogodavac" type="global:TOsobe"/>
+				<xs:element name="Svrha_placanja">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="255" />
+							<xs:minLength value="3" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Primalac_poverilac" type="global:TOsobe"/>
+				<xs:element name="Datum_naloga" type="xs:date"/>
+				<xs:element name="Datum_Valute" type="xs:date"/>
+				<xs:element name="Iznos" type="global:TIznos"/>
+	            <xs:element name="Valuta" type="global:TOznakaValute"/>
+				<xs:element name="Hitno" type="xs:boolean"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>
