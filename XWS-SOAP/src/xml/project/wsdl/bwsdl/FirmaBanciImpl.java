@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import xml.project.globals.StatusCode;
 import xml.project.globals.TBanke;
+import xml.project.globals.TOsobe;
 import xml.project.mt102.MT102;
 import xml.project.mt103.MT103;
 import xml.project.mt910.MT910;
@@ -92,8 +93,12 @@ public class FirmaBanciImpl implements FirmaBanci {
     public StatusCode acceptMT103(MT103 mt103) { 
         LOG.info("Executing operation acceptMT103");
         System.out.println(mt103);
+        BankaChecker bc = new BankaChecker();
         try {
             StatusCode _return = new StatusCode();
+            if(bc.checkTOsoba(mt103.getDuznikNalogodavac()) || bc.checkTOsoba(mt103.getPrimalacPoverilac())){
+            	throw new Exception("Invalid partisipants in transaction.");
+            }
             
             return _return;
         } catch (Exception ex) {
