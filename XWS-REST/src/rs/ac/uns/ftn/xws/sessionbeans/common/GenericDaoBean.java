@@ -62,5 +62,9 @@ public abstract class GenericDaoBean<T extends Identifiable, ID extends Serializ
 		em.update(entity, id);
 		return entity;
 	}
+	
+	public boolean exists(String xQuery) throws IOException {
+		return exists(xQuery);
+	}
 
 }
