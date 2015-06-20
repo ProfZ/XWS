@@ -828,7 +828,7 @@ public class Faktura extends Identifiable {
         @XmlElement(name = "Dobavljac", namespace = "http://www.project.xml/faktura", required = true)
         protected TFirma dobavljac;
         @XmlElement(name = "Kupac", namespace = "http://www.project.xml/faktura", required = true)
-        protected Object kupac;
+        protected TFirma kupac;
         @XmlElement(name = "Racun", namespace = "http://www.project.xml/faktura", required = true)
         protected Faktura.ZaglavljeFakture.Racun racun;
         @XmlElement(name = "Vrednost_robe", namespace = "http://www.project.xml/faktura", required = true)
@@ -907,7 +907,7 @@ public class Faktura extends Identifiable {
          *     {@link Object }
          *     
          */
-        public Object getKupac() {
+        public TFirma getKupac() {
             return kupac;
         }
 
@@ -919,7 +919,7 @@ public class Faktura extends Identifiable {
          *     {@link Object }
          *     
          */
-        public void setKupac(Object value) {
+        public void setKupac(TFirma value) {
             this.kupac = value;
         }
 
