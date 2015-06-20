@@ -105,6 +105,27 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		return results;
 	}
 	
+	public boolean exists(String query) throws IOException {
+		
+		StringBuilder builder = new StringBuilder(REST_URL);
+		builder.append(schemaName);
+		builder.append("?query=exists('" + query + "')");
+		builder.append("&wrap=yes");
+
+		url = new URL(builder.substring(0));
+		conn = (HttpURLConnection) url.openConnection();
+
+		int responseCode = conn.getResponseCode();
+		String message = conn.getResponseMessage();
+
+		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');
+		
+		if (message.equals("true")) {
+			return true;
+		}
+		return false;
+	}
+	
 	/*
 	 * Takes both, XQuery and XUpdate statements.
 	 */

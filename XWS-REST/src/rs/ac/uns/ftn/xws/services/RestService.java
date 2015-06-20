@@ -3,8 +3,6 @@ package rs.ac.uns.ftn.xws.services;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -16,59 +14,78 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBException;
 
-import rs.ac.uns.ftn.xws.entities.payments.Invoice;
-import rs.ac.uns.ftn.xws.entities.payments.InvoiceItem;
 import rs.ac.uns.ftn.xws.sessionbeans.payments.InvoiceDaoLocal;
+import xml.project.faktura.Faktura;
 import xml.project.faktura.Faktura.StavkaFakture;
 
 @Path("/partneri")
-public class RestService implements RestServerRemote{
+public class RestService implements RestServerRemote{ 
 
-	@EJB
+	@EJB 
 	private InvoiceDaoLocal invoiceDao;
 	
 	@POST
 	@Path("/{id_dobavljaca}/fakture")
-	@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Override
-	public void slanjeFakture(@PathParam("id_dobavljaca") long id_dobavljaca) {
-		// TODO Auto-generated method stub
-		
+	public Response slanjeFakture(@PathParam("id_dobavljaca") long id_dobavljaca, Faktura faktura) throws IOException, JAXBException {
+		ResponseBuilder rb;
+		if (!invoiceDao.exists("partneri/" + id_dobavljaca)) {
+			rb = Response.status(Status.FORBIDDEN);
+		} else {
+			if (!invoiceDao.checkValid(faktura)) {
+				rb = Response.status(Status.BAD_REQUEST);
+			} else {
+				Faktura retFakt = invoiceDao.persist(faktura);
+				rb = Response.created(URI.create("/partneri/" + id_dobavljaca + "/fakture/" + retFakt.getId()));
+			}
+		}
+		return rb.build();
 	}
 	
 	@GET
-	@Path("{url_kupca}/partneri/{id}/fakture")
-	@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id_dobavljaca}/fakture")
 	@Override
-	public List<Invoice> pribaviFakture(@PathParam("id") long id_dobavljaca) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response pribaviFakture(@PathParam("id_dobavljaca") long id_dobavljaca) throws IOException, JAXBException {
+		ResponseBuilder rb;
+		if (!invoiceDao.exists("partneri/" + id_dobavljaca)) {
+			rb = Response.status(Status.NOT_FOUND);
+		} else {
+			rb = Response.ok(invoiceDao.findAllInvoicesByPartner(id_dobavljaca));
+		}
+		return rb.build();
 	}
 
 	@GET
-	@Path("{url_kupca}/partneri/{id_dobavljaca}/fakture/{id_fakture}")
-	@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id_dobavljaca}/fakture/{id_fakture}")
 	@Override
-	public Invoice pribaviFakturu(@PathParam("id_dobavljaca") long id_dobavljaca,
-			 @PathParam("id_fakture") long id_fakture) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response pribaviFakturu(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture) throws IOException, JAXBException {
+		ResponseBuilder rb;
+		if (!invoiceDao.exists("partneri/" + id_dobavljaca) ||  !invoiceDao.exists("partneri/" + id_dobavljaca + "/fakture/" + id_fakture)) {
+			rb = Response.status(Status.NOT_FOUND);
+		} else {
+			rb = Response.ok(invoiceDao.findById(id_fakture));
+		}
+		return rb.build();
 	}
 
 	@GET
-	@Path("{url_kupca}/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke")
-	@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke")
 	@Override
-	public List<InvoiceItem> pribaviStavke(@PathParam("id_dobavljaca") long id_dobavljaca,
-			 @PathParam("id_fakture") long id_fakture) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response pribaviStavke(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture) throws IOException, JAXBException {
+		ResponseBuilder rb;
+		if (!invoiceDao.exists("partneri/" + id_dobavljaca) ||  !invoiceDao.exists("partneri/" + id_dobavljaca + "/fakture/" + id_fakture)) {
+			rb = Response.status(Status.NOT_FOUND);
+		} else {
+			rb = Response.ok(invoiceDao.findAllItems(id_fakture));
+		}
+		return rb.build();
 	}
 
 	@POST

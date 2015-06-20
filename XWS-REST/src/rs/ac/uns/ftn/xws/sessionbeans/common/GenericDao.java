@@ -22,4 +22,6 @@ public interface GenericDao<T extends Identifiable, ID extends Serializable> {
 	public void remove(ID id) throws IOException;
 	
 	public InputStream findBy(String xQuery, boolean wrap) throws IOException;
+	
+	public boolean exists(String xQuery) throws IOException;
 }
