@@ -8,7 +8,7 @@ import javax.xml.bind.JAXBException;
 import xml.project.faktura.Faktura;
 import xml.project.faktura.Faktura.StavkaFakture;
 
-public interface RestServerRemote {
+public interface RestServerRemote { 
 
 	public Response pribaviFakturu(long id_dobavljaca, long id_fakture) throws IOException, JAXBException;
 	public Response pribaviFakture(long id_dobavljaca) throws IOException, JAXBException;

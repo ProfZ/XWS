@@ -23,9 +23,9 @@ import xml.project.faktura.Faktura;
 import xml.project.faktura.Faktura.StavkaFakture;
 
 @Path("/partneri")
-public class RestService implements RestServerRemote{
+public class RestService implements RestServerRemote{ 
 
-	@EJB
+	@EJB 
 	private InvoiceDaoLocal invoiceDao;
 	
 	@POST
