@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
                       serviceName = "FirmaBankaService",
                       portName = "FirmaBanci",
                       targetNamespace = "http://www.project.xml/wsdl/bwsdl",
-                      wsdlLocation = "file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/wsdl/Banka.wsdl",
+                      wsdlLocation = "WEB-INF/wsdl/Banka.wsdl",
                       endpointInterface = "xml.project.wsdl.bwsdl.FirmaBanci")
                       
 public class FirmaBanciImpl implements FirmaBanci {
@@ -52,6 +52,9 @@ public class FirmaBanciImpl implements FirmaBanci {
     public xml.project.globals.StatusCode acceptMT910(xml.project.mt910.MT910 mt910) { 
         LOG.info("Executing operation acceptMT910");
         System.out.println(mt910);
+        
+        
+        
         try {
             xml.project.globals.StatusCode _return = null;
             return _return;
