@@ -2,13 +2,16 @@ package rest.util;
 
 public class Validation {
 	
-	public static boolean checkBankNumber(String number){
-		if (number.trim().equals(""))
+	public static boolean checkBankNumber(String number) {
+		if(number == null || number.trim().equals("")) 
 			return false;
-		
-		int n = Integer.parseInt(number.substring(0, 15));
-		int checksum = Integer.parseInt(number.substring(16, 17));
-		return (n == (98 - (n * 100) % 97));
+		try{
+			int n = Integer.parseInt(number.substring(0, 16));
+			int checksum = Integer.parseInt(number.substring(16, 18));
+			return (checksum == (98 - (n * 100) % 97));
+		}catch (NumberFormatException e){
+			return false;
+		}
 	}
 
 }

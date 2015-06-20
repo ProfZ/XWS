@@ -26,7 +26,7 @@ public final class RESTGet {
 		 * Sam XPath izraz se ugradjuje kao 'query' request parametar nad semom baze 'factbook'. 
 		 * Obavezno blank-ove zameniti odgovarajucim karakterom. 
 		 */
-		URL url = new URL(REST_URL + "CB/Racuni?query=" + query.replace(" ", "+"));
+		URL url = new URL(REST_URL + "Banka/Racuni?query=" + query.replace(" ", "+"));
 		System.out.println("\n* URL: " + url);
 
 		/* Uspostavljanje konekcije za zadati URL */

@@ -26,7 +26,7 @@ public final class RESTPost {
 		System.out.println("=== POST: execute a query ===");
 
 		/* URL konekcije ka konkretnom resursu - semi baze */
-		URL url = new URL(REST_URL + "CB/Racuni");
+		URL url = new URL(REST_URL + "Banka/Racuni");
 		System.out.println("\n* URL: " + url);
 
 		/* XML formatiran query koji se salje serveru */
@@ -37,7 +37,7 @@ public final class RESTPost {
 		 */
 		String request = 
 				"<query xmlns='http://basex.org/rest'>\n"
-				+ "  <text>(//kod_banke[id='AAAARS01'])[position() = 10 to 15]</text>\n"
+				+ "  <text>(//SWIFT_kod_banke[id='AMAARS23'])[position() = 10 to 15]</text>\n"
 				+ "  <parameter name='wrap' value='yes'/>\n" 
 				+ "</query>";
 		
