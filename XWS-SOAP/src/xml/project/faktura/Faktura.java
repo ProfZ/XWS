@@ -239,7 +239,7 @@ import org.basex.rest.Identifiable;
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
- * </pre>
+ * </pre>    
  * 
  * 
  */
