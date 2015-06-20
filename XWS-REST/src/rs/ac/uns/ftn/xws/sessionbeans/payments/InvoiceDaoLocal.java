@@ -7,7 +7,17 @@ import javax.xml.bind.JAXBException;
 
 import rs.ac.uns.ftn.xws.sessionbeans.common.GenericDao;
 import xml.project.faktura.Faktura;
+import xml.project.faktura.Faktura.StavkaFakture;
 
 public interface InvoiceDaoLocal extends GenericDao<Faktura, Long> {
 	public List<Faktura.StavkaFakture> findAllItems(Long idFakture) throws IOException, JAXBException;
+	public String removeInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException;
+	StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice,
+			Long idInvoiceItem, String idDobavljaca) throws IOException,
+			JAXBException;
+	String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem,
+			Long idInvoice, Long idInvoiceItem, String idDobavljaca)
+			throws IOException, JAXBException;
+	String addInvoiceItem(Long idInvoice, StavkaFakture newInvoiceItem,
+			String idDobavljaca) throws IOException, JAXBException;
 }

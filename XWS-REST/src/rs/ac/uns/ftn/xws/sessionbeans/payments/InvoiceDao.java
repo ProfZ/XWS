@@ -35,4 +35,85 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		result.addAll(fakt.getStavkaFakture());
 		return result;
 	}
+	
+	@Override
+	public String removeInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
+		Faktura invoice;
+		invoice = findById(idInvoice);
+		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
+		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
+		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
+			return "403";
+		}
+		for(StavkaFakture temp : listOfInvoiceItems){
+			Long result = temp.getRedniBroj();
+			if(result.equals(idInvoiceItem)){
+				newlistOfInvoiceItems.remove(idInvoice);
+				invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
+				return "204";
+			}
+		}
+		return "404";
+	}
+	
+	@Override
+	public String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem, Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
+		Faktura invoice;
+		invoice = findById(idInvoice);
+		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
+		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
+		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
+			return "403";
+		}
+		for(StavkaFakture temp : listOfInvoiceItems){
+			Long result = temp.getRedniBroj();
+			if(result.equals(idInvoiceItem)){
+				newlistOfInvoiceItems.remove(idInvoice);
+				//proveta ispravnosti stavke
+				newlistOfInvoiceItems.add(newInvoiceItem);
+				invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
+				return "200";
+			}
+		}
+		return "404";
+	}
+	
+	@Override
+	public StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
+		Faktura invoice;
+		invoice = findById(idInvoice);
+		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
+		if(!invoice.getZaglavljeFakture().getKupac().equals(idDobavljaca)){
+			return null;
+		}
+		for(int i = 0; i < listOfInvoiceItems.size(); ++i){
+			Long temp = listOfInvoiceItems.get(i).getRedniBroj();
+			if(temp.equals(idInvoiceItem)){
+				//proveta ispravnosti stavke
+				return listOfInvoiceItems.get(i);
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public String addInvoiceItem(Long idInvoice, StavkaFakture newInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
+		Faktura invoice;
+		invoice = findById(idInvoice);
+		if(invoice==null){
+			return "404";
+		}
+		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
+		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
+		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
+			return "403";
+		}
+		//provera da li je ispravna stavka
+		Long numb = (long) listOfInvoiceItems.size();
+		newInvoiceItem.setRedniBroj(numb+1);
+		newlistOfInvoiceItems.add(newInvoiceItem);
+		invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
+		return "201";
+
+	}
 }

@@ -33,7 +33,7 @@ public class RestService implements RestServerRemote{
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public List<Invoice> pribaviFakture(@PathParam("url_kupca") String url_kupca, @PathParam("id") int id_dobavljaca) {
+	public List<Invoice> pribaviFakture(@PathParam("id") long id_dobavljaca) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -43,8 +43,8 @@ public class RestService implements RestServerRemote{
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public Invoice pribaviFakturu(@PathParam("url_kupca") String url_kupca, @PathParam("id_dobavljaca") int id_dobavljaca,
-			 @PathParam("id_fakture") int id_fakture) {
+	public Invoice pribaviFakturu(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -54,50 +54,52 @@ public class RestService implements RestServerRemote{
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public List<InvoiceItem> pribaviStavke(@PathParam("url_kupca") String url_kupca, @PathParam("id_dobavljaca") int id_dobavljaca,
-			 @PathParam("id_fakture") int id_fakture) {
+	public List<InvoiceItem> pribaviStavke(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@POST
-	@Path("{url_kupca}/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke")
+	@Path("/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
-	public void novaStavka(@PathParam("url_kupca") String url_kupca, @PathParam("id_dobavljaca") int id_dobavljaca,
-			 @PathParam("id_fakture") int id_fakture) {
+	public void novaStavka(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@GET
-	@Path("{url_kupca}/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
+	@Path("/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public InvoiceItem pribaviStavku(@PathParam("url_kupca") String url_kupca, @PathParam("id_dobavljaca") int id_dobavljaca,
-			 @PathParam("id_fakture") int id_fakture, @PathParam("redni_broj") int redni_broj){
+	public InvoiceItem pribaviStavku(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj){
 		return null;
 	}
 	
 	@PUT
-	@Path("{url_kupca}/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
+	@Path("/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
-	public void izmeniStavke(@PathParam("url_kupca") String url_kupca, @PathParam("id_dobavljaca") int id_dobavljaca,
-			 @PathParam("id_fakture") int id_fakture, @PathParam("redni_broj") int redni_broj) {
+	public void izmeniStavke(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj) {
 		// TODO Auto-generated method stub
 	}
 
 	@DELETE
-	@Path("{url_kupca}/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
+	@Path("/partneri/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
-	public void obrisiStavku(@PathParam("url_kupca") String url_kupca, @PathParam("id_dobavljaca") int id_dobavljaca,
-			 @PathParam("id_fakture") int id_fakture, @PathParam("redni_broj") int redni_broj) {
+	public void obrisiStavku(@PathParam("id_dobavljaca") long id_dobavljaca,
+			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 
 
 	

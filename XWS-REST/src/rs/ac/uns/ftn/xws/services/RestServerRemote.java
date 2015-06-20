@@ -7,12 +7,16 @@ import rs.ac.uns.ftn.xws.entities.payments.InvoiceItem;
 
 public interface RestServerRemote {
 
-	public void slanjeFakture(String url_kupca, int id_dobavljaca);
-	public List<Invoice> pribaviFakture(String url_kupca, int id_dobavljaca);
-	public Invoice pribaviFakturu(String url_kupca, int id_dobavljaca, int id_fakture);
-	public List<InvoiceItem> pribaviStavke(String url_kupca, int id_dobavljaca, int id_fakture);
-	public void novaStavka(String url_kupca, int id_dobavljaca, int id_fakture);
-	public InvoiceItem pribaviStavku(String url_kupca, int id_dobavljaca, int id_fakture, int redni_broj);
-	public void izmeniStavke(String url_kupca, int id_dobavljaca, int id_fakture, int redni_broj);
-	public void obrisiStavku(String url_kupca, int id_dobavljaca, int id_fakture, int redni_broj);
+	public Invoice pribaviFakturu(long id_dobavljaca, long id_fakture);
+	public List<Invoice> pribaviFakture(long id_dobavljaca);
+	public void novaStavka(long id_dobavljaca, long id_fakture);
+	public List<InvoiceItem> pribaviStavke(long id_dobavljaca, long id_fakture);
+	public void izmeniStavke(long id_dobavljaca, long id_fakture, long redni_broj);
+	public void obrisiStavku(long id_dobavljaca, long id_fakture, long redni_broj);
+	public void slanjeFakture(long id_dobavljaca);
+	public InvoiceItem pribaviStavku(long id_dobavljaca, long id_fakture,
+			long redni_broj);
+	
+	
+	
 }
