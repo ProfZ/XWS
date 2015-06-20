@@ -8,6 +8,10 @@ package xml.project.wsdl.bwsdl;
 
 import java.util.logging.Logger;
 
+import javax.rmi.CORBA.Util;
+
+import rest.util.RESTUtil;
+import xml.project.faktura.Faktura.ZaglavljeFakture.Racun;
 import xml.project.globals.StatusCode;
 import xml.project.globals.TBanke;
 import xml.project.mt102.MT102;
@@ -63,7 +67,15 @@ public class FirmaBanciImpl implements FirmaBanci {
         
         
         try {
-            StatusCode _return = null;
+            StatusCode _return = new StatusCode();
+            //RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
+            
+            String idPorukeNaloga = mt910.getIDPorukeNaloga(); // obrazac MT103
+            MT103 mt103Temp = new MT103();
+            
+            
+            
+            
             return _return;
         } catch (Exception ex) {
             ex.printStackTrace();
