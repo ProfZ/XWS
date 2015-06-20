@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Racuni>
+	<Firma_Racun id="1">
+		<Naziv>Rad_1</Naziv>
+		<Raspolozivi_novac>100</Raspolozivi_novac>
+		<Racun>
+			<Broj_racuna>123456789123456789</Broj_racuna>
+			<Datum_racuna>01.09.2001.</Datum_racuna>		
+		</Racun>
+		<Valuta>RSD</Valuta>
+	</Firma_Racun>
+	<Firma_Racun id="2">
+		<Naziv>Rad_2</Naziv>
+		<Raspolozivi_novac>1000</Raspolozivi_novac>
+		<Racun>
+			<Broj_racuna>123456789123456788</Broj_racuna>
+			<Datum_racuna>01.09.2001.</Datum_racuna>		
+		</Racun>
+		<Valuta>RSD</Valuta>
+	</Firma_Racun>
+</Racuni>
