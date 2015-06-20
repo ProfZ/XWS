@@ -1,12 +1,16 @@
 package rs.ac.uns.ftn.xws.sessionbeans.payments;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBException;
+import org.basex.rest.Result;
+import org.basex.rest.Results;
+import org.w3c.dom.Node;
 
 import rs.ac.uns.ftn.xws.sessionbeans.common.GenericDaoBean;
 import xml.project.faktura.Faktura;
@@ -40,6 +44,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public String removeInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
 		Faktura invoice;
 		invoice = findById(idInvoice);
+		if(invoice==null){
+			return "404";
+		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
 		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
@@ -60,6 +67,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem, Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
 		Faktura invoice;
 		invoice = findById(idInvoice);
+		if(invoice==null){
+			return "404";
+		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
 		if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
@@ -82,6 +92,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException{
 		Faktura invoice;
 		invoice = findById(idInvoice);
+		if(invoice==null){
+			return null;
+		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		if(!invoice.getZaglavljeFakture().getKupac().equals(idDobavljaca)){
 			return null;
@@ -115,5 +128,26 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
 		return "201";
 
+	}
+
+
+	@Override
+	public boolean checkValid(Faktura faktura) {
+		return true;
+	}
+
+
+	@Override
+	public List<Faktura> findAllInvoicesByPartner(Long partnerID) throws IOException, JAXBException {
+		String xQuery = "for $x in collection('partneri/" + partnerID + "/fakture')  return $x";
+		InputStream is = em.executeQuery(xQuery, true);
+		
+		List<Faktura> fakture = new ArrayList<Faktura>();
+		if (is != null) {
+			Results wrappedResults = (Results) em.getUnmarshaller().unmarshal(is);
+			for (Result result : wrappedResults.getResult())
+				fakture.add((Faktura) em.getUnmarshaller().unmarshal((Node)result.getAny()));
+		}
+		return null;
 	}
 }
