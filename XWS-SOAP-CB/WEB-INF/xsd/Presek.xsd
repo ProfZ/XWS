@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified"
+    vc:minVersion="1.0" vc:maxVersion="1.1" targetNamespace="http://www.project.xml/presek"
+    xmlns:globals="http://www.project.xml/globals" xmlns:presek="http://www.project.xml/presek">
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd"/>
+    <xs:element name="presek">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Zaglavlje">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Broj_racuna" type="globals:TBrojRacuna"/>
+                            <xs:element name="Datum_naloga" type="xs:date"/>
+                            <xs:element name="Broj_preseka">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:positiveInteger">
+                                        <xs:totalDigits value="2"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="Prethodno_stanje">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:decimal">
+                                        <xs:totalDigits value="15"/>
+                                        <xs:fractionDigits value="2"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="Korist" type="presek:TPromene"/>
+                            <xs:element name="Teret" type="presek:TPromene"/>
+                            <xs:element name="Novo_stanje">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:decimal">
+                                        <xs:totalDigits value="15"/>
+                                        <xs:fractionDigits value="2"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Stavka" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ID_poruke">
+                                <xs:simpleType>
+                                    <xs:restriction base="globals:ID_poruke">
+                                        <xs:maxLength value="50"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="Racun" type="globals:IzgledUplatnice"/>
+                            <xs:element name="Smer">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:maxLength value="1"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="Datum_valute" type="xs:date"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="TPromene">
+        <xs:sequence>
+            <xs:element name="Broj_promena">
+                <xs:simpleType>
+                    <xs:restriction base="xs:positiveInteger">
+                        <xs:totalDigits value="6"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Ukupno_na">
+                <xs:simpleType>
+                    <xs:restriction base="xs:decimal">
+                        <xs:totalDigits value="15"/>
+                        <xs:fractionDigits value="2"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

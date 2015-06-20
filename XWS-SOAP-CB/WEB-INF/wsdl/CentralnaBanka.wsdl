@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions 
+    targetNamespace="http://www.project.xml/wsdl/CBwsdl"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ws="http://www.project.xml/wsdl/CBwsdl"
+    xmlns:utils="http://www.project.xml/CBankaUtils"
+    xmlns:MT910="http://www.project.xml/MT910"
+    xmlns:MT103="http://www.project.xml/MT103"
+    xmlns:MT102="http://www.project.xml/MT102"
+    xmlns:globals="http://www.project.xml/globals">
+    <wsdl:types>
+        <xs:schema targetNamespace="http://www.project.xml/CBankaUtils">
+            <xs:import schemaLocation="../xsd/MT103.xsd" namespace="http://www.project.xml/MT103"></xs:import>
+            <xs:import schemaLocation="../xsd/MT102.xsd" namespace="http://www.project.xml/MT102"></xs:import>
+            <xs:import schemaLocation="../xsd/MT900.xsd" namespace="http://www.project.xml/MT900"></xs:import>
+            <xs:import schemaLocation="../xsd/MT910.xsd" namespace="http://www.project.xml/MT910"></xs:import>
+            <xs:import schemaLocation="../xsd/Globals.xsd" namespace="http://www.project.xml/globals"></xs:import>
+        
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="acceptMT103msg">
+        <wsdl:part name="MT103" element="MT103:MT103"></wsdl:part>   
+    </wsdl:message>
+    <wsdl:message name="acceptMT103response">
+        <wsdl:part name="return" element="MT910:MT910"></wsdl:part>  
+    </wsdl:message>
+    <wsdl:message name="acceptMT103Fault">
+        <wsdl:part name="fault" element="globals:statusCode"></wsdl:part>
+    </wsdl:message>
+   
+    <wsdl:message name="acceptMT102msg">
+        <wsdl:part name="MT102" element="MT102:MT102"></wsdl:part>   
+    </wsdl:message>
+    <wsdl:message name="acceptMT102response">
+        <wsdl:part name="return" element="globals:statusCode"></wsdl:part>  
+    </wsdl:message>
+
+    <wsdl:message name="sendMT103msg">
+        <wsdl:part name="MT103" element="MT103:MT103"></wsdl:part>   
+    </wsdl:message>
+    <wsdl:message name="sendMT103Fault">
+        <wsdl:part name="fault" element="globals:statusCode"></wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="CentralnaBanka">
+        <wsdl:operation name="acceptMT103">
+            <wsdl:input message="ws:acceptMT103msg"></wsdl:input>
+            <wsdl:output message="ws:acceptMT103response"></wsdl:output>
+            <wsdl:fault name="acceptMT103Fault" message="ws:acceptMT103Fault"></wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="acceptMT102">
+            <wsdl:input message="ws:acceptMT102msg"></wsdl:input>
+            <wsdl:output message="ws:acceptMT102response"></wsdl:output>   
+        </wsdl:operation>
+    </wsdl:portType>
+    
+    <wsdl:binding name="CentralnaBankaBinding" type="ws:CentralnaBanka">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="acceptMT103">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="acceptMT103Fault">
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="acceptMT102">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+       
+    </wsdl:binding>
+    <wsdl:service name="CentralnaBankaService">
+        <wsdl:port name="CentralnaBankaPort" binding="ws:CentralnaBankaBinding">
+            <soap:address location="http://localhost:8080/CentralnaBanka"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

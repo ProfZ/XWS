@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.project.xml/MT102" xmlns="http://www.project.xml/MT102"
+  	xmlns:global="http://www.project.xml/globals">
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd" id="globals"/>
+    <xs:element name="MT102">
+        <xs:complexType>
+            <xs:sequence>
+            	<xs:element name="ID_poruke" type="global:ID_poruke"> </xs:element>
+            	<xs:element name="Banka_Duznik" type="global:TBanke"/>
+            	<xs:element name="Banka_Poverilac" type="global:TBanke"/>
+            	<xs:element name="Datum_Valute" type="xs:date"/>
+            	<xs:element name="Ukupan_Iznos" type="global:TIznos"/>
+            	<xs:element name="Sifra_valute" type="global:TOznakaValute"/>
+                <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="Sekvenca" type="global:TSequence"> </xs:element>       
+                </xs:sequence>
+                <xs:element name="Datum" type="xs:date"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
