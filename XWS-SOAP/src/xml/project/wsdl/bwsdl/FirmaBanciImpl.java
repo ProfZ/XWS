@@ -7,7 +7,11 @@
 package xml.project.wsdl.bwsdl;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.logging.Logger;
+
+
+
 
 
 
@@ -20,6 +24,7 @@ import xml.project.mt102.MT102;
 import xml.project.mt103.MT103;
 import xml.project.mt910.MT910;
 import xml.project.presek.Presek;
+import xml.project.racuni.Racuni;
 import xml.project.uplatnica.NalogZaPrenos;
 import xml.project.zahtev_za_izovd.Zahtev;
 
@@ -63,18 +68,18 @@ public class FirmaBanciImpl implements FirmaBanci {
     public StatusCode acceptMT910(MT910 mt910) { 
         LOG.info("Executing operation acceptMT910");
         System.out.println(mt910);
-        
-        
-        
+         
         try {
             StatusCode _return = new StatusCode();
-            //RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
+            RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
             
             String idPorukeNaloga = mt910.getIDPorukeNaloga(); // obrazac MT103
             MT103 mt103Temp = new MT103();
             
-            
-            
+            // rtgs nalog
+            mt103Temp = (MT103) RESTUtil.doUnmarshall("//"+mt910.getIDPorukeNaloga(), "", mt103Temp);
+            String racunPoverioca = mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
+            BigDecimal iznos = mt103Temp.getIznos();
             
             return _return;
         } catch (Exception ex) {
