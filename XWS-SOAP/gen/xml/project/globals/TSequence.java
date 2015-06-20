@@ -53,13 +53,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class TSequence {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "Svrha_placanja", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Iznos", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "Primalac_poverilac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Duznik_nalogodavac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Iznos", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Valuta", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "Svrha_placanja", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "Datum_naloga", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "ID_naloga_za_placanje", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Valuta", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "Duznik_nalogodavac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "ID_naloga_za_placanje", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<?>> content;
 
@@ -69,8 +69,8 @@ public class TSequence {
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "DuznikNalogodavac" is used by two different parts of a schema. See: 
-     * line 111 of file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/xsd/Globals.xsd
-     * line 99 of file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/xsd/Globals.xsd
+     * line 111 of file:/C:/xws/XWS/XWS-SOAP/WEB-INF/xsd/Globals.xsd
+     * line 99 of file:/C:/xws/XWS/XWS-SOAP/WEB-INF/xsd/Globals.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -91,12 +91,12 @@ public class TSequence {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
      * {@link JAXBElement }{@code <}{@link BigDecimal }{@code >}
-     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
-     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
-     * {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
+     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
      * {@link JAXBElement }{@code <}{@link String }{@code >}
      * 
      * 

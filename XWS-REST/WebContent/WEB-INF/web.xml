@@ -6,4 +6,14 @@
 
   <display-name>MiroKredit</display-name>
 
+  <!-- REST Service (can be deactivated by removing this entry) -->
+  <servlet>
+    <servlet-name>REST</servlet-name>
+    <servlet-class>rs.ac.uns.ftn.xws.services.RestService</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>REST</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 </web-app>

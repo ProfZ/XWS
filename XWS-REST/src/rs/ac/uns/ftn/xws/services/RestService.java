@@ -15,14 +15,15 @@ import javax.ws.rs.core.MediaType;
 import rs.ac.uns.ftn.xws.entities.payments.Invoice;
 import rs.ac.uns.ftn.xws.entities.payments.InvoiceItem;
 
+@Path("/partneri")
 public class RestService implements RestServerRemote{
 
 	@POST
-	@Path("{url_kupca}/partneri/{id}/fakture")
+	@Path("/{id_dobavljaca}/fakture")
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public void slanjeFakture(@PathParam("url_kupca") String url_kupca, @PathParam("id") int id_dobavljaca) {
+	public void slanjeFakture(@PathParam("id_dobavljaca") long id_dobavljaca) {
 		// TODO Auto-generated method stub
 		
 	}
