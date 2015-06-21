@@ -29,6 +29,8 @@ import rest.util.RESTUtil;
 import rest.util.Validation;
 import xml.project.globals.StatusCode;
 import xml.project.globals.TBanke;
+import xml.project.globals.TOsobe;
+import xml.project.globals.TSequence;
 import xml.project.mt102.MT102;
 import xml.project.mt103.MT103;
 import xml.project.mt910.MT910;
@@ -48,6 +50,12 @@ import xml.project.zahtev_za_izovd.Zahtev;
 @javax.jws.WebService(serviceName = "FirmaBankaService", portName = "FirmaBanci", targetNamespace = "http://www.project.xml/wsdl/bwsdl", wsdlLocation = "WEB-INF/wsdl/Banka.wsdl", endpointInterface = "xml.project.wsdl.bwsdl.FirmaBanci")
 public class FirmaBanciImpl implements FirmaBanci {
 
+	public static final String MT910_Putanja = "Banka/MT910";
+	public static final String MT900_Putanja = "Banka/MT900";
+	public static final String MT103_Putanja = "Banka/MT103";
+	public static final String MT102_Putanja = "Banka/MT102";
+	public static final String Racuni_Putanja = "Racuni/";
+	
 	private List<FirmaRacun> racuni;
 	TBanke banka;
 	private static final Logger LOG = Logger.getLogger(FirmaBanciImpl.class
@@ -81,10 +89,10 @@ public class FirmaBanciImpl implements FirmaBanci {
 	        System.out.println(mt910);
 	        try {
 	            StatusCode _return = new StatusCode();
-	            RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
+	            RESTUtil.objectToDB(MT910_Putanja, mt910.getIDPoruke(), mt910);
 	            MT103 mt103Temp = new MT103();
 	            // rtgs nalog
-	            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", "Banka/MT103/" + mt910.getIDPorukeNaloga(), mt103Temp);
+	            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_Putanja + mt910.getIDPorukeNaloga(), mt103Temp);
 	            String racunPoverioca = mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
 	            BigDecimal iznos = mt103Temp.getIznos();
 	            //update racuna banke
@@ -108,12 +116,31 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public StatusCode acceptMT102(MT102 mt102) {
 		LOG.info("Executing operation acceptMT102");
 		System.out.println(mt102);
+		BankaChecker bc = new BankaChecker();
+		StatusCode _return = new StatusCode();
 		try {
-			StatusCode _return = null;
+			if (bc.checkTBanka(mt102.getBankaDuznik())
+					&& bc.checkTBanka(mt102.getBankaPoverilac())) {
+				throw new Exception("Invalid banks in transaction.");
+			}
+			if (bc.checkTBanka(mt102.getBankaDuznik())
+					&& bc.checkTBanka(mt102.getBankaPoverilac())) {
+				throw new Exception("Invalid participants in transaction.");
+			}
+			
+			for (TSequence sequence : mt102.getSekvenca()){
+				FirmaRacun racun = findFirmu(((TOsobe) sequence.getContent().get(1).getValue()).getRacun());
+				if(racun == null) {
+					throw new Exception("Not existing firma.");
+				}
+			}
+			
+			RESTUtil.objectToDB(MT102_Putanja, mt102.getIDPoruke().toString(), mt102);
+			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
+			_return.setMessage("ERROR");
+			return _return;
 		}
 	}
 
@@ -142,7 +169,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			if(racun == null) {
 				throw new Exception("Not existing firma.");
 			}
-			RESTUtil.objectToDB("Banka/MT103", mt103.getIDPoruke().toString(), mt103);
+			RESTUtil.objectToDB(MT103_Putanja, mt103.getIDPoruke().toString(), mt103);
 			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
@@ -192,7 +219,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 		this.banka = new TBanke();
 		this.racuni = new ArrayList<Racuni.FirmaRacun>();
 		try {
-			InputStream in = RESTUtil.retrieveResource("*", "Racuni/",
+			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(Racuni.class,
 					Racuni.class);
@@ -232,6 +259,12 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 	public void createInitial() {
 		try {
+			RESTUtil.createSchema(MT102_Putanja);
+			RESTUtil.createSchema(MT103_Putanja);
+			RESTUtil.createSchema(MT900_Putanja);
+			RESTUtil.createSchema(MT910_Putanja);
+			RESTUtil.createSchema(Racuni_Putanja);
+			
 			Racuni rac = new Racuni();
 			Racuni.FirmaRacun fr = new FirmaRacun();
 			fr.setNaziv("Pejak");
@@ -263,7 +296,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			rac.setFirmaRacun(racc);
 			RESTUtil.objectToDB("//Racuni", "", rac);
 			Racuni temp = new Racuni();
-			temp = (Racuni) RESTUtil.doUnmarshall("*", "Racuni/", temp);
+			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
 			System.out.println(temp + " " + temp.getFirmaRacun().size());
 		} catch (Exception e) {
 			e.printStackTrace();
