@@ -79,30 +79,18 @@ public class FirmaBanciImpl implements FirmaBanci {
 	   public StatusCode acceptMT910(MT910 mt910) { 
 	        LOG.info("Executing operation acceptMT910");
 	        System.out.println(mt910);
-	        
 	        try {
 	            StatusCode _return = new StatusCode();
 	            RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
-	            
 	            MT103 mt103Temp = new MT103();
-	            
 	            // rtgs nalog
 	            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", "Banka/MT103/" + mt910.getIDPorukeNaloga(), mt103Temp);
 	            String racunPoverioca = mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
 	            BigDecimal iznos = mt103Temp.getIznos();
-	            
-	            
 	            //update racuna banke
-	            for (FirmaRacun r : racuni){
-	            	if (r.getRacun().getBrojRacuna().equals(racunPoverioca)){
-	            		r.setRaspoloziviNovac(r.getRaspoloziviNovac() + iznos.intValue()); // za sada ovako sa int
-	            	}
-	            }
+	            FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac().getRacun());
+	            racun.setRaspoloziviNovac(racun.getRaspoloziviNovac() + iznos.intValue());
 	            saveRacuni();
-	            
-	            RESTUtil.objectToDB("Banka/MT103Transakcija", mt103Temp.getIDPoruke(), mt103Temp); // mt103 obavljene transakcije 
-	            
-	            
 	            return _return;
 	        } catch (Exception ex) {
 	            ex.printStackTrace();
@@ -154,7 +142,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			if(racun == null) {
 				throw new Exception("Not existing firma.");
 			}
-			RESTUtil.objectToDB("//Transakcije", mt103.getIDPoruke().toString(), mt103);
+			RESTUtil.objectToDB("Banka/MT103", mt103.getIDPoruke().toString(), mt103);
 			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
