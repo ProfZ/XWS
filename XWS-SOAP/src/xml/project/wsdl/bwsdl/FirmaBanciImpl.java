@@ -131,8 +131,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation acceptMT103");
 		System.out.println(mt103);
 		BankaChecker bc = new BankaChecker();
+		StatusCode _return = new StatusCode();
 		try {
-			StatusCode _return = new StatusCode();
 			if (bc.checkTBanka(mt103.getBankaDuznik())
 					&& bc.checkTBanka(mt103.getBankaPoverilac())) {
 				throw new Exception("Invalid banks in transaction.");
@@ -141,11 +141,16 @@ public class FirmaBanciImpl implements FirmaBanci {
 					&& bc.checkTOsoba(mt103.getPrimalacPoverilac())) {
 				throw new Exception("Invalid participants in transaction.");
 			}
-
+			FirmaRacun racun = findFirmu(mt103.getPrimalacPoverilac().getRacun());
+			if(racun == null) {
+				throw new Exception("Not existing firma.");
+			}
+			RESTUtil.objectToDB("//Transakcije", mt103.getIDPoruke().toString(), mt103);
+			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
+			_return.setMessage("ERROR");
+			return _return;
 		}
 	}
 
@@ -214,6 +219,16 @@ public class FirmaBanciImpl implements FirmaBanci {
 		}
 	}
 
+	public FirmaRacun findFirmu(String string) {
+		BigInteger racunBroj = new BigInteger(string);
+		for (FirmaRacun racun : racuni) {
+			if(racun.getRacun().getBrojRacuna().equals(racunBroj)){
+				return racun;
+			}
+		}
+		return null;
+	}
+	
 	public void saveRacuni() {
 		RESTUtil.objectToDB("//Racuni", "", racuni);
 	}
