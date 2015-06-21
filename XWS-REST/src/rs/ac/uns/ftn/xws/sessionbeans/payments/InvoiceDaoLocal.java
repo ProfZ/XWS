@@ -24,4 +24,6 @@ public interface InvoiceDaoLocal extends GenericDao<Faktura, Long> {
 	public boolean checkValid(Faktura faktura);
 	
 	public List<Faktura> findAllInvoicesByPartner(Long partnerID) throws IOException, JAXBException;
+
+	public boolean isPartner(Long partnerID) throws IOException;
 }

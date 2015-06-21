@@ -34,7 +34,7 @@ public class RestService implements RestServerRemote{
 	@Override
 	public Response slanjeFakture(@PathParam("id_dobavljaca") long id_dobavljaca, Faktura faktura) throws IOException, JAXBException {
 		ResponseBuilder rb;
-		if (!invoiceDao.exists("partneri/" + id_dobavljaca)) {
+		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
 			if (!invoiceDao.checkValid(faktura)) {
@@ -52,8 +52,8 @@ public class RestService implements RestServerRemote{
 	@Override
 	public Response pribaviFakture(@PathParam("id_dobavljaca") long id_dobavljaca) throws IOException, JAXBException {
 		ResponseBuilder rb;
-		if (!invoiceDao.exists("partneri/" + id_dobavljaca)) {
-			rb = Response.status(Status.NOT_FOUND);
+		if (!invoiceDao.isPartner(id_dobavljaca)) {
+			rb = Response.status(Status.FORBIDDEN);
 		} else {
 			rb = Response.ok(invoiceDao.findAllInvoicesByPartner(id_dobavljaca));
 		}
@@ -66,7 +66,7 @@ public class RestService implements RestServerRemote{
 	public Response pribaviFakturu(@PathParam("id_dobavljaca") long id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture) throws IOException, JAXBException {
 		ResponseBuilder rb;
-		if (!invoiceDao.exists("partneri/" + id_dobavljaca) ||  !invoiceDao.exists("partneri/" + id_dobavljaca + "/fakture/" + id_fakture)) {
+		if (!invoiceDao.isPartner(id_dobavljaca) || invoiceDao.findById(id_fakture) == null) {
 			rb = Response.status(Status.NOT_FOUND);
 		} else {
 			rb = Response.ok(invoiceDao.findById(id_fakture));
@@ -80,7 +80,7 @@ public class RestService implements RestServerRemote{
 	public Response pribaviStavke(@PathParam("id_dobavljaca") long id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture) throws IOException, JAXBException {
 		ResponseBuilder rb;
-		if (!invoiceDao.exists("partneri/" + id_dobavljaca) ||  !invoiceDao.exists("partneri/" + id_dobavljaca + "/fakture/" + id_fakture)) {
+		if (!invoiceDao.isPartner(id_dobavljaca) || invoiceDao.findById(id_fakture) == null) {
 			rb = Response.status(Status.NOT_FOUND);
 		} else {
 			rb = Response.ok(invoiceDao.findAllItems(id_fakture));
@@ -90,7 +90,7 @@ public class RestService implements RestServerRemote{
 
 	@POST
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Override
 	public Response novaStavka(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {
@@ -116,8 +116,6 @@ public class RestService implements RestServerRemote{
 	
 	@GET
 	@Path("/fakture/{id_fakture}/stavke/{redni_broj}")
-	@Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response pribaviStavku(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj){
@@ -140,7 +138,7 @@ public class RestService implements RestServerRemote{
 	
 	@PUT
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_XML)
 	@Override
 	public Response izmeniStavke(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj, StavkaFakture newInvoiceItem) {
@@ -167,7 +165,6 @@ public class RestService implements RestServerRemote{
 
 	@DELETE
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
-	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
 	public Response obrisiStavku(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj) {
