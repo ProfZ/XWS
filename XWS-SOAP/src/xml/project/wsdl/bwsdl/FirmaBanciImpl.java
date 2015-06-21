@@ -76,30 +76,39 @@ public class FirmaBanciImpl implements FirmaBanci {
 	 * xml.project.wsdl.bwsdl.FirmaBanci#acceptMT910(xml.project.mt910.MT910
 	 * mt910 )*
 	 */
-	public StatusCode acceptMT910(MT910 mt910) {
-		LOG.info("Executing operation acceptMT910");
-		System.out.println(mt910);
-
-		try {
-			StatusCode _return = new StatusCode();
-			RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
-
-			String idPorukeNaloga = mt910.getIDPorukeNaloga(); // obrazac MT103
-			MT103 mt103Temp = new MT103();
-
-			// rtgs nalog
-			mt103Temp = (MT103) RESTUtil.doUnmarshall(
-					"//" + mt910.getIDPorukeNaloga(), "", mt103Temp);
-			String racunPoverioca = mt103Temp.getBankaPoverilac()
-					.getObracunskiRacunBanke();
-			BigDecimal iznos = mt103Temp.getIznos();
-
-			return _return;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}
-	}
+	   public StatusCode acceptMT910(MT910 mt910) { 
+	        LOG.info("Executing operation acceptMT910");
+	        System.out.println(mt910);
+	        
+	        try {
+	            StatusCode _return = new StatusCode();
+	            RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
+	            
+	            MT103 mt103Temp = new MT103();
+	            
+	            // rtgs nalog
+	            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", "Banka/MT103/" + mt910.getIDPorukeNaloga(), mt103Temp);
+	            String racunPoverioca = mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
+	            BigDecimal iznos = mt103Temp.getIznos();
+	            
+	            
+	            //update racuna banke
+	            for (FirmaRacun r : racuni){
+	            	if (r.getRacun().getBrojRacuna().equals(racunPoverioca)){
+	            		r.setRaspoloziviNovac(r.getRaspoloziviNovac() + iznos.intValue()); // za sada ovako sa int
+	            	}
+	            }
+	            saveRacuni();
+	            
+	            RESTUtil.objectToDB("Banka/MT103Transakcija", mt103Temp.getIDPoruke(), mt103Temp); // mt103 obavljene transakcije 
+	            
+	            
+	            return _return;
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	            throw new RuntimeException(ex);
+	        }
+	    }
 
 	/*
 	 * (non-Javadoc)
