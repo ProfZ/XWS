@@ -20,10 +20,8 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.transform.OutputKeys;
 
 import rest.bundle.RequestMethod;
 import rest.util.RESTUtil;
@@ -34,6 +32,7 @@ import xml.project.globals.TOsobe;
 import xml.project.globals.TSequence;
 import xml.project.mt102.MT102;
 import xml.project.mt103.MT103;
+import xml.project.mt900.MT900;
 import xml.project.mt910.MT910;
 import xml.project.presek.Presek;
 import xml.project.racuni.Racuni;
@@ -56,7 +55,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static final String MT103_Putanja = "Banka/MT103";
 	public static final String MT102_Putanja = "Banka/MT102";
 	public static final String Racuni_Putanja = "Racuni/";
-	
+
 	private List<FirmaRacun> racuni;
 	TBanke banka;
 	private static final Logger LOG = Logger.getLogger(FirmaBanciImpl.class
@@ -85,27 +84,66 @@ public class FirmaBanciImpl implements FirmaBanci {
 	 * xml.project.wsdl.bwsdl.FirmaBanci#acceptMT910(xml.project.mt910.MT910
 	 * mt910 )*
 	 */
-	   public StatusCode acceptMT910(MT910 mt910) { 
-	        LOG.info("Executing operation acceptMT910");
-	        System.out.println(mt910);
-	        try {
-	            StatusCode _return = new StatusCode();
-	            RESTUtil.objectToDB(MT910_Putanja, mt910.getIDPoruke(), mt910);
-	            MT103 mt103Temp = new MT103();
-	            // rtgs nalog
-	            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_Putanja + mt910.getIDPorukeNaloga(), mt103Temp);
-	            String racunPoverioca = mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
-	            BigDecimal iznos = mt103Temp.getIznos();
-	            //update racuna banke
-	            FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac().getRacun());
-	            racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(iznos));
-	            saveRacuni();
-	            return _return;
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	            throw new RuntimeException(ex);
-	        }
-	    }
+	public StatusCode acceptMT910(MT910 mt910) {
+		LOG.info("Executing operation acceptMT910");
+		System.out.println(mt910);
+		try {
+			StatusCode _return = new StatusCode();
+			RESTUtil.objectToDB(MT910_Putanja, mt910.getIDPoruke(), mt910);
+			MT103 mt103Temp = new MT103();
+			// rtgs nalog
+			mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_Putanja
+					+ mt910.getIDPorukeNaloga(), mt103Temp);
+			// String racunPoverioca =
+			// mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
+			BigDecimal iznos = mt103Temp.getIznos();
+			// update racuna banke
+			FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac()
+					.getRacun());
+			if (racun != null) {
+				racun.setRaspoloziviNovac(racun.getRaspoloziviNovac()
+						.add(iznos));
+				saveRacuni();
+			}
+			return _return;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
+	}
+
+	@Override
+	public StatusCode acceptMT900(MT900 mt900) {
+		LOG.info("Executing operation acceptMT910");
+        System.out.println(mt900);
+        try {
+            StatusCode _return = new StatusCode();
+            RESTUtil.objectToDB(MT900_Putanja, mt900.getIDPoruke(), mt900);
+            MT103 mt103Temp = new MT103();
+            // rtgs nalog
+            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_Putanja + mt900.getIDPorukeNaloga(), mt103Temp);
+            if(mt103Temp == null) {
+            	MT102 mt102Temp = new MT102();
+            	mt102Temp = (MT102) RESTUtil.doUnmarshall("*", MT102_Putanja + mt900.getIDPorukeNaloga(), mt102Temp);
+            	for(TSequence seq : mt102Temp.getSekvenca()) {
+            		TOsobe t1 = ((TOsobe) seq.getContent().get(1).getValue());
+            		BigDecimal iznos = new BigDecimal(((Double) seq.getContent().get(4).getValue()));
+            		FirmaRacun racun = findFirmu(t1.getRacun());
+            		if(racun != null)
+            		racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(iznos));
+            	}
+            } else {
+            	BigDecimal iznos = mt103Temp.getIznos();
+            	FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac().getRacun());
+            	racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(iznos));
+            }
+            saveRacuni();
+            return _return;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -128,15 +166,17 @@ public class FirmaBanciImpl implements FirmaBanci {
 					&& bc.checkTBanka(mt102.getBankaPoverilac())) {
 				throw new Exception("Invalid participants in transaction.");
 			}
-			
-			for (TSequence sequence : mt102.getSekvenca()){
-				FirmaRacun racun = findFirmu(((TOsobe) sequence.getContent().get(1).getValue()).getRacun());
-				if(racun == null) {
+
+			for (TSequence sequence : mt102.getSekvenca()) {
+				FirmaRacun racun = findFirmu(((TOsobe) sequence.getContent()
+						.get(1).getValue()).getRacun());
+				if (racun == null) {
 					throw new Exception("Not existing firma.");
 				}
 			}
-			
-			RESTUtil.objectToDB(MT102_Putanja, mt102.getIDPoruke().toString(), mt102);
+
+			RESTUtil.objectToDB(MT102_Putanja, mt102.getIDPoruke().toString(),
+					mt102);
 			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
@@ -166,11 +206,13 @@ public class FirmaBanciImpl implements FirmaBanci {
 					&& bc.checkTOsoba(mt103.getPrimalacPoverilac())) {
 				throw new Exception("Invalid participants in transaction.");
 			}
-			FirmaRacun racun = findFirmu(mt103.getPrimalacPoverilac().getRacun());
-			if(racun == null) {
+			FirmaRacun racun = findFirmu(mt103.getPrimalacPoverilac()
+					.getRacun());
+			if (racun == null) {
 				throw new Exception("Not existing firma.");
 			}
-			RESTUtil.objectToDB(MT103_Putanja, mt103.getIDPoruke().toString(), mt103);
+			RESTUtil.objectToDB(MT103_Putanja, mt103.getIDPoruke().toString(),
+					mt103);
 			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
@@ -190,26 +232,26 @@ public class FirmaBanciImpl implements FirmaBanci {
 		System.out.println(nalogZaPrenos);
 		try {
 			StatusCode _return = new StatusCode();
-			
+
 			// Ista banka
-			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac().getRacun());
-			if (racun != null){
-				
+			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac()
+					.getRacun());
+			if (racun != null) {
+
 				_return.setMessage("OK");
 				return _return;
 			}
-			
-			
+
 			// Preko CB
-			if ((nalogZaPrenos.getIznos().doubleValue() >= 25000.00) || (nalogZaPrenos.isHitno())){
+			if ((nalogZaPrenos.getIznos().doubleValue() >= 25000.00)
+					|| (nalogZaPrenos.isHitno())) {
 				// RTGS
-				
+
 			} else {
 				// Clearing & Settlement
-				
-				
+
 			}
-			
+
 			_return.setMessage("OK");
 			return _return;
 		} catch (java.lang.Exception ex) {
@@ -268,13 +310,13 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public FirmaRacun findFirmu(String string) {
 		BigInteger racunBroj = new BigInteger(string);
 		for (FirmaRacun racun : racuni) {
-			if(racun.getRacun().getBrojRacuna().equals(racunBroj)){
+			if (racun.getRacun().getBrojRacuna().equals(racunBroj)) {
 				return racun;
 			}
 		}
 		return null;
 	}
-	
+
 	public void saveRacuni() {
 		RESTUtil.objectToDB("//Racuni", "", racuni);
 	}
@@ -286,7 +328,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			RESTUtil.createSchema(MT900_Putanja);
 			RESTUtil.createSchema(MT910_Putanja);
 			RESTUtil.createSchema(Racuni_Putanja);
-			
+
 			Racuni rac = new Racuni();
 			Racuni.FirmaRacun fr = new FirmaRacun();
 			fr.setNaziv("Pejak");
@@ -327,7 +369,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
-		//imp.createInitial();
+		// imp.createInitial();
 		imp.init();
 	}
 

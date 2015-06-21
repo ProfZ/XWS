@@ -12,14 +12,14 @@ import javax.xml.ws.Endpoint;
  
 public class CentralnaBanka_CentralnaBankaPort_Server{
 
-    protected CentralnaBanka_CentralnaBankaPort_Server() throws java.lang.Exception {
+    protected CentralnaBanka_CentralnaBankaPort_Server() throws Exception {
         System.out.println("Starting Server");
         Object implementor = new CentralnaBankaImpl();
         String address = "http://localhost:8080/CentralnaBanka";
         Endpoint.publish(address, implementor);
     }
     
-    public static void main(String args[]) throws java.lang.Exception { 
+    public static void main(String args[]) throws Exception { 
         new CentralnaBanka_CentralnaBankaPort_Server();
         System.out.println("Server ready..."); 
         
