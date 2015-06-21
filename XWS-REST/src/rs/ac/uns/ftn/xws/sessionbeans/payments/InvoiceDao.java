@@ -1,3 +1,4 @@
+
 package rs.ac.uns.ftn.xws.sessionbeans.payments;
 
 import java.io.IOException;
@@ -241,3 +242,4 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		return em.exists("/Partneri/pib_partnera[pib='" + partnerID + "']");
 	}
 }
+

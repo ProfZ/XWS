@@ -1,3 +1,4 @@
+
 package rs.ac.uns.ftn.xws.services;
 
 import java.io.IOException;
@@ -187,3 +188,4 @@ public class RestService implements RestServerRemote{
 		return r;
 	}
 }
+

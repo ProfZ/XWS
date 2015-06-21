@@ -76,30 +76,27 @@ public class FirmaBanciImpl implements FirmaBanci {
 	 * xml.project.wsdl.bwsdl.FirmaBanci#acceptMT910(xml.project.mt910.MT910
 	 * mt910 )*
 	 */
-	public StatusCode acceptMT910(MT910 mt910) {
-		LOG.info("Executing operation acceptMT910");
-		System.out.println(mt910);
-
-		try {
-			StatusCode _return = new StatusCode();
-			RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
-
-			String idPorukeNaloga = mt910.getIDPorukeNaloga(); // obrazac MT103
-			MT103 mt103Temp = new MT103();
-
-			// rtgs nalog
-			mt103Temp = (MT103) RESTUtil.doUnmarshall(
-					"//" + mt910.getIDPorukeNaloga(), "", mt103Temp);
-			String racunPoverioca = mt103Temp.getBankaPoverilac()
-					.getObracunskiRacunBanke();
-			BigDecimal iznos = mt103Temp.getIznos();
-
-			return _return;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}
-	}
+	   public StatusCode acceptMT910(MT910 mt910) { 
+	        LOG.info("Executing operation acceptMT910");
+	        System.out.println(mt910);
+	        try {
+	            StatusCode _return = new StatusCode();
+	            RESTUtil.objectToDB("Banka/MT910", mt910.getIDPoruke(), mt910);
+	            MT103 mt103Temp = new MT103();
+	            // rtgs nalog
+	            mt103Temp = (MT103) RESTUtil.doUnmarshall("*", "Banka/MT103/" + mt910.getIDPorukeNaloga(), mt103Temp);
+	            String racunPoverioca = mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
+	            BigDecimal iznos = mt103Temp.getIznos();
+	            //update racuna banke
+	            FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac().getRacun());
+	            racun.setRaspoloziviNovac(racun.getRaspoloziviNovac() + iznos.intValue());
+	            saveRacuni();
+	            return _return;
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	            throw new RuntimeException(ex);
+	        }
+	    }
 
 	/*
 	 * (non-Javadoc)
@@ -131,8 +128,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation acceptMT103");
 		System.out.println(mt103);
 		BankaChecker bc = new BankaChecker();
+		StatusCode _return = new StatusCode();
 		try {
-			StatusCode _return = new StatusCode();
 			if (bc.checkTBanka(mt103.getBankaDuznik())
 					&& bc.checkTBanka(mt103.getBankaPoverilac())) {
 				throw new Exception("Invalid banks in transaction.");
@@ -141,11 +138,16 @@ public class FirmaBanciImpl implements FirmaBanci {
 					&& bc.checkTOsoba(mt103.getPrimalacPoverilac())) {
 				throw new Exception("Invalid participants in transaction.");
 			}
-
+			FirmaRacun racun = findFirmu(mt103.getPrimalacPoverilac().getRacun());
+			if(racun == null) {
+				throw new Exception("Not existing firma.");
+			}
+			RESTUtil.objectToDB("Banka/MT103", mt103.getIDPoruke().toString(), mt103);
+			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
+			_return.setMessage("ERROR");
+			return _return;
 		}
 	}
 
@@ -214,6 +216,16 @@ public class FirmaBanciImpl implements FirmaBanci {
 		}
 	}
 
+	public FirmaRacun findFirmu(String string) {
+		BigInteger racunBroj = new BigInteger(string);
+		for (FirmaRacun racun : racuni) {
+			if(racun.getRacun().getBrojRacuna().equals(racunBroj)){
+				return racun;
+			}
+		}
+		return null;
+	}
+	
 	public void saveRacuni() {
 		RESTUtil.objectToDB("//Racuni", "", racuni);
 	}

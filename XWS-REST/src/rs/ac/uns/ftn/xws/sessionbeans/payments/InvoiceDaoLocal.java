@@ -1,3 +1,4 @@
+
 package rs.ac.uns.ftn.xws.sessionbeans.payments;
 
 import java.io.IOException;
@@ -27,3 +28,5 @@ public interface InvoiceDaoLocal extends GenericDao<Faktura, Long> {
 
 	public boolean isPartner(Long partnerID) throws IOException;
 }
+
+
