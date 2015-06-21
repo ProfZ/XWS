@@ -1,0 +1,103 @@
+<project name="Vezbe WSDL WS" default="main" basedir=".">
+
+	<property file="ant.properties" />
+
+	<property name="bin.dir" value="${basedir}/build"/>
+	<property name="src.dir" value="${basedir}/src"/>
+	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="dist.dir" value="${basedir}/dist"/>
+	<property name="gen.dir" value="${basedir}/gen"/>
+	<property name="webinf.dir" value="${basedir}/WebContent/WEB-INF"/>
+	<property name="weblib.dir" value="${webinf.dir}/lib"/>
+	
+	<target name="check-war-name" unless="war.name">
+		<fail>
+			Property "war.name" is not set. Please use the file
+			"ant.properties" in this directory ${basedir} to
+			set this property.
+		</fail>
+	</target>
+
+	<target name="check-tomee" unless="tomee.dir">
+		<fail>
+			Property "tomee.dir" is not set. Please use the file
+			"build.properties" in this directory ${basedir} to
+			set this property. It must point to the directory which
+			contains the following directory: "bin", "conf", "webapps"
+			etc.
+		</fail>
+	</target>
+	
+	<target name="check-environment">
+		<antcall target="check-war-name"/>
+		<antcall target="check-tomee"/>
+	</target>
+	
+	<target name="init" depends="check-environment">
+		<echo message="java.home = ${java.home}"/>
+		<echo message="deploy.dir = ${tomee.dir}"/>
+	</target>
+
+	<path id="cxf.classpath">
+		<pathelement location="${basedir}"/>
+		<pathelement location="${src.dir}"/>
+		<pathelement path="${bin.dir}"/>
+		<fileset dir="${lib.dir}">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${tomee.dir}/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	
+	<target name="compile" depends="init">
+		<javac destdir="${bin.dir}" debug="on">
+			<classpath>
+				<fileset dir="${lib.dir}">
+					<include name="*.jar"/>
+				</fileset>
+				<fileset dir="${weblib.dir}">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+			<src path="${src.dir}"/>
+		</javac>
+	</target>
+
+	<target name="copy-non-java" depends="compile"
+			description="Copies non java files to bin directory">
+		<copy todir="${bin.dir}">
+			<fileset dir="${src.dir}" excludes="**/*.java"/>
+		</copy>
+	</target>
+	
+	<target name="war" depends="compile">
+		<delete file="${war.name}"/>
+		<war warfile="${dist.dir}/${war.name}" webxml="${webinf.dir}/web.xml">
+			<classes dir="${bin.dir}">
+				<exclude name="**/client/*.class"/>
+				<include name="**/*.class"/>
+			</classes>
+			<lib dir="${weblib.dir}">
+				<include name="*.jar"/>
+			</lib>
+		</war>
+	</target>
+
+	<target name="deploy" depends="war">
+		<copy todir="${tomee.dir}/webapps">
+			<fileset dir="${dist.dir}" includes="${war.name}"/>
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete file="${dist.dir}/${war.name}"/>
+		<delete file="${tomee.dir}/webapps/${war.name}"/>
+		<delete dir="${tomee.dir}/webapps/${dir.name}"/>
+	</target>
+
+	<target name="main" depends="deploy">
+	</target>
+
+</project>
