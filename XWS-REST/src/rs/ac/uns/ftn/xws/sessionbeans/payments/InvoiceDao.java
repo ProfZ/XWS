@@ -246,7 +246,6 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			convertToXML("xml.project.faktura", faktura);
 			convertToXML("xml.project.faktura", faktura1);
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
