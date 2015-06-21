@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.project.xml/MT102_sequence" xmlns="http://www.project.xml/MT102_sequence"
+	 xmlns:global="http://www.project.xml/globals">
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd" id="globals"/>
+    <xs:element name="MT102_sequence" type="global:TSequence">
+       
+    </xs:element>
+</xs:schema>

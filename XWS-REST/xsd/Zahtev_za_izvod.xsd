@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified"
+    vc:minVersion="1.0" vc:maxVersion="1.1"
+    targetNamespace="http://www.project.xml/zahtev_za_izovd"
+    xmlns:globals="http://www.project.xml/globals"
+    xmlns:zahtev="http://www.project.xml/zahtev_za_izovd">
+
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd"/>
+    <xs:element name="zahtev">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Broj_racuna" type="globals:TBrojRacuna"/>
+                <xs:element name="Datum" type="xs:date"/>
+                <xs:element name="Redni_broj_preseka">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:positiveInteger">
+                            <xs:totalDigits value="2"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

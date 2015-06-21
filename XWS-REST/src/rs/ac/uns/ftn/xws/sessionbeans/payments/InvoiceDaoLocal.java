@@ -12,21 +12,13 @@ import xml.project.faktura.Faktura.StavkaFakture;
 
 public interface InvoiceDaoLocal extends GenericDao<Faktura, Long> {
 	public List<Faktura.StavkaFakture> findAllItems(Long idFakture) throws IOException, JAXBException;
-	public String removeInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem, String idDobavljaca) throws IOException, JAXBException;
-	StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice,
-			Long idInvoiceItem, String idDobavljaca) throws IOException,
-			JAXBException;
-	String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem,
-			Long idInvoice, Long idInvoiceItem, String idDobavljaca)
-			throws IOException, JAXBException;
-	String addInvoiceItem(Long idInvoice, StavkaFakture newInvoiceItem,
-			String idDobavljaca) throws IOException, JAXBException;
-	
-	public boolean checkValid(Faktura faktura);
-	
+	public String removeInvoiceItemByIdFromInvoice(Long idInvoice, Long idInvoiceItem) throws IOException, JAXBException;
+	StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice,Long idInvoiceItem) throws IOException,JAXBException;
+	String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem,Long idInvoice, Long idInvoiceItem) throws IOException, JAXBException;
+	String addInvoiceItem(Long idInvoice, StavkaFakture newInvoiceItem) throws IOException, JAXBException;
 	public List<Faktura> findAllInvoicesByPartner(Long partnerID) throws IOException, JAXBException;
-
 	public boolean isPartner(Long partnerID) throws IOException;
+	boolean testValidationInvoice(Faktura invoice);
 }
 
 

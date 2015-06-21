@@ -271,5 +271,4 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 	public void setContext(JAXBContext context) {
 		this.context = context;
 	}
-	
 }

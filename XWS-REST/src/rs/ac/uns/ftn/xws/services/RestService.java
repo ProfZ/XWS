@@ -12,7 +12,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -38,7 +37,7 @@ public class RestService implements RestServerRemote{
 		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
-			if (!invoiceDao.checkValid(faktura)) {
+			if (!invoiceDao.testValidationInvoice(faktura)) {
 				rb = Response.status(Status.BAD_REQUEST);
 			} else {
 				Faktura retFakt = invoiceDao.persist(faktura);
@@ -93,12 +92,15 @@ public class RestService implements RestServerRemote{
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke")
 	@Consumes(MediaType.APPLICATION_XML)
 	@Override
-	public Response novaStavka(@PathParam("id_dobavljaca") String id_dobavljaca,
-			 @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {
+	public Response novaStavka(@PathParam("id_dobavljaca") long id_dobavljaca, @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {
 		String result = "";
 		Response r = null;
 		try {
-			result = invoiceDao.addInvoiceItem(id_fakture, newInvoiceItem, id_dobavljaca);
+			if (!invoiceDao.isPartner(id_dobavljaca)) {
+				r = Response.status(403).build();
+				return r;
+			}
+			result = invoiceDao.addInvoiceItem(id_fakture, newInvoiceItem);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JAXBException e) {
@@ -118,12 +120,16 @@ public class RestService implements RestServerRemote{
 	@GET
 	@Path("/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Override
-	public Response pribaviStavku(@PathParam("id_dobavljaca") String id_dobavljaca,
+	public Response pribaviStavku(@PathParam("id_dobavljaca") long id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj){
 		StavkaFakture result = null;
 		Response r = null;
 		try {
-			result = invoiceDao.getInvoiceItemByIdFromInvoice(id_fakture, redni_broj, id_dobavljaca);
+			if (!invoiceDao.isPartner(id_dobavljaca)) {
+				r = Response.status(403).build();
+				return r;
+			}
+			result = invoiceDao.getInvoiceItemByIdFromInvoice(id_fakture, redni_broj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JAXBException e) {
@@ -141,12 +147,16 @@ public class RestService implements RestServerRemote{
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Consumes(MediaType.APPLICATION_XML)
 	@Override
-	public Response izmeniStavke(@PathParam("id_dobavljaca") String id_dobavljaca,
+	public Response izmeniStavke(@PathParam("id_dobavljaca") long id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj, StavkaFakture newInvoiceItem) {
 		String result = "";
 		Response r = null;
 		try {
-			result = invoiceDao.modifyInvoiceItemFromInvoice(newInvoiceItem, id_fakture, redni_broj, id_dobavljaca);
+			if (!invoiceDao.isPartner(id_dobavljaca)) {
+				r = Response.status(403).build();
+				return r;
+			}
+			result = invoiceDao.modifyInvoiceItemFromInvoice(newInvoiceItem, id_fakture, redni_broj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JAXBException e) {
@@ -167,12 +177,16 @@ public class RestService implements RestServerRemote{
 	@DELETE
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Override
-	public Response obrisiStavku(@PathParam("id_dobavljaca") String id_dobavljaca,
+	public Response obrisiStavku(@PathParam("id_dobavljaca") long id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj) {
 		String result = "";
 		Response r = null;
 		try {
-			result = invoiceDao.removeInvoiceItemByIdFromInvoice(id_fakture, redni_broj, id_dobavljaca);
+			if (!invoiceDao.isPartner(id_dobavljaca)) {
+				r = Response.status(403).build();
+				return r;
+			}
+			result = invoiceDao.removeInvoiceItemByIdFromInvoice(id_fakture, redni_broj);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JAXBException e) {
