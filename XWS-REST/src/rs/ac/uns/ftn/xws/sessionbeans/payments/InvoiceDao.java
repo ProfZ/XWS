@@ -45,6 +45,10 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	public InvoiceDao(String contextPath, String schemaName) {
 		super(contextPath, schemaName);
 	}
+	
+	public InvoiceDao() {
+		super("org.basex.rest", "fakture");
+	}
 
 
 	public List<Faktura> findAll() throws IOException, JAXBException {
@@ -287,7 +291,13 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 
 	@Override
 	public boolean isPartner(Long partnerID) throws IOException {
-		return em.exists("/Partneri/pib_partnera[pib='" + partnerID + "']");
+		try {
+			return em.exists("/Partneri/pib_partnera[pib='" + partnerID + "']");
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public void convertToXML(String path, Object classTheIsConverted) throws JAXBException{
