@@ -171,6 +171,7 @@ public class FirmaBanciImpl implements FirmaBanci {
     		test.setIDPoruke("12345");
     		test.setSifraValute("gf");
     		//RESTUtil.createResource("Banka/Racuni", test.getIDPoruke(), is);
+    		RESTUtil.createSchema("Banka2");
     		RESTUtil.objectToDB("Banka", test.getIDPoruke(), test);
     		InputStream in = RESTUtil.retrieveResource("//12345", "Banka", RequestMethod.GET);
     		

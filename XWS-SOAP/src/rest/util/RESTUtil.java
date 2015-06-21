@@ -31,7 +31,7 @@ import rest.bundle.RequestMethod;
  */
 public class RESTUtil<T> {
 
-	public static final String REST_URL = "http://localhost:8081/BaseX821/rest/";
+	public static final String REST_URL = "http://localhost:8984/rest/";
 	
 	public static void main(String[] args) throws Exception {
 
