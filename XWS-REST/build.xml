@@ -2,7 +2,7 @@
 
 	<property file="ant.properties" />
 
-	<property name="bin.dir" value="${basedir}/bin"/>
+	<property name="bin.dir" value="${basedir}/build"/>
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="lib.dir" value="${basedir}/lib"/>
 	<property name="dist.dir" value="${basedir}/dist"/>
