@@ -8,6 +8,7 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBException;
+
 import org.basex.rest.Result;
 import org.basex.rest.Results;
 import org.w3c.dom.Node;
@@ -139,7 +140,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 
 	@Override
 	public List<Faktura> findAllInvoicesByPartner(Long partnerID) throws IOException, JAXBException {
-		String xQuery = "for $x in collection('partneri/" + partnerID + "/fakture')  return $x";
+		String xQuery = "for $x in collection('fakture') where $x//Dobavljac/PIB_kupca = " + partnerID + " return $x";
 		InputStream is = em.executeQuery(xQuery, true);
 		
 		List<Faktura> fakture = new ArrayList<Faktura>();
@@ -149,5 +150,11 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 				fakture.add((Faktura) em.getUnmarshaller().unmarshal((Node)result.getAny()));
 		}
 		return null;
+	}
+
+
+	@Override
+	public boolean isPartner(Long partnerID) throws IOException {
+		return em.exists("/Partneri/pib_partnera[pib='" + partnerID + "']");
 	}
 }
