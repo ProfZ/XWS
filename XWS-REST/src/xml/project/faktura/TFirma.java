@@ -63,11 +63,11 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class TFirma {
 
-    @XmlElement(name = "Naziv_kupca", required = true)
+    @XmlElement(name = "Naziv", required = true)
     protected String nazivKupca;
-    @XmlElement(name = "Adresa_kupca", required = true)
+    @XmlElement(name = "Adresa", required = true)
     protected String adresaKupca;
-    @XmlElement(name = "PIB_kupca", required = true)
+    @XmlElement(name = "PIB", required = true)
     protected String pibKupca;
 
     /**
