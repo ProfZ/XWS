@@ -17,7 +17,9 @@
 							</xs:element>
 							<xs:element name="Raspolozivi_novac">
 								<xs:simpleType>
-									<xs:restriction base="xs:long">
+									<xs:restriction base="xs:decimal">
+										<xs:fractionDigits value="2" />
+										<xs:totalDigits value="17" />
 										<xs:minInclusive value="0" />
 									</xs:restriction>
 								</xs:simpleType>

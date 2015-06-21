@@ -23,6 +23,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.OutputKeys;
 
 import rest.bundle.RequestMethod;
 import rest.util.RESTUtil;
@@ -97,7 +98,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	            BigDecimal iznos = mt103Temp.getIznos();
 	            //update racuna banke
 	            FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac().getRacun());
-	            racun.setRaspoloziviNovac(racun.getRaspoloziviNovac() + iznos.intValue());
+	            racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(iznos));
 	            saveRacuni();
 	            return _return;
 	        } catch (Exception ex) {
@@ -188,7 +189,28 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation primiNalog");
 		System.out.println(nalogZaPrenos);
 		try {
-			StatusCode _return = null;
+			StatusCode _return = new StatusCode();
+			
+			// Ista banka
+			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac().getRacun());
+			if (racun != null){
+				
+				_return.setMessage("OK");
+				return _return;
+			}
+			
+			
+			// Preko CB
+			if ((nalogZaPrenos.getIznos().doubleValue() >= 25000.00) || (nalogZaPrenos.isHitno())){
+				// RTGS
+				
+			} else {
+				// Clearing & Settlement
+				
+				
+			}
+			
+			_return.setMessage("OK");
 			return _return;
 		} catch (java.lang.Exception ex) {
 			ex.printStackTrace();
@@ -278,7 +300,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 					.newXMLGregorianCalendar(c);
 			r.setDatumRacuna(date2);
 			fr.setRacun(r);
-			fr.setRaspoloziviNovac(100);
+			fr.setRaspoloziviNovac(new BigDecimal(100));
 			fr.setValuta("RSD");
 			FirmaRacun fr2 = new FirmaRacun();
 			fr2.setNaziv("Alex");
@@ -288,12 +310,12 @@ public class FirmaBanciImpl implements FirmaBanci {
 					+ Validation.generateChecksum(deoRac2)));
 			r2.setDatumRacuna(date2);
 			fr2.setRacun(r2);
-			fr2.setRaspoloziviNovac(200);
+			fr2.setRaspoloziviNovac(new BigDecimal(200));
 			fr2.setValuta("RSD");
-			ArrayList<FirmaRacun> racc = new ArrayList<Racuni.FirmaRacun>();
+			ArrayList<FirmaRacun> racc = new ArrayList<FirmaRacun>();
 			racc.add(fr);
 			racc.add(fr2);
-			rac.setFirmaRacun(racc);
+			rac.setFirmaRacuni(racc);
 			RESTUtil.objectToDB("//Racuni", "", rac);
 			Racuni temp = new Racuni();
 			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
