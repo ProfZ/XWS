@@ -95,7 +95,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @XmlRootElement(name = "Racuni")
 public class Racuni {
 
-    @XmlElement(name = "Firma_Racun", required = true)
+    @XmlElement(name = "Firma_Racun", required = false)
     protected List<Racuni.FirmaRacun> firmaRacun;
 
     /**
@@ -126,7 +126,9 @@ public class Racuni {
         }
         return this.firmaRacun;
     }
-
+    public void setFirmaRacun(List<Racuni.FirmaRacun> racuni){
+    	this.firmaRacun = racuni;
+    }
 
     /**
      * <p>Java class for anonymous complex type.
