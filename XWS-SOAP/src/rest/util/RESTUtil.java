@@ -265,31 +265,6 @@ public class RESTUtil<T> {
 		}
 	}
 	
-	public static Object doUnmarshallTransactions(String query, String schema, Object o){
-		try{
-			InputStream in = RESTUtil.retrieveResource(query, schema, RequestMethod.GET);
-			JAXBContext context = JAXBContext.newInstance(o.getClass(), o.getClass());
-			Unmarshaller unmarshaller = context.createUnmarshaller();
-			Marshaller marshaller = context.createMarshaller();
-			// set optional properties
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	
-			String xml = "<ns5:Transakcije xmlns:ns5=\"http://www.project.com/transakcije\" xmlns:ns2=\"http://www.project.com/common_types\" xmlns:ns3=\"http://www.project.com/nalog_za_placanje\" xmlns:ns4=\"http://www.project.com/stavka_preseka\">\n";
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			for (String line; (line = br.readLine()) != null;) {
-				xml=xml+line+"\n";
-				System.out.println(line);
-			}
-			xml=xml+"</ns5:Transakcije>";
-			StringReader reader = new StringReader(xml);
-			Object rac = (Object) unmarshaller.unmarshal(reader);
-			return rac;
-		}catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	public static boolean doMarshall(String schemaName, Object o){
 		try{
 			JAXBContext context = JAXBContext.newInstance(o.getClass());

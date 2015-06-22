@@ -61,9 +61,9 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static final String Racuni_Putanja = "Racuni/";
 
 	public static final String CB = "http://www.project.xml/wsdl/CBwsdl";
-	public static final String CBSERVICE = "CBservice";
-	public static final String CBPORT = "CBport";
-	public static final String CBURL = "http://localhost:8080/XWS-SOAP-CB/services/Banka?wsdl";
+	public static final String CBSERVICE = "CentralnaBankaService";
+	public static final String CBPORT = "CentralnaBankaPort";
+	public static final String CBURL = "http://localhost:8080/5._VezebeWSDLWS/CentralnaBankaService?wsdl";
 	
 	private URL cbwsdl;
 	private QName serviceName;
@@ -316,6 +316,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 			this.service = Service.create(this.cbwsdl, serviceName);
 			this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
 			
+			System.out.println(this.cetralnaBanka.TEST());
+			
 			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(Racuni.class,
@@ -399,7 +401,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
 		// imp.createInitial();

@@ -24,7 +24,7 @@ import xml.project.mt910.MT910;
                       serviceName = "CentralnaBankaService",
                       portName = "CentralnaBankaPort",
                       targetNamespace = "http://www.project.xml/wsdl/CBwsdl",
-                      wsdlLocation = "file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/wsdl/CentralnaBanka.wsdl",
+                      wsdlLocation = "WebContent/WEB-INF/wsdl/CentralnaBanka.wsdl",
                       endpointInterface = "xml.project.wsdl.cbwsdl.CentralnaBanka")
                       
 public class CentralnaBankaImpl implements CentralnaBanka {
@@ -55,11 +55,15 @@ public class CentralnaBankaImpl implements CentralnaBanka {
         System.out.println(mt102);
         try {
             StatusCode _return = new StatusCode();
+            _return.setMessage("AKO USPE IDEMO NA FRIZBI");
             return _return;
         } catch (java.lang.Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }
-
+    
+    public String TEST(){
+    	return "RADI!???!";
+    }
 }

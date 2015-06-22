@@ -36,4 +36,8 @@ public interface CentralnaBanka {
         @WebParam(partName = "MT102", name = "MT102", targetNamespace = "http://www.project.xml/MT102")
         MT102 mt102
     );
+    
+    @WebMethod
+    @WebResult(name = "statusCode", targetNamespace = "http://www.project.xml/globals", partName = "return")
+    public String TEST();
 }
