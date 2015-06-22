@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.net.ssl.SNIMatcher;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -50,11 +51,13 @@ import xml.project.zahtev_za_izovd.Zahtev;
 @javax.jws.WebService(serviceName = "FirmaBankaService", portName = "FirmaBanci", targetNamespace = "http://www.project.xml/wsdl/bwsdl", wsdlLocation = "WEB-INF/wsdl/Banka.wsdl", endpointInterface = "xml.project.wsdl.bwsdl.FirmaBanci")
 public class FirmaBanciImpl implements FirmaBanci {
 
+	TBanke currentBank = new TBanke();
+	
 	public static final String MT910_Putanja = "Banka/MT910";
 	public static final String MT900_Putanja = "Banka/MT900";
 	public static final String MT103_Putanja = "Banka/MT103";
 	public static final String MT102_Putanja = "Banka/MT102";
-	public static final String Racuni_Putanja = "Racuni/";
+	public static final String Racuni_Putanja = "Banka/Racuni";
 
 	private List<FirmaRacun> racuni;
 	TBanke banka;
@@ -237,7 +240,9 @@ public class FirmaBanciImpl implements FirmaBanci {
 			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac()
 					.getRacun());
 			if (racun != null) {
-
+				racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(nalogZaPrenos.getIznos()));
+				saveRacuni();
+				// kreiraj izvjestaj, npr 103
 				_return.setMessage("OK");
 				return _return;
 			}
@@ -282,7 +287,9 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public void init() {
 		this.banka = new TBanke();
 		this.racuni = new ArrayList<Racuni.FirmaRacun>();
+		
 		try {
+			
 			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(Racuni.class,
@@ -358,7 +365,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			racc.add(fr);
 			racc.add(fr2);
 			rac.setFirmaRacuni(racc);
-			RESTUtil.objectToDB("//Racuni", "", rac);
+			RESTUtil.objectToDB("//" + Racuni_Putanja, "", rac);
 			Racuni temp = new Racuni();
 			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
 			System.out.println(temp + " " + temp.getFirmaRacun().size());
@@ -369,8 +376,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
-		// imp.createInitial();
-		imp.init();
+		imp.createInitial();
+		//imp.init();
 	}
 
 }
