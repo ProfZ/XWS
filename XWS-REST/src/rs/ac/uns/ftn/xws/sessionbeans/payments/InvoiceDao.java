@@ -171,16 +171,19 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 
 	@Override
 	public List<Faktura> findAllInvoicesByPartner(String partnerID) throws IOException, JAXBException {
-		String xQuery = "for $x in collection('fakture') where $x//Dobavljac/PIB_kupca = " + partnerID + " return $x";
-		InputStream is = em.executeQuery(xQuery, true);
+		//String xQuery = "for $x in collection('fakture')//*:Faktura where $x//*:Dobavljac/*:PIB = " + partnerID + "' return $x";
+		InputStream is = em.executeQuery(partnerID, true);
 		
 		List<Faktura> fakture = new ArrayList<Faktura>();
 		if (is != null) {
-			Results wrappedResults = (Results) em.getUnmarshaller().unmarshal(is);
-			for (Result result : wrappedResults.getResult())
-				fakture.add((Faktura) em.getUnmarshaller().unmarshal((Node)result.getAny()));
+			System.out.println();
+			Faktura fakt = (Faktura) JAXBContext.newInstance("xml.project.faktura").createUnmarshaller().unmarshal(is);
+			fakture.add(fakt);
+			//for (Faktura fakt: fakture){
+				System.out.println(fakt);
+			//}
 		}
-		return null;
+		return fakture;
 	}
 	
 	public static void init(){

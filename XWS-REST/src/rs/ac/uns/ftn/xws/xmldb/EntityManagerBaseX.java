@@ -137,7 +137,7 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		
 		StringBuilder builder = new StringBuilder(REST_URL);
 		builder.append(schemaName);
-		builder.append("?query=exists%28for%20$x%20in%20collection%28fakture%29%20where%20$x//pib_partnera[@pib=%27" + query + "%27]%20return%20$x%29");
+		builder.append("?query=exists%28for%20$x%20in%20collection%28fakture%29%20where%20$x//*:pib_partnera[@pib=%27" + query + "%27]%20return%20$x%29");
 		//builder.append("?query=exists(for $x in collection(fakture) where $x//" + query + " return $x)");
 
 		url = new URL(builder.substring(0));
@@ -162,9 +162,11 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		if (is != null) {
 			String string = IOUtils.toString(is);
 			System.out.println("Message is : " + string);
+			conn.disconnect();
 			if (string.equalsIgnoreCase("true")) 
 				return true;
 		} else {
+			conn.disconnect();
 			System.out.println("Input stream is null");
 		}
 		return false;
@@ -175,35 +177,39 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 	 */
 	public InputStream executeQuery(String xQuery, boolean wrap) throws IOException {
 		InputStream result = null;
-		String wrapString = wrap ? "yes" : "no";
+		/*String wrapString = wrap ? "yes" : "no";
 		String wrappedQuery = "<query xmlns='http://basex.org/rest'>" + 
 				"<text><![CDATA[%s]]></text>" + 
 				"<parameter name='wrap' value='" + wrapString + "'/>" +
 			"</query>";
-		wrappedQuery = String.format(wrappedQuery, xQuery);
-
-		url = new URL(REST_URL + schemaName);
+		wrappedQuery = String.format(wrappedQuery, xQuery);*/
+		StringBuilder builder = new StringBuilder(REST_URL);
+		builder.append(schemaName);//for $x in collection('fakture')//*:Faktura where $x//*:Dobavljac/*:PIB = 'PIBKupca1' return $x
+		builder.append("?query=for%20$x%20in%20collection%28fakture%29//*:Faktura%20where%20$x//*:Dobavljac/*:PIB=%27" + xQuery + "%27%20return%20$x");
+		url = new URL(builder.substring(0));
 		conn = (HttpURLConnection) url.openConnection();
-		conn.setDoOutput(true);
-		conn.setRequestMethod(RequestMethod.POST);
-		conn.setRequestProperty("Content-Type", "application/query+xml");
+		conn.setRequestMethod(RequestMethod.GET);
+		//conn.setRequestProperty("Content-Type", "application/query+xml");
 		String userpass = "admin:admin";
 		String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 		conn.setRequestProperty ("Authorization", basicAuth);
 		conn.connect();
-		OutputStream out = conn.getOutputStream();
-		out.write(wrappedQuery.getBytes("UTF-8"));
-		out.close();
 		int responseCode = conn.getResponseCode();
 		String message = conn.getResponseMessage();
 
 		/*
 		 * Generate HTTP POST body.
 		 */
-		System.out.println(wrappedQuery);
-
-
 		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');
+		InputStream is = conn.getInputStream();
+		
+		/*if (is != null) {
+			//String string = IOUtils.toString(is);
+			System.out.println("Message is : " + string);
+		} else {
+			System.out.println("Input stream is null");
+		}*/
+
 		
 		if (responseCode == HttpURLConnection.HTTP_OK)
 			result = conn.getInputStream();

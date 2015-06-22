@@ -55,7 +55,8 @@ public class RestService implements RestServerRemote{
 		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
-			rb = Response.ok(invoiceDao.findAllInvoicesByPartner(id_dobavljaca));
+			rb = Response.ok();//invoiceDao.findAllInvoicesByPartner(id_dobavljaca)
+			rb.entity(invoiceDao.findAllInvoicesByPartner(id_dobavljaca).get(0));
 		}
 		return rb.build();
 	}
