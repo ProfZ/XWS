@@ -60,13 +60,6 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		
 		basex_context = JAXBContext.newInstance(BASEX_CONTEXT_PATH);
 		basex_unmarshaller = basex_context.createUnmarshaller();
-		
-		try {
-			createSchema(schemaName);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public static int createSchema(String schemaName) throws Exception {
@@ -144,7 +137,8 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		
 		StringBuilder builder = new StringBuilder(REST_URL);
 		builder.append(schemaName);
-		builder.append("?query=exists(" + query + ")");
+		builder.append("?query=exists%28for%20$x%20in%20collection%28fakture%29%20where%20$x//pib_partnera[@pib=%27" + query + "%27]%20return%20$x%29");
+		//builder.append("?query=exists(for $x in collection(fakture) where $x//" + query + " return $x)");
 
 		url = new URL(builder.substring(0));
 		conn = (HttpURLConnection) url.openConnection();
@@ -167,9 +161,11 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		
 		if (is != null) {
 			String string = IOUtils.toString(is);
-			System.out.println(string);
+			System.out.println("Message is : " + string);
 			if (string.equalsIgnoreCase("true")) 
 				return true;
+		} else {
+			System.out.println("Input stream is null");
 		}
 		return false;
 	}
@@ -195,6 +191,9 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 		conn.setRequestProperty ("Authorization", basicAuth);
 		conn.connect();
+		OutputStream out = conn.getOutputStream();
+		out.write(wrappedQuery.getBytes("UTF-8"));
+		out.close();
 		int responseCode = conn.getResponseCode();
 		String message = conn.getResponseMessage();
 
@@ -202,9 +201,6 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		 * Generate HTTP POST body.
 		 */
 		System.out.println(wrappedQuery);
-		OutputStream out = conn.getOutputStream();
-		out.write(wrappedQuery.getBytes("UTF-8"));
-		out.close();
 
 
 		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');
@@ -227,11 +223,11 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 		conn.setRequestProperty ("Authorization", basicAuth);
 		conn.connect();
+		marshaller.marshal(entity, conn.getOutputStream());
 		int responseCode = conn.getResponseCode();
 		String message = conn.getResponseMessage();
 
 
-		marshaller.marshal(entity, conn.getOutputStream());
 		
 		
 		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');

@@ -12,6 +12,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import rs.ac.uns.ftn.xws.sessionbeans.payments.InvoiceDao;
 import xml.project.globals.IzgledUplatnice;
 import xml.project.globals.TBanke;
 import xml.project.globals.TOsobe;
@@ -27,7 +28,7 @@ import xml.project.presek.Presek.Zaglavlje;
 public class InitialXML {
 
 	 
-	private static MT102 mt102v1;
+/*	private static MT102 mt102v1;
 	private static MT103 mt103v1;
 	private static MT900 mt900v1; 
 	private static MT910 mt910v1;
@@ -159,9 +160,10 @@ public class InitialXML {
 		presekv1.setZaglavlje(zaglavlje1);
 		presekv1.getStavka().add(stavka2);
 		
-}
+}*/
 	public static void main(String[] args) {
-	    try {
+		InvoiceDao.init();
+	    /*try {
 	    	JAXBContext jaxbContext = JAXBContext.newInstance("xml.project.mt102");
 		    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 		    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);     
@@ -195,7 +197,7 @@ public class InitialXML {
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 }

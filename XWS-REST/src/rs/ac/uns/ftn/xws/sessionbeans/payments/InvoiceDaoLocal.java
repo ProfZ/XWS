@@ -16,8 +16,8 @@ public interface InvoiceDaoLocal extends GenericDao<Faktura, Long> {
 	StavkaFakture getInvoiceItemByIdFromInvoice(Long idInvoice,Long idInvoiceItem) throws IOException,JAXBException;
 	String modifyInvoiceItemFromInvoice(StavkaFakture newInvoiceItem,Long idInvoice, Long idInvoiceItem) throws IOException, JAXBException;
 	String addInvoiceItem(Long idInvoice, StavkaFakture newInvoiceItem) throws IOException, JAXBException;
-	public List<Faktura> findAllInvoicesByPartner(Long partnerID) throws IOException, JAXBException;
-	public boolean isPartner(Long partnerID) throws IOException;
+	public List<Faktura> findAllInvoicesByPartner(String partnerID) throws IOException, JAXBException;
+	public boolean isPartner(String partnerID) throws IOException;
 	boolean testValidationInvoice(Faktura invoice);
 }
 
