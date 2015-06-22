@@ -13,7 +13,11 @@ import javax.xml.ws.WebFault;
 @WebFault(name = "statusCode", targetNamespace = "http://www.project.xml/globals")
 public class AcceptMT103Fault extends Exception {
     
-    private xml.project.globals.StatusCode statusCode;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1368599297434775464L;
+	private xml.project.globals.StatusCode statusCode;
 
     public AcceptMT103Fault() {
         super();

@@ -1,21 +1,15 @@
 
 package xml.project.uplatnica;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
+import xml.project.globals.TOsobe;
 
 
 /**
@@ -28,63 +22,23 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Duznik" type="{http://www.project.xml/uplatnica}TLice"/>
+ *         &lt;element name="ID_poruke" type="{http://www.project.xml/globals}ID_poruke"/>
+ *         &lt;element name="Duznik_nalogodavac" type="{http://www.project.xml/globals}TOsobe"/>
  *         &lt;element name="Svrha_placanja">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="200"/>
+ *               &lt;maxLength value="255"/>
  *               &lt;minLength value="3"/>
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="Primalac" type="{http://www.project.xml/uplatnica}TLice"/>
- *         &lt;element name="Podaci_o_uplati" type="{http://www.w3.org/2001/XMLSchema}anyType"/>
- *         &lt;element name="Sifra_placanja" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *         &lt;element name="Valuta">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;pattern value="[A-Z]3"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="Iznos">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}decimal">
- *               &lt;totalDigits value="15"/>
- *               &lt;fractionDigits value="2"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;sequence maxOccurs="2">
- *           &lt;element name="Broj_modela">
- *             &lt;simpleType>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}positiveInteger">
- *                 &lt;totalDigits value="2"/>
- *               &lt;/restriction>
- *             &lt;/simpleType>
- *           &lt;/element>
- *           &lt;element name="Poziv_na_broj">
- *             &lt;simpleType>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *                 &lt;maxLength value="20"/>
- *                 &lt;pattern value=""/>
- *               &lt;/restriction>
- *             &lt;/simpleType>
- *           &lt;/element>
- *           &lt;element name="Racun" type="{http://www.project.xml/globals}TBrojRacuna"/>
- *         &lt;/sequence>
- *         &lt;element ref="{http://www.project.xml/uplatnica}Mesto_Datum_prijema"/>
- *         &lt;element name="Pecat_potpis_nalogodavaca" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/>
+ *         &lt;element name="Primalac_poverilac" type="{http://www.project.xml/globals}TOsobe"/>
+ *         &lt;element name="Datum_naloga" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         &lt;element name="Datum_Valute" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         &lt;element name="Iznos" type="{http://www.project.xml/globals}TIznos"/>
+ *         &lt;element name="Valuta" type="{http://www.project.xml/globals}TOznakaValute"/>
+ *         &lt;element name="Hitno" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       &lt;/sequence>
- *       &lt;attribute name="Hitno">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *             &lt;whiteSpace value="preserve"/>
- *             &lt;enumeration value="DA"/>
- *             &lt;enumeration value="NE"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -94,70 +48,86 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "duznik",
+    "idPoruke",
+    "duznikNalogodavac",
     "svrhaPlacanja",
-    "primalac",
-    "podaciOUplati",
-    "sifraPlacanja",
-    "valuta",
+    "primalacPoverilac",
+    "datumNaloga",
+    "datumValute",
     "iznos",
-    "brojModelaAndPozivNaBrojAndRacun",
-    "mestoDatumPrijema",
-    "pecatPotpisNalogodavaca"
+    "valuta",
+    "hitno"
 })
 @XmlRootElement(name = "NalogZaPrenos")
 public class NalogZaPrenos {
 
-    @XmlElement(name = "Duznik", required = true)
-    protected TLice duznik;
+    @XmlElement(name = "ID_poruke", required = true)
+    protected String idPoruke;
+    @XmlElement(name = "Duznik_nalogodavac", required = true)
+    protected TOsobe duznikNalogodavac;
     @XmlElement(name = "Svrha_placanja", required = true)
     protected String svrhaPlacanja;
-    @XmlElement(name = "Primalac", required = true)
-    protected TLice primalac;
-    @XmlElement(name = "Podaci_o_uplati", required = true)
-    protected Object podaciOUplati;
-    @XmlElement(name = "Sifra_placanja", required = true)
-    @XmlSchemaType(name = "positiveInteger")
-    protected BigInteger sifraPlacanja;
-    @XmlElement(name = "Valuta", required = true)
-    protected String valuta;
+    @XmlElement(name = "Primalac_poverilac", required = true)
+    protected TOsobe primalacPoverilac;
+    @XmlElement(name = "Datum_naloga", required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar datumNaloga;
+    @XmlElement(name = "Datum_Valute", required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar datumValute;
     @XmlElement(name = "Iznos", required = true)
     protected BigDecimal iznos;
-    @XmlElementRefs({
-        @XmlElementRef(name = "Broj_modela", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
-        @XmlElementRef(name = "Poziv_na_broj", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
-        @XmlElementRef(name = "Racun", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class)
-    })
-    protected List<JAXBElement<? extends Serializable>> brojModelaAndPozivNaBrojAndRacun;
-    @XmlElement(name = "Mesto_Datum_prijema", required = true)
-    protected MestoDatumPrijema mestoDatumPrijema;
-    @XmlElement(name = "Pecat_potpis_nalogodavaca")
-    protected Object pecatPotpisNalogodavaca;
-    @XmlAttribute(name = "Hitno")
-    protected String hitno;
+    @XmlElement(name = "Valuta", required = true)
+    protected String valuta;
+    @XmlElement(name = "Hitno")
+    protected boolean hitno;
 
     /**
-     * Gets the value of the duznik property.
+     * Gets the value of the idPoruke property.
      * 
      * @return
      *     possible object is
-     *     {@link TLice }
+     *     {@link String }
      *     
      */
-    public TLice getDuznik() {
-        return duznik;
+    public String getIDPoruke() {
+        return idPoruke;
     }
 
     /**
-     * Sets the value of the duznik property.
+     * Sets the value of the idPoruke property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TLice }
+     *     {@link String }
      *     
      */
-    public void setDuznik(TLice value) {
-        this.duznik = value;
+    public void setIDPoruke(String value) {
+        this.idPoruke = value;
+    }
+
+    /**
+     * Gets the value of the duznikNalogodavac property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TOsobe }
+     *     
+     */
+    public TOsobe getDuznikNalogodavac() {
+        return duznikNalogodavac;
+    }
+
+    /**
+     * Sets the value of the duznikNalogodavac property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TOsobe }
+     *     
+     */
+    public void setDuznikNalogodavac(TOsobe value) {
+        this.duznikNalogodavac = value;
     }
 
     /**
@@ -185,99 +155,75 @@ public class NalogZaPrenos {
     }
 
     /**
-     * Gets the value of the primalac property.
+     * Gets the value of the primalacPoverilac property.
      * 
      * @return
      *     possible object is
-     *     {@link TLice }
+     *     {@link TOsobe }
      *     
      */
-    public TLice getPrimalac() {
-        return primalac;
+    public TOsobe getPrimalacPoverilac() {
+        return primalacPoverilac;
     }
 
     /**
-     * Sets the value of the primalac property.
+     * Sets the value of the primalacPoverilac property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TLice }
+     *     {@link TOsobe }
      *     
      */
-    public void setPrimalac(TLice value) {
-        this.primalac = value;
+    public void setPrimalacPoverilac(TOsobe value) {
+        this.primalacPoverilac = value;
     }
 
     /**
-     * Gets the value of the podaciOUplati property.
+     * Gets the value of the datumNaloga property.
      * 
      * @return
      *     possible object is
-     *     {@link Object }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public Object getPodaciOUplati() {
-        return podaciOUplati;
+    public XMLGregorianCalendar getDatumNaloga() {
+        return datumNaloga;
     }
 
     /**
-     * Sets the value of the podaciOUplati property.
+     * Sets the value of the datumNaloga property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setPodaciOUplati(Object value) {
-        this.podaciOUplati = value;
+    public void setDatumNaloga(XMLGregorianCalendar value) {
+        this.datumNaloga = value;
     }
 
     /**
-     * Gets the value of the sifraPlacanja property.
+     * Gets the value of the datumValute property.
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public BigInteger getSifraPlacanja() {
-        return sifraPlacanja;
+    public XMLGregorianCalendar getDatumValute() {
+        return datumValute;
     }
 
     /**
-     * Sets the value of the sifraPlacanja property.
+     * Sets the value of the datumValute property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setSifraPlacanja(BigInteger value) {
-        this.sifraPlacanja = value;
-    }
-
-    /**
-     * Gets the value of the valuta property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValuta() {
-        return valuta;
-    }
-
-    /**
-     * Sets the value of the valuta property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValuta(String value) {
-        this.valuta = value;
+    public void setDatumValute(XMLGregorianCalendar value) {
+        this.datumValute = value;
     }
 
     /**
@@ -305,105 +251,42 @@ public class NalogZaPrenos {
     }
 
     /**
-     * Gets the value of the brojModelaAndPozivNaBrojAndRacun property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the brojModelaAndPozivNaBrojAndRacun property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getBrojModelaAndPozivNaBrojAndRacun().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link BigInteger }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * 
-     * 
-     */
-    public List<JAXBElement<? extends Serializable>> getBrojModelaAndPozivNaBrojAndRacun() {
-        if (brojModelaAndPozivNaBrojAndRacun == null) {
-            brojModelaAndPozivNaBrojAndRacun = new ArrayList<JAXBElement<? extends Serializable>>();
-        }
-        return this.brojModelaAndPozivNaBrojAndRacun;
-    }
-
-    /**
-     * Gets the value of the mestoDatumPrijema property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link MestoDatumPrijema }
-     *     
-     */
-    public MestoDatumPrijema getMestoDatumPrijema() {
-        return mestoDatumPrijema;
-    }
-
-    /**
-     * Sets the value of the mestoDatumPrijema property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link MestoDatumPrijema }
-     *     
-     */
-    public void setMestoDatumPrijema(MestoDatumPrijema value) {
-        this.mestoDatumPrijema = value;
-    }
-
-    /**
-     * Gets the value of the pecatPotpisNalogodavaca property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Object }
-     *     
-     */
-    public Object getPecatPotpisNalogodavaca() {
-        return pecatPotpisNalogodavaca;
-    }
-
-    /**
-     * Sets the value of the pecatPotpisNalogodavaca property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
-     */
-    public void setPecatPotpisNalogodavaca(Object value) {
-        this.pecatPotpisNalogodavaca = value;
-    }
-
-    /**
-     * Gets the value of the hitno property.
+     * Gets the value of the valuta property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getHitno() {
+    public String getValuta() {
+        return valuta;
+    }
+
+    /**
+     * Sets the value of the valuta property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValuta(String value) {
+        this.valuta = value;
+    }
+
+    /**
+     * Gets the value of the hitno property.
+     * 
+     */
+    public boolean isHitno() {
         return hitno;
     }
 
     /**
      * Sets the value of the hitno property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setHitno(String value) {
+    public void setHitno(boolean value) {
         this.hitno = value;
     }
 
