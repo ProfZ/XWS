@@ -10,12 +10,15 @@ package xml.project.partneri;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.basex.rest.Identifiable;
 
 
 /**
@@ -56,7 +59,7 @@ import javax.xml.bind.annotation.XmlType;
     "pibPartnera"
 })
 @XmlRootElement(name = "Partneri")
-public class Partneri {
+public class Partneri extends Identifiable{
 
     @XmlElement(name = "pib_partnera", required = true)
     protected List<Partneri.PibPartnera> pibPartnera;
@@ -146,5 +149,19 @@ public class Partneri {
         }
 
     }
+
+    public static Long id = 1L;
+
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return id;
+	}
+
+
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 }

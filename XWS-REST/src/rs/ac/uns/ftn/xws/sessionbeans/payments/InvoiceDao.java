@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.ejb.Init;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.xml.XMLConstants;
@@ -30,6 +31,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import rs.ac.uns.ftn.xws.sessionbeans.common.GenericDaoBean;
+import rs.ac.uns.ftn.xws.xmldb.EntityManagerBaseX;
 import xml.project.faktura.Faktura;
 import xml.project.faktura.Faktura.StavkaFakture;
 import xml.project.faktura.Faktura.ZaglavljeFakture;
@@ -47,7 +49,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	}
 	
 	public InvoiceDao() {
-		super("org.basex.rest", "fakture");
+		super("xml.project.faktura", "fakture");
 	}
 
 
@@ -168,7 +170,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	}
 
 	@Override
-	public List<Faktura> findAllInvoicesByPartner(Long partnerID) throws IOException, JAXBException {
+	public List<Faktura> findAllInvoicesByPartner(String partnerID) throws IOException, JAXBException {
 		String xQuery = "for $x in collection('fakture') where $x//Dobavljac/PIB_kupca = " + partnerID + " return $x";
 		InputStream is = em.executeQuery(xQuery, true);
 		
@@ -180,7 +182,8 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		}
 		return null;
 	}
-	public void init(){
+	
+	public static void init(){
 		//partneri
 		Partneri partneri = new Partneri();
 		//dummy PIB
@@ -230,22 +233,38 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		racun2.setDatumRacuna(date2);
 		//faktura 1
 		Faktura faktura = new Faktura();
-		faktura.setId(new Long(12390));
 		faktura.setZaglavljeFakture(createHeaderOfInvoice(date1, firma1, "idPoruka1", new BigDecimal(5000), firma2, "RSD", racun1, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "0", new BigDecimal(800), new BigDecimal(900)));
+
+		faktura.setId(new Long(12390));
 		long val1 = 0;
 		//stavke1 faktura1
 		faktura.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"krompir",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(100),new BigDecimal(600)));
 		//faktura 1
 		Faktura faktura1 = new Faktura();
-		faktura1.setId(new Long(12391));
 		faktura1.setZaglavljeFakture(createHeaderOfInvoice(date2, firma3, "idPoruka2", new BigDecimal(5600), firma2, "RSD", racun2, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "0", new BigDecimal(800), new BigDecimal(900)));
-		//stavke1 faktura1
+
+		faktura1.setId(new Long(12391));//stavke1 faktura1
 		val1++;
 		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"pekmez",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(100),new BigDecimal(600)));
 		//stavke2 faktura1
 		val1++;
 		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(80),"kg",new BigDecimal(80),new BigDecimal(4),"kupus",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(90),new BigDecimal(600)));
 		
+		try {
+			EntityManagerBaseX.createSchema("fakture");
+			EntityManagerBaseX<Faktura, Long> emf = new EntityManagerBaseX<Faktura, Long>("fakture", "xml.project.faktura");
+			emf.persist(faktura1, faktura1.getId());
+			emf.persist(faktura, faktura.getId());
+			
+			EntityManagerBaseX<Partneri, Long> emp = new EntityManagerBaseX<Partneri, Long>("fakture", "xml.project.partneri");
+			emp.persist(partneri, partneri.getId());
+		} catch (JAXBException | IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		try {
 			convertToXML("xml.project.faktura", faktura);
 			convertToXML("xml.project.faktura", faktura1);
@@ -254,7 +273,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		}
 	}
 	
-	public ZaglavljeFakture createHeaderOfInvoice(XMLGregorianCalendar date, TFirma firmaDobavljac, String idPoruke, BigDecimal iznosZaUplatu, TFirma firmaKupac, String oznakaValute, Racun racun, 
+	public static ZaglavljeFakture createHeaderOfInvoice(XMLGregorianCalendar date, TFirma firmaDobavljac, String idPoruke, BigDecimal iznosZaUplatu, TFirma firmaKupac, String oznakaValute, Racun racun, 
 			BigDecimal ukupanPorez, BigDecimal ukupanRabat, BigDecimal robaIUsluge, String uplataNaRacun, BigDecimal vrednostRobe, BigDecimal vrednostUsluge){
 		ZaglavljeFakture temp = new ZaglavljeFakture();
 		temp.setDatumValute(date);
@@ -273,7 +292,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		return temp;
 	}
 	
-	public StavkaFakture createInvoiceItem(BigDecimal iznosRabata, String jedinicaMere, BigDecimal jedinicnaCena, BigDecimal kolicina, String nazivRobeUsluge, BigDecimal procenatRabata, long redniBroj,
+	public static StavkaFakture createInvoiceItem(BigDecimal iznosRabata, String jedinicaMere, BigDecimal jedinicnaCena, BigDecimal kolicina, String nazivRobeUsluge, BigDecimal procenatRabata, long redniBroj,
 			BigDecimal ukupanPorez,BigDecimal umanjenoZaRabat, BigDecimal vrednost){
 		StavkaFakture temp = new StavkaFakture();
 		temp.setIznosRabata(iznosRabata);
@@ -290,9 +309,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	}
 
 	@Override
-	public boolean isPartner(Long partnerID) throws IOException {
+	public boolean isPartner(String partnerID) throws IOException {
 		try {
-			return em.exists("/Partneri/pib_partnera[pib='" + partnerID + "']");
+			return em.exists(partnerID + "");
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -300,7 +319,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		return false;
 	}
 	
-	public void convertToXML(String path, Object classTheIsConverted) throws JAXBException{
+	public static void convertToXML(String path, Object classTheIsConverted) throws JAXBException{
 		JAXBContext jaxbContext = JAXBContext.newInstance(path);
 	    Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 	    jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
