@@ -24,7 +24,7 @@ import xml.project.mt910.MT910;
                       serviceName = "CentralnaBankaService",
                       portName = "CentralnaBankaPort",
                       targetNamespace = "http://www.project.xml/wsdl/CBwsdl",
-                      wsdlLocation = "file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/wsdl/CentralnaBanka.wsdl",
+                      wsdlLocation = "WEB-INF/wsdl/CentralnaBanka.wsdl",
                       endpointInterface = "xml.project.wsdl.cbwsdl.CentralnaBanka")
                       
 public class CentralnaBankaImpl implements CentralnaBanka {
