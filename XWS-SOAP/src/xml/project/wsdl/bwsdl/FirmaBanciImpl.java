@@ -27,6 +27,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import rest.bundle.RequestMethod;
+import rest.util.Converter;
 import rest.util.RESTUtil;
 import rest.util.Validation;
 import xml.project.globals.StatusCode;
@@ -53,8 +54,9 @@ import xml.project.zahtev_za_izovd.Zahtev;
 
 @javax.jws.WebService(serviceName = "FirmaBankaService", portName = "FirmaBanci", targetNamespace = "http://www.project.xml/wsdl/bwsdl", wsdlLocation = "WEB-INF/wsdl/Banka.wsdl", endpointInterface = "xml.project.wsdl.bwsdl.FirmaBanci")
 public class FirmaBanciImpl implements FirmaBanci {
-
-	TBanke currentBank = new TBanke();
+	
+	public static final String SWIFT_BANKE = "BANASRNS";
+	public static final String RACUN_BANKE = "0011234567891234" + Validation.generateChecksum("0011234567891234");
 	
 	public static final String MT910_Putanja = "Banka/MT910";
 	public static final String MT900_Putanja = "Banka/MT900";
@@ -271,7 +273,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 			if (racun != null) {
 				racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(nalogZaPrenos.getIznos()));
 				saveRacuni();
-				// kreiraj izvjestaj, npr 103
+				// kreiraj izvjestaj, npr kao 103 i sacuvati u bazi
+				MT103 mt103 = Converter.convertNalogToMT103(nalogZaPrenos);
 				_return.setCode(200);
 				_return.setMessage("OK");
 				return _return;
@@ -280,8 +283,11 @@ public class FirmaBanciImpl implements FirmaBanci {
 			if ((nalogZaPrenos.getIznos().doubleValue() >= 25000.00)
 					|| (nalogZaPrenos.isHitno())) {
 				// RTGS
+				MT103 mt103 = Converter.convertNalogToMT103(nalogZaPrenos);
+				cetralnaBanka.acceptMT103(mt103);
 			} else {
 				// Clearing & Settlement
+				
 			}
 			_return.setMessage("OK");
 			return _return;
@@ -318,15 +324,19 @@ public class FirmaBanciImpl implements FirmaBanci {
 		
 		try {
 			this.banka = new TBanke();
+			this.banka.setObracunskiRacunBanke(RACUN_BANKE);
+			this.banka.setSWIFTKodBanke(RACUN_BANKE);
 			this.racuni = new ArrayList<Racuni.FirmaRacun>();
 			this.cbwsdl = new URL(FirmaBanciImpl.CBURL);
 			this.serviceName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBSERVICE);
 			this.portName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBPORT);
-			this.service = Service.create(this.cbwsdl, serviceName);
-			this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
+			//this.service = Service.create(this.cbwsdl, serviceName);
+			//this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
 			
+			System.out.println(RACUN_BANKE);
+			
+			/*
 			System.out.println(this.cetralnaBanka.TEST());
-			
 			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(Racuni.class,
@@ -346,6 +356,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			for (FirmaRacun k : rac.getFirmaRacun()) {
 				racuni.add(k);
 			}
+			*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -413,8 +424,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 	
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
-		imp.createInitial();
-		//imp.init();
+		//imp.createInitial();
+		imp.init();
 	}
 
 }

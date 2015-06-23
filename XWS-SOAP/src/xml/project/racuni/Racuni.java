@@ -12,10 +12,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-<<<<<<< HEAD
-
-=======
->>>>>>> d0cda5fd3daa32471825edd7fc5b80cf58b34938
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -133,13 +129,11 @@ public class Racuni {
         }
         return this.firmaRacun;
     }
-<<<<<<< HEAD
-=======
+
     
     public void setFirmaRacuni(List<Racuni.FirmaRacun> racuni){
     	this.firmaRacun = racuni;
     }
->>>>>>> d0cda5fd3daa32471825edd7fc5b80cf58b34938
 
 
     /**
@@ -408,12 +402,4 @@ public class Racuni {
 
     }
 
-<<<<<<< HEAD
-
-	public void setFirmaRacuni(ArrayList<FirmaRacun> racc) {
-		this.firmaRacun = racc;
-	}
-
-=======
->>>>>>> d0cda5fd3daa32471825edd7fc5b80cf58b34938
 }
