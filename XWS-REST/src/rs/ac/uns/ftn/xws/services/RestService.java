@@ -4,6 +4,7 @@ package rs.ac.uns.ftn.xws.services;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -41,28 +43,30 @@ public class RestService implements RestServerRemote{
 				rb = Response.status(Status.BAD_REQUEST);
 			} else {
 				Faktura retFakt = invoiceDao.persist(faktura);
-				rb = Response.created(URI.create("/partneri/" + id_dobavljaca + "/fakture/" + retFakt.getId()));
+				rb = Response.created(URI.create("/partneri/" + id_dobavljaca + "/fakture/" + retFakt.procitajId()));
 			}
 		}
 		return rb.build();
 	}
 	
-	@GET
+	@GET//Done
 	@Path("/{id_dobavljaca}/fakture")
 	@Override
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response pribaviFakture(@PathParam("id_dobavljaca") String id_dobavljaca) throws IOException, JAXBException {
 		ResponseBuilder rb;
 		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
 			rb = Response.ok();//invoiceDao.findAllInvoicesByPartner(id_dobavljaca)
-			rb.entity(invoiceDao.findAllInvoicesByPartner(id_dobavljaca).get(0));
+			rb.entity(invoiceDao.findAllInvoicesByPartner(id_dobavljaca));
 		}
 		return rb.build();
 	}
 
-	@GET
+	@GET//Done
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response pribaviFakturu(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture) throws IOException, JAXBException {
@@ -75,8 +79,9 @@ public class RestService implements RestServerRemote{
 		return rb.build();
 	}
 
-	@GET
+	@GET//Done
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response pribaviStavke(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture) throws IOException, JAXBException {
@@ -92,6 +97,7 @@ public class RestService implements RestServerRemote{
 	@POST
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke")
 	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response novaStavka(@PathParam("id_dobavljaca") String id_dobavljaca, @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {
 		String result = "";
@@ -118,8 +124,9 @@ public class RestService implements RestServerRemote{
 		return r;
 	}
 	
-	@GET
-	@Path("/fakture/{id_fakture}/stavke/{redni_broj}")
+	@GET//Done
+	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response pribaviStavku(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj){
@@ -137,7 +144,7 @@ public class RestService implements RestServerRemote{
 			e.printStackTrace();
 		}
 		if(result != null){
-			r = Response.ok().type("application/xml").entity(result).build();
+			r = Response.ok().entity(result).build();
 		}else {
 			r = Response.status(404).build();
 		}
@@ -147,6 +154,7 @@ public class RestService implements RestServerRemote{
 	@PUT
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Consumes(MediaType.APPLICATION_XML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response izmeniStavke(@PathParam("id_dobavljaca") String id_dobavljaca,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj, StavkaFakture newInvoiceItem) {

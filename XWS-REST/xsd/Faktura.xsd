@@ -8,6 +8,7 @@
     <xs:element name="Faktura">
         <xs:complexType>
             <xs:sequence>
+            	<xs:element name="id" xmlns="http://basex.org/rest" minOccurs="0"></xs:element>
                 <xs:element name="Zaglavlje_fakture">
                     <xs:complexType>
                         <xs:sequence>
@@ -199,7 +200,7 @@
     </xs:element>
     <xs:complexType name="TFirma">
         <xs:sequence>
-            <xs:element name="Naziv_kupca">
+            <xs:element name="Naziv">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
                         <xs:minLength value="5"/>
@@ -207,7 +208,7 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-            <xs:element name="Adresa_kupca">
+            <xs:element name="Adresa">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
                         <xs:minLength value="5"/>
@@ -215,7 +216,7 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-            <xs:element name="PIB_kupca">
+            <xs:element name="PIB">
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
                         <xs:length value="11"/>

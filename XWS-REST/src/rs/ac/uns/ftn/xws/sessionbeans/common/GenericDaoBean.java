@@ -3,14 +3,19 @@ package rs.ac.uns.ftn.xws.sessionbeans.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 
 
-import org.basex.rest.Identifiable;
+
+
+
+
 
 import rs.ac.uns.ftn.xws.xmldb.EntityManagerBaseX;
+import xml.project.faktura.Identifiable;
 
 public abstract class GenericDaoBean<T extends Identifiable, ID extends Serializable> implements
 		GenericDao<T, ID> {
@@ -36,7 +41,7 @@ public abstract class GenericDaoBean<T extends Identifiable, ID extends Serializ
 
 	public T persist(T entity) throws JAXBException, IOException {
 		Long id = em.getIdentity();
-		entity.setId(id);
+		entity.postaviID(id);
 		em.persist(entity, id);
 		return entity;
 	}

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:faktura="http://www.project.xml/faktura"
+    xmlns:idns="http://basex.org/rest"
     targetNamespace="http://www.project.xml/faktura"
     xmlns:globals="http://www.project.xml/globals" elementFormDefault="qualified">
     <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd"
@@ -8,6 +9,7 @@
     <xs:element name="Faktura">
         <xs:complexType>
             <xs:sequence>
+            	<xs:element name="id"></xs:element>
                 <xs:element name="Zaglavlje_fakture">
                     <xs:complexType>
                         <xs:sequence>

@@ -7,9 +7,9 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
-import org.basex.rest.Identifiable;
 
-public interface GenericDao<T extends Identifiable, ID extends Serializable> {
+
+public interface GenericDao<T , ID extends Serializable> {
 
 	public T findById(ID id) throws JAXBException, IOException;
 

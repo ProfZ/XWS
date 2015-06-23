@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.basex.rest.Identifiable;
-
 
 /**
  * <p>Java class for anonymous complex type.
@@ -249,7 +247,7 @@ import org.basex.rest.Identifiable;
     "stavkaFakture"
 })
 @XmlRootElement(name = "Faktura", namespace = "http://www.project.xml/faktura")
-public class Faktura extends Identifiable {
+public class Faktura extends Identifiable{
 
     @XmlElement(name = "Zaglavlje_fakture", namespace = "http://www.project.xml/faktura", required = true)
     protected Faktura.ZaglavljeFakture zaglavljeFakture;
@@ -1255,15 +1253,14 @@ public class Faktura extends Identifiable {
 
     }
 
-
 	@Override
-	public Long getId() {
+	public Long procitajId() {
 		// TODO Auto-generated method stub
 		return Long.valueOf(zaglavljeFakture.getIDPoruke());
 	}
 
 	@Override
-	public void setId(Long id) {
+	public void postaviID(Long id) {
 		// TODO Auto-generated method stub
 		zaglavljeFakture.setIDPoruke(String.valueOf(id));
 	}

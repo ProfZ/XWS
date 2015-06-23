@@ -223,7 +223,7 @@
     <xs:element name="Fakture">
         <xs:complexType>
             <xs:sequence>
-                <xs:element maxOccurs="unbounded" minOccurs="0" name="listaFaktura"
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="Faktura"
                     type="fakture:TFaktura"/>
             </xs:sequence>
         </xs:complexType>
