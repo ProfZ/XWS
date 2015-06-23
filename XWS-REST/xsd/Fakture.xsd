@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:fakture="http://www.project.xml/fakture" targetNamespace="http://www.project.xml/fakture"
+    elementFormDefault="qualified" xmlns:globals="http://www.project.xml/globals">
+    <xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd" id="globals"/>
+    <xs:complexType name="TFirma">
+        <xs:sequence>
+            <xs:element name="Naziv_kupca">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="5"/>
+                        <xs:maxLength value="255"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Adresa_kupca">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="5"/>
+                        <xs:maxLength value="255"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="PIB_kupca">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:length value="11"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="TFaktura">
+        <xs:sequence>
+            <xs:element name="Zaglavlje_fakture">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ID_poruke">
+                            <xs:simpleType>
+                                <xs:restriction base="globals:ID_poruke"> </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Dobavljac" type="fakture:TFirma"> </xs:element>
+                        <xs:element name="Kupac"> </xs:element>
+                        <xs:element name="Racun">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="1" name="Broj_racuna">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:positiveInteger">
+                                                <xs:totalDigits value="6"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="Datum_racuna" type="xs:date"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="Vrednost_robe">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="17"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Vrednost_usluga">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="17"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Ukupno_roba_i_usluge">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="17"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Ukupno_rabat">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="17"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Ukupno_porez">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="17"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element default="rsd" name="Oznaka_valute">
+                            <xs:simpleType>
+                                <xs:restriction base="globals:TOznakaValute"> </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Iznos_za_uplatu">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="17"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Uplata_na_racun">
+                            <xs:simpleType>
+                                <xs:restriction base="globals:TBrojRacuna"> </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Datum_valute" type="xs:date"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element form="qualified" maxOccurs="unbounded" name="Stavka_fakture">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Redni_broj">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:long">
+                                    <xs:fractionDigits value="0"/>
+                                    <xs:totalDigits value="3"/>
+                                    <xs:minInclusive value="000"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Naziv_robe_usluge">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="5"/>
+                                    <xs:maxLength value="120"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Kolicina">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="12"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Jedinica_mere">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="1"/>
+                                    <xs:maxLength value="6"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Jedinicna_cena">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="12"/>
+                                    <xs:minInclusive value="0"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Vrednost">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:minInclusive value="0"/>
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="14"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Procenat_rabata">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:minInclusive value="0"/>
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="7"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Iznos_rabata">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:minInclusive value="0"/>
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="14"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Umanjeno_za_rabat">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:minInclusive value="0"/>
+                                    <xs:totalDigits value="14"/>
+                                    <xs:fractionDigits value="2"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="Ukupan_porez">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:decimal">
+                                    <xs:minInclusive value="0"/>
+                                    <xs:fractionDigits value="2"/>
+                                    <xs:totalDigits value="14"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="Fakture">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="listaFaktura"
+                    type="fakture:TFaktura"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
