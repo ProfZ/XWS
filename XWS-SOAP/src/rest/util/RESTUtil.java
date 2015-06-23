@@ -36,7 +36,7 @@ public class RESTUtil<T> {
 	public static void main(String[] args) throws Exception {
 
 	}
-
+	
 	public static int createSchema(String schemaName) throws Exception {
 		System.out.println("=== PUT: create a new database: " + schemaName + " ===");
 		URL url = new URL(REST_URL + schemaName);

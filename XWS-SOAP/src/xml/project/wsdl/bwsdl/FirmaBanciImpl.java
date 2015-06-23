@@ -56,16 +56,17 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 	TBanke currentBank = new TBanke();
 	
-	public static final String MT910_Putanja = "Banka/MT910";
-	public static final String MT900_Putanja = "Banka/MT900";
-	public static final String MT103_Putanja = "Banka/MT103";
-	public static final String MT102_Putanja = "Banka/MT102";
-	public static final String Racuni_Putanja = "Banka/Racuni";
+	public static final String ID = "100";
+	public static final String MT910_Putanja = "BMT910"+ID;
+	public static final String MT900_Putanja = "BMT900"+ID;
+	public static final String MT103_Putanja = "BMT103"+ID;
+	public static final String MT102_Putanja = "BMT102"+ID;
+	public static final String Racuni_Putanja = "BRacuni"+ID;
 
 	public static final String CB = "http://www.project.xml/wsdl/CBwsdl";
 	public static final String CBSERVICE = "CentralnaBankaService";
 	public static final String CBPORT = "CentralnaBankaPort";
-	public static final String CBURL = "http://localhost:8080/5._VezebeWSDLWS/CentralnaBankaService?wsdl";
+	public static final String CBURL = "http://localhost:8080/XWS-SOAP-CB/CentralnaBankaService?wsdl";
 	
 	private URL cbwsdl;
 	private QName serviceName;
@@ -104,8 +105,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public StatusCode acceptMT910(MT910 mt910) {
 		LOG.info("Executing operation acceptMT910");
 		System.out.println(mt910);
+		StatusCode _return = new StatusCode();
 		try {
-			StatusCode _return = new StatusCode();
 			RESTUtil.objectToDB(MT910_Putanja, mt910.getIDPoruke(), mt910);
 			MT103 mt103Temp = new MT103();
 			// rtgs nalog
@@ -122,10 +123,13 @@ public class FirmaBanciImpl implements FirmaBanci {
 						.add(iznos));
 				saveRacuni();
 			}
+			_return.setCode(200);
+			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
+			_return.setCode(404);
+			_return.setMessage("Something is kinda bad");
+			return _return;
 		}
 	}
 
@@ -319,14 +323,14 @@ public class FirmaBanciImpl implements FirmaBanci {
 		try {
 			this.banka = new TBanke();
 			this.racuni = new ArrayList<Racuni.FirmaRacun>();
-			this.cbwsdl = new URL(FirmaBanciImpl.CBURL);
-			this.serviceName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBSERVICE);
-			this.portName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBPORT);
+			this.cbwsdl = new URL(CBURL);
+			this.serviceName = new QName(CB, CBSERVICE);
+			this.portName = new QName(CB, CBPORT);
 			this.service = Service.create(this.cbwsdl, serviceName);
 			this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
 			
 			System.out.println(this.cetralnaBanka.TEST());
-			
+			System.out.println(this.cetralnaBanka.getSWIFT(ID));
 			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(Racuni.class,
@@ -362,7 +366,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	}
 
 	public void saveRacuni() {
-		RESTUtil.objectToDB("//Racuni", "", racuni);
+		RESTUtil.objectToDB("//"+Racuni_Putanja, "", racuni);
 	}
 
 	public void createInitial() {
@@ -377,7 +381,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			Racuni.FirmaRacun fr = new FirmaRacun();
 			fr.setNaziv("Pejak");
 			Racun r = new Racun();
-			String deoRac = "1234567890123456";
+			String deoRac = "1004567890123456";
 			r.setBrojRacuna(new BigInteger(deoRac
 					+ Validation.generateChecksum(deoRac)));
 			GregorianCalendar c = new GregorianCalendar();
@@ -391,7 +395,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			FirmaRacun fr2 = new FirmaRacun();
 			fr2.setNaziv("Alex");
 			Racun r2 = new Racun();
-			String deoRac2 = "1234567891234567";
+			String deoRac2 = "1004567891234567";
 			r2.setBrojRacuna(new BigInteger(deoRac2
 					+ Validation.generateChecksum(deoRac2)));
 			r2.setDatumRacuna(date2);
@@ -403,9 +407,9 @@ public class FirmaBanciImpl implements FirmaBanci {
 			racc.add(fr2);
 			rac.setFirmaRacuni(racc);
 			RESTUtil.objectToDB("//" + Racuni_Putanja, "", rac);
-			Racuni temp = new Racuni();
-			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
-			System.out.println(temp + " " + temp.getFirmaRacun().size());
+//			Racuni temp = new Racuni();
+//			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
+//			System.out.println(temp + " " + temp.getFirmaRacun().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

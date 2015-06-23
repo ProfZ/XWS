@@ -25,15 +25,31 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _NalogZaPrenosBrojModela_QNAME = new QName("http://www.project.xml/uplatnica", "Broj_modela");
-    private final static QName _NalogZaPrenosPozivNaBroj_QNAME = new QName("http://www.project.xml/uplatnica", "Poziv_na_broj");
     private final static QName _NalogZaPrenosRacun_QNAME = new QName("http://www.project.xml/uplatnica", "Racun");
+    private final static QName _NalogZaPrenosPozivNaBroj_QNAME = new QName("http://www.project.xml/uplatnica", "Poziv_na_broj");
+    private final static QName _NalogZaPrenosBrojModela_QNAME = new QName("http://www.project.xml/uplatnica", "Broj_modela");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: xml.project.uplatnica
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link Adresa }
+     * 
+     */
+    public Adresa createAdresa() {
+        return new Adresa();
+    }
+
+    /**
+     * Create an instance of {@link MestoDatumPrijema }
+     * 
+     */
+    public MestoDatumPrijema createMestoDatumPrijema() {
+        return new MestoDatumPrijema();
     }
 
     /**
@@ -53,19 +69,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MestoDatumPrijema }
+     * Create an instance of {@link TFicikoLice }
      * 
      */
-    public MestoDatumPrijema createMestoDatumPrijema() {
-        return new MestoDatumPrijema();
-    }
-
-    /**
-     * Create an instance of {@link Adresa }
-     * 
-     */
-    public Adresa createAdresa() {
-        return new Adresa();
+    public TFicikoLice createTFicikoLice() {
+        return new TFicikoLice();
     }
 
     /**
@@ -77,20 +85,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TFicikoLice }
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    public TFicikoLice createTFicikoLice() {
-        return new TFicikoLice();
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link BigInteger }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.project.xml/uplatnica", name = "Broj_modela", scope = NalogZaPrenos.class)
-    public JAXBElement<BigInteger> createNalogZaPrenosBrojModela(BigInteger value) {
-        return new JAXBElement<BigInteger>(_NalogZaPrenosBrojModela_QNAME, BigInteger.class, NalogZaPrenos.class, value);
+    @XmlElementDecl(namespace = "http://www.project.xml/uplatnica", name = "Racun", scope = NalogZaPrenos.class)
+    public JAXBElement<String> createNalogZaPrenosRacun(String value) {
+        return new JAXBElement<String>(_NalogZaPrenosRacun_QNAME, String.class, NalogZaPrenos.class, value);
     }
 
     /**
@@ -103,12 +103,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link BigInteger }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://www.project.xml/uplatnica", name = "Racun", scope = NalogZaPrenos.class)
-    public JAXBElement<String> createNalogZaPrenosRacun(String value) {
-        return new JAXBElement<String>(_NalogZaPrenosRacun_QNAME, String.class, NalogZaPrenos.class, value);
+    @XmlElementDecl(namespace = "http://www.project.xml/uplatnica", name = "Broj_modela", scope = NalogZaPrenos.class)
+    public JAXBElement<BigInteger> createNalogZaPrenosBrojModela(BigInteger value) {
+        return new JAXBElement<BigInteger>(_NalogZaPrenosBrojModela_QNAME, BigInteger.class, NalogZaPrenos.class, value);
     }
 
 }
