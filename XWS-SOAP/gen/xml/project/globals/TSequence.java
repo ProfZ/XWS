@@ -2,13 +2,10 @@
 package xml.project.globals;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -35,7 +32,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;/element>
  *         &lt;element name="Datum_naloga" type="{http://www.w3.org/2001/XMLSchema}date"/>
  *         &lt;element name="Iznos" type="{http://www.project.xml/globals}TIznos"/>
- *         &lt;element name="Duznik_nalogodavac" type="{http://www.project.xml/globals}TOsobe"/>
  *         &lt;element name="Valuta" type="{http://www.project.xml/globals}TOznakaValute"/>
  *         &lt;element name="ID_naloga_za_placanje" type="{http://www.project.xml/globals}ID_poruke"/>
  *       &lt;/sequence>
@@ -48,64 +44,198 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TSequence", propOrder = {
-    "content"
+    "duznikNalogodavac",
+    "primalacPoverilac",
+    "svrhaPlacanja",
+    "datumNaloga",
+    "iznos",
+    "valuta",
+    "idNalogaZaPlacanje"
 })
 public class TSequence {
 
-    @XmlElementRefs({
-        @XmlElementRef(name = "Duznik_nalogodavac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Datum_naloga", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Primalac_poverilac", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Valuta", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "ID_naloga_za_placanje", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Iznos", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "Svrha_placanja", namespace = "http://www.project.xml/globals", type = JAXBElement.class, required = false)
-    })
-    protected List<JAXBElement<?>> content;
+    @XmlElement(name = "Duznik_nalogodavac", required = true)
+    protected TOsobe duznikNalogodavac;
+    @XmlElement(name = "Primalac_poverilac", required = true)
+    protected TOsobe primalacPoverilac;
+    @XmlElement(name = "Svrha_placanja", required = true)
+    protected String svrhaPlacanja;
+    @XmlElement(name = "Datum_naloga", required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar datumNaloga;
+    @XmlElement(name = "Iznos", required = true)
+    protected BigDecimal iznos;
+    @XmlElement(name = "Valuta", required = true)
+    protected String valuta;
+    @XmlElement(name = "ID_naloga_za_placanje", required = true)
+    protected String idNalogaZaPlacanje;
 
     /**
-     * Gets the rest of the content model. 
+     * Gets the value of the duznikNalogodavac property.
      * 
-     * <p>
-     * You are getting this "catch-all" property because of the following reason: 
-     * The field name "DuznikNalogodavac" is used by two different parts of a schema. See: 
-     * line 111 of file:/home/profx/xml/XML_Projekat/XWS/XWS-SOAP/WEB-INF/xsd/Globals.xsd
-     * line 99 of file:/home/profx/xml/XML_Projekat/XWS/XWS-SOAP/WEB-INF/xsd/Globals.xsd
-     * <p>
-     * To get rid of this property, apply a property customization to one 
-     * of both of the following declarations to change their names: 
-     * Gets the value of the content property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the content property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getContent().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
-     * {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
-     * {@link JAXBElement }{@code <}{@link TOsobe }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link BigDecimal }{@code >}
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link TOsobe }
+     *     
      */
-    public List<JAXBElement<?>> getContent() {
-        if (content == null) {
-            content = new ArrayList<JAXBElement<?>>();
-        }
-        return this.content;
+    public TOsobe getDuznikNalogodavac() {
+        return duznikNalogodavac;
+    }
+
+    /**
+     * Sets the value of the duznikNalogodavac property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TOsobe }
+     *     
+     */
+    public void setDuznikNalogodavac(TOsobe value) {
+        this.duznikNalogodavac = value;
+    }
+
+    /**
+     * Gets the value of the primalacPoverilac property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TOsobe }
+     *     
+     */
+    public TOsobe getPrimalacPoverilac() {
+        return primalacPoverilac;
+    }
+
+    /**
+     * Sets the value of the primalacPoverilac property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TOsobe }
+     *     
+     */
+    public void setPrimalacPoverilac(TOsobe value) {
+        this.primalacPoverilac = value;
+    }
+
+    /**
+     * Gets the value of the svrhaPlacanja property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSvrhaPlacanja() {
+        return svrhaPlacanja;
+    }
+
+    /**
+     * Sets the value of the svrhaPlacanja property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSvrhaPlacanja(String value) {
+        this.svrhaPlacanja = value;
+    }
+
+    /**
+     * Gets the value of the datumNaloga property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getDatumNaloga() {
+        return datumNaloga;
+    }
+
+    /**
+     * Sets the value of the datumNaloga property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setDatumNaloga(XMLGregorianCalendar value) {
+        this.datumNaloga = value;
+    }
+
+    /**
+     * Gets the value of the iznos property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public BigDecimal getIznos() {
+        return iznos;
+    }
+
+    /**
+     * Sets the value of the iznos property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public void setIznos(BigDecimal value) {
+        this.iznos = value;
+    }
+
+    /**
+     * Gets the value of the valuta property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValuta() {
+        return valuta;
+    }
+
+    /**
+     * Sets the value of the valuta property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValuta(String value) {
+        this.valuta = value;
+    }
+
+    /**
+     * Gets the value of the idNalogaZaPlacanje property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getIDNalogaZaPlacanje() {
+        return idNalogaZaPlacanje;
+    }
+
+    /**
+     * Sets the value of the idNalogaZaPlacanje property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setIDNalogaZaPlacanje(String value) {
+        this.idNalogaZaPlacanje = value;
     }
 
 }

@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -76,6 +77,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	private CentralnaBanka cetralnaBanka;
 	
 	private List<FirmaRacun> racuni;
+	private HashMap<String, ArrayList<TSequence>> sekvence102 = null;
 	TBanke banka;
 	private static final Logger LOG = Logger.getLogger(FirmaBanciImpl.class
 			.getName());
@@ -145,8 +147,8 @@ public class FirmaBanciImpl implements FirmaBanci {
             	MT102 mt102Temp = new MT102();
             	mt102Temp = (MT102) RESTUtil.doUnmarshall("*", MT102_Putanja + mt900.getIDPorukeNaloga(), mt102Temp);
             	for(TSequence seq : mt102Temp.getSekvenca()) {
-            		TOsobe t1 = ((TOsobe) seq.getContent().get(1).getValue());
-            		BigDecimal iznos = new BigDecimal(((Double) seq.getContent().get(4).getValue()));
+            		TOsobe t1 = (seq.getPrimalacPoverilac());
+            		BigDecimal iznos = seq.getIznos();
             		FirmaRacun racun = findFirmu(t1.getRacun());
             		if(racun != null)
             		racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(iznos));
@@ -192,8 +194,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 				//throw new Exception("Invalid participants in transaction.");
 			}
 			for (TSequence sequence : mt102.getSekvenca()) {
-				FirmaRacun racun = findFirmu(((TOsobe) sequence.getContent()
-						.get(1).getValue()).getRacun());
+				FirmaRacun racun = findFirmu(sequence.getDuznikNalogodavac().getRacun());
 				if (racun == null) {
 					_return.setCode(404);
 					_return.setMessage("Not Found");
@@ -287,7 +288,15 @@ public class FirmaBanciImpl implements FirmaBanci {
 				cetralnaBanka.acceptMT103(mt103);
 			} else {
 				// Clearing & Settlement
-				
+				TSequence seq = Converter.convertNalogTo102PojedinacnoPlacanje(nalogZaPrenos);
+				String racunBanke = ""; // TODO 
+				if (!(sekvence102.containsKey(racunBanke))){
+					ArrayList<TSequence> tempList = new ArrayList<TSequence>();
+					tempList.add(seq);
+					sekvence102.put(racunBanke, tempList);
+				} else {
+					sekvence102.get(racunBanke).add(seq);
+				}
 			}
 			_return.setMessage("OK");
 			return _return;
@@ -330,6 +339,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			this.cbwsdl = new URL(FirmaBanciImpl.CBURL);
 			this.serviceName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBSERVICE);
 			this.portName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBPORT);
+			this.sekvence102 = new HashMap<String, ArrayList<TSequence>>();
 			//this.service = Service.create(this.cbwsdl, serviceName);
 			//this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
 			
