@@ -18,10 +18,10 @@ public class Validation {
 		if(number == null || number.trim().equals("")) 
 			return "";
 		try{
-			int n = Integer.parseInt(number);
-			return Integer.toString(98 - (n * 100) % 97);
+			long n = Long.parseLong(number);
+			return Long.toString(98 - (n * 100) % 97);
 		}catch (NumberFormatException e){
-			return "";
+			return "fail";
 		}
 	}
 

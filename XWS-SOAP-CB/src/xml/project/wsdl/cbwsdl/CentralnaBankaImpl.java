@@ -46,7 +46,15 @@ import xml.project.racuni.Racuni.FirmaRacun.Racun;
  * 
  */
 
-@javax.jws.WebService(serviceName = "CentralnaBankaService", portName = "CentralnaBankaPort", targetNamespace = "http://www.project.xml/wsdl/CBwsdl", wsdlLocation = "WEB-INF/wsdl/CentralnaBanka.wsdl", endpointInterface = "xml.project.wsdl.cbwsdl.CentralnaBanka")
+
+@javax.jws.WebService(
+                      serviceName = "CentralnaBankaService",
+                      portName = "CentralnaBankaPort",
+                      targetNamespace = "http://www.project.xml/wsdl/CBwsdl",
+                      wsdlLocation = "WEB-INF/wsdl/CentralnaBanka.wsdl",
+                      endpointInterface = "xml.project.wsdl.cbwsdl.CentralnaBanka")
+                      
+
 public class CentralnaBankaImpl implements CentralnaBanka {
 
 	private static final Logger LOG = Logger.getLogger(CentralnaBankaImpl.class

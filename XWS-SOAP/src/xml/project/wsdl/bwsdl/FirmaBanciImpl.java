@@ -15,9 +15,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.sound.midi.Sequence;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -27,8 +31,10 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import rest.bundle.RequestMethod;
+import rest.util.Converter;
 import rest.util.RESTUtil;
 import rest.util.Validation;
+import xml.project.globals.IzgledUplatnice;
 import xml.project.globals.StatusCode;
 import xml.project.globals.TBanke;
 import xml.project.globals.TOsobe;
@@ -38,6 +44,7 @@ import xml.project.mt103.MT103;
 import xml.project.mt900.MT900;
 import xml.project.mt910.MT910;
 import xml.project.presek.Presek;
+import xml.project.presek.Presek.Stavka;
 import xml.project.racuni.Racuni;
 import xml.project.racuni.Racuni.FirmaRacun;
 import xml.project.racuni.Racuni.FirmaRacun.Racun;
@@ -53,8 +60,10 @@ import xml.project.zahtev_za_izovd.Zahtev;
 
 @javax.jws.WebService(serviceName = "FirmaBankaService", portName = "FirmaBanci", targetNamespace = "http://www.project.xml/wsdl/bwsdl", wsdlLocation = "WEB-INF/wsdl/Banka.wsdl", endpointInterface = "xml.project.wsdl.bwsdl.FirmaBanci")
 public class FirmaBanciImpl implements FirmaBanci {
+	
 
-	TBanke currentBank = new TBanke();
+	public static final String SWIFT_BANKE = "BANASRNS";
+	public static final String RACUN_BANKE = "0011234567891234" + Validation.generateChecksum("0011234567891234");
 	
 	public static final String ID = "100";
 	public static final String MT910_Putanja = "BMT910"+ID;
@@ -62,6 +71,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static final String MT103_Putanja = "BMT103"+ID;
 	public static final String MT102_Putanja = "BMT102"+ID;
 	public static final String Racuni_Putanja = "BRacuni"+ID;
+
 
 	public static final String CB = "http://www.project.xml/wsdl/CBwsdl";
 	public static final String CBSERVICE = "CentralnaBankaService";
@@ -75,6 +85,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	private CentralnaBanka cetralnaBanka;
 	
 	private List<FirmaRacun> racuni;
+	private HashMap<String, ArrayList<TSequence>> sekvence102 = null;
 	TBanke banka;
 	private static final Logger LOG = Logger.getLogger(FirmaBanciImpl.class
 			.getName());
@@ -87,7 +98,27 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public StatusCode doClearing() {
 		LOG.info("Executing operation doClearing");
 		try {
-			StatusCode _return = null;
+			StatusCode _return = new StatusCode();
+			Iterator it = sekvence102.entrySet().iterator();
+			while (it.hasNext()){
+				MT102 mt102 = new MT102();
+				Map.Entry ent = (Map.Entry) it.next();
+				List<TSequence> tempSeq = (ArrayList<TSequence>) ent.getValue();
+				mt102.getSekvenca().addAll(tempSeq);
+				mt102.setDatum(tempSeq.get(0).getDatumNaloga()); // mozda treba danasnji (za sada pretpostavka da se bar jednom dnevno adi clearing)
+				mt102.setDatumValute(tempSeq.get(0).getDatumNaloga());
+				mt102.setSifraValute(tempSeq.get(0).getValuta());
+				BigDecimal ukupnaSuma = new BigDecimal(0);
+				for (TSequence s : tempSeq){
+					ukupnaSuma.add(s.getIznos());
+				}
+				mt102.setUkupanIznos(ukupnaSuma);
+				
+				cetralnaBanka.acceptMT102(mt102);
+			}
+			
+			_return.setCode(200);
+			_return.setMessage("OK");
 			return _return;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -106,14 +137,19 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation acceptMT910");
 		System.out.println(mt910);
 		StatusCode _return = new StatusCode();
+		BankaChecker bc = new BankaChecker();
 		try {
+			if (bc.checkTBanka(mt910.getBankaPoverilac())) {
+				_return.setCode(400);
+				_return.setMessage("Bad Request");
+				//throw new Exception("Invalid banks in transaction.");
+			}
+
 			RESTUtil.objectToDB(MT910_Putanja, mt910.getIDPoruke(), mt910);
 			MT103 mt103Temp = new MT103();
 			// rtgs nalog
 			mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_Putanja
 					+ mt910.getIDPorukeNaloga(), mt103Temp);
-			// String racunPoverioca =
-			// mt103Temp.getBankaPoverilac().getObracunskiRacunBanke();
 			BigDecimal iznos = mt103Temp.getIznos();
 			// update racuna banke
 			FirmaRacun racun = findFirmu(mt103Temp.getPrimalacPoverilac()
@@ -138,7 +174,15 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation acceptMT910");
         System.out.println(mt900);
         StatusCode _return = new StatusCode();
+        BankaChecker bc = new BankaChecker();
+        
         try {
+        	if (bc.checkTBanka(mt900.getBankaDuznik())) {
+				_return.setCode(400);
+				_return.setMessage("Bad Request");
+				//throw new Exception("Invalid banks in transaction.");
+			}
+        	
             RESTUtil.objectToDB(MT900_Putanja, mt900.getIDPoruke(), mt900);
             MT103 mt103Temp = new MT103();
             // rtgs nalog
@@ -147,8 +191,8 @@ public class FirmaBanciImpl implements FirmaBanci {
             	MT102 mt102Temp = new MT102();
             	mt102Temp = (MT102) RESTUtil.doUnmarshall("*", MT102_Putanja + mt900.getIDPorukeNaloga(), mt102Temp);
             	for(TSequence seq : mt102Temp.getSekvenca()) {
-            		TOsobe t1 = ((TOsobe) seq.getContent().get(1).getValue());
-            		BigDecimal iznos = new BigDecimal(((Double) seq.getContent().get(4).getValue()));
+            		TOsobe t1 = (seq.getPrimalacPoverilac());
+            		BigDecimal iznos = seq.getIznos();
             		FirmaRacun racun = findFirmu(t1.getRacun());
             		if(racun != null)
             		racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(iznos));
@@ -194,8 +238,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 				//throw new Exception("Invalid participants in transaction.");
 			}
 			for (TSequence sequence : mt102.getSekvenca()) {
-				FirmaRacun racun = findFirmu(((TOsobe) sequence.getContent()
-						.get(1).getValue()).getRacun());
+				FirmaRacun racun = findFirmu(sequence.getDuznikNalogodavac().getRacun());
 				if (racun == null) {
 					_return.setCode(404);
 					_return.setMessage("Not Found");
@@ -268,14 +311,23 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation primiNalog");
 		System.out.println(nalogZaPrenos);
 		StatusCode _return = new StatusCode();
+		BankaChecker bc = new BankaChecker();
 		try {
+			//Validation
+			if (bc.checkTOsoba(nalogZaPrenos.getDuznikNalogodavac())
+					&& bc.checkTOsoba(nalogZaPrenos.getPrimalacPoverilac())) {
+				_return.setCode(400);
+				_return.setMessage("Bad Request");
+			}
+			
 			// Ista banka
 			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac()
 					.getRacun());
 			if (racun != null) {
 				racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(nalogZaPrenos.getIznos()));
 				saveRacuni();
-				// kreiraj izvjestaj, npr 103
+				// kreiraj izvjestaj, npr kao 103 i sacuvati u bazi
+				MT103 mt103 = Converter.convertNalogToMT103(nalogZaPrenos);
 				_return.setCode(200);
 				_return.setMessage("OK");
 				return _return;
@@ -284,8 +336,19 @@ public class FirmaBanciImpl implements FirmaBanci {
 			if ((nalogZaPrenos.getIznos().doubleValue() >= 25000.00)
 					|| (nalogZaPrenos.isHitno())) {
 				// RTGS
+				MT103 mt103 = Converter.convertNalogToMT103(nalogZaPrenos);
+				cetralnaBanka.acceptMT103(mt103);
 			} else {
 				// Clearing & Settlement
+				TSequence seq = Converter.convertNalogTo102PojedinacnoPlacanje(nalogZaPrenos);
+				String racunBanke = ""; // TODO 
+				if (!(sekvence102.containsKey(racunBanke))){
+					ArrayList<TSequence> tempList = new ArrayList<TSequence>();
+					tempList.add(seq);
+					sekvence102.put(racunBanke, tempList);
+				} else {
+					sekvence102.get(racunBanke).add(seq);
+				}
 			}
 			_return.setMessage("OK");
 			return _return;
@@ -307,30 +370,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation traziIzvod");
 		System.out.println(zaDatum);
 		try {
-			Presek _return = null;
-			return _return;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}
-	}
-
-	public void init() {
-
-		this.banka = new TBanke();
-		this.racuni = new ArrayList<Racuni.FirmaRacun>();
-		
-		try {
-			this.banka = new TBanke();
-			this.racuni = new ArrayList<Racuni.FirmaRacun>();
-			this.cbwsdl = new URL(CBURL);
-			this.serviceName = new QName(CB, CBSERVICE);
-			this.portName = new QName(CB, CBPORT);
-			this.service = Service.create(this.cbwsdl, serviceName);
-			this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
-			
-			System.out.println(this.cetralnaBanka.TEST());
-			System.out.println(this.cetralnaBanka.getSWIFT(ID));
+			Presek _return = new Presek();
 			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(Racuni.class,
@@ -345,6 +385,88 @@ public class FirmaBanciImpl implements FirmaBanci {
 			for (String line; (line = br.readLine()) != null;) {
 				xml = xml + line + "\n";
 			}
+			
+			String[] tempMT103 = xml.split("<ns2:MT103 xmlns:ns2=\"http://www.project.xml/MT103\" xmlns=\"http://basex.org/rest\" xmlns:ns3=\"http://www.project.xml/globals\">");			
+			for (String mt103 : tempMT103){
+				if (mt103.trim().equals(""))
+					continue;
+				StringReader reader = new StringReader("<ns2:MT103 xmlns:ns2=\"http://www.project.xml/MT103\" xmlns=\"http://basex.org/rest\" xmlns:ns3=\"http://www.project.xml/globals\">" + tempMT103[1]);
+				MT103 test = (MT103) unmarshaller.unmarshal(reader);
+				
+				
+				
+				// odliv sa racuna
+				if (test.getDuznikNalogodavac().getRacun().equals(zaDatum.getBrojRacuna()) && test.getDatumNaloga().equals(zaDatum.getDatum())){
+					Stavka stavka = new Stavka();
+					stavka.setDatumValute(test.getDatumValute());
+					stavka.setSmer("0"); // 0 je odliv, a 1 je priliv
+					IzgledUplatnice uplatnica = new IzgledUplatnice();
+					uplatnica.setDatumNaloga(test.getDatumNaloga());
+					uplatnica.setDuznikNalogodavac(test.getDuznikNalogodavac());
+					uplatnica.setIznos(test.getIznos());
+					uplatnica.setPrimalacPoverilac(test.getPrimalacPoverilac());
+					uplatnica.setSifraValute(test.getValuta());
+					uplatnica.setSvrhaPlacanja(test.getSvrhaPlacanja());
+					stavka.setRacun(uplatnica);
+					
+					
+				}
+				
+			}
+			
+			
+			return _return;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public void init() {
+
+		this.banka = new TBanke();
+		this.racuni = new ArrayList<Racuni.FirmaRacun>();
+		
+		try {
+			this.banka = new TBanke();
+			this.banka.setObracunskiRacunBanke(RACUN_BANKE);
+			this.banka.setSWIFTKodBanke(RACUN_BANKE);
+			this.racuni = new ArrayList<Racuni.FirmaRacun>();
+
+			this.cbwsdl = new URL(FirmaBanciImpl.CBURL);
+			this.serviceName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBSERVICE);
+			this.portName = new QName(FirmaBanciImpl.CB, FirmaBanciImpl.CBPORT);
+			this.sekvence102 = new HashMap<String, ArrayList<TSequence>>();
+			//this.service = Service.create(this.cbwsdl, serviceName);
+			//this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
+			
+			System.out.println(RACUN_BANKE);
+			
+			
+			//System.out.println(this.cetralnaBanka.TEST());
+
+			this.cbwsdl = new URL(CBURL);
+			this.serviceName = new QName(CB, CBSERVICE);
+			this.portName = new QName(CB, CBPORT);
+			this.service = Service.create(this.cbwsdl, serviceName);
+			this.cetralnaBanka = service.getPort(this.portName, CentralnaBanka.class);
+			
+			System.out.println(this.cetralnaBanka.TEST());
+			System.out.println(this.cetralnaBanka.getSWIFT(ID));
+			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja, RequestMethod.GET);
+			JAXBContext context = JAXBContext.newInstance(MT103.class,
+					MT103.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			Marshaller marshaller = context.createMarshaller();
+			// set optional properties
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			String xml = "";
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			for (String line; (line = br.readLine()) != null;) {
+				xml = xml + line + "\n";
+			}
+			
 			StringReader reader = new StringReader(xml);
 			Racuni rac = (Racuni) unmarshaller.unmarshal(reader);
 			for (FirmaRacun k : rac.getFirmaRacun()) {
@@ -371,6 +493,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 	public void createInitial() {
 		try {
+			
 			RESTUtil.createSchema(MT102_Putanja);
 			RESTUtil.createSchema(MT103_Putanja);
 			RESTUtil.createSchema(MT900_Putanja);
@@ -407,6 +530,37 @@ public class FirmaBanciImpl implements FirmaBanci {
 			racc.add(fr2);
 			rac.setFirmaRacuni(racc);
 			RESTUtil.objectToDB("//" + Racuni_Putanja, "", rac);
+
+			Racuni temp = new Racuni();
+			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
+			System.out.println(temp + " " + temp.getFirmaRacun().size());
+			
+			MT103 mt103 = new MT103();
+			TBanke banka = new  TBanke();
+			banka.setObracunskiRacunBanke(RACUN_BANKE);
+			banka.setSWIFTKodBanke(SWIFT_BANKE);
+			mt103.setBankaDuznik(banka);
+			mt103.setBankaPoverilac(banka);
+			mt103.setDatumNaloga(date2);
+			mt103.setDatumValute(date2);
+			TOsobe osoba = new TOsobe();
+			osoba.setModel(new BigInteger("0"));
+			osoba.setNaziv("osoba");
+			osoba.setPozivNaBroj("12345");
+			osoba.setRacun(RACUN_BANKE);
+			mt103.setDuznikNalogodavac(osoba);
+			mt103.setId(new Long(12345));
+			mt103.setIDPoruke("1234567");
+			mt103.setIznos(new BigDecimal(123456789));
+			mt103.setPrimalacPoverilac(osoba);
+			mt103.setSvrhaPlacanja("prijava ispita");
+			mt103.setValuta("rsd");
+			RESTUtil.objectToDB("//" + MT103_Putanja, mt103.getIDPoruke(), mt103);
+			
+			mt103.setId(new Long(123456));
+			mt103.setIDPoruke("12345678");
+			RESTUtil.objectToDB("//" + MT103_Putanja, mt103.getIDPoruke(), mt103);
+
 //			Racuni temp = new Racuni();
 //			temp = (Racuni) RESTUtil.doUnmarshall("*", Racuni_Putanja, temp);
 //			System.out.println(temp + " " + temp.getFirmaRacun().size());
@@ -418,7 +572,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
 		imp.createInitial();
-		//imp.init();
+		imp.init();
 	}
 
 }
