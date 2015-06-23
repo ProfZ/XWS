@@ -30,7 +30,7 @@ public class RestService implements RestServerRemote{
 	@EJB 
 	private InvoiceDaoLocal invoiceDao;
 	
-	@POST
+	@POST//Done
 	@Path("/{id_dobavljaca}/fakture")
 	@Consumes(MediaType.APPLICATION_XML)
 	@Override
@@ -94,9 +94,9 @@ public class RestService implements RestServerRemote{
 		return rb.build();
 	}
 
-	@POST
+	@POST//Done
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response novaStavka(@PathParam("id_dobavljaca") String id_dobavljaca, @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {

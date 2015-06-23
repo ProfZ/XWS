@@ -157,15 +157,14 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			return "400";
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
-		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
 		//if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
 			//return "403";
 		//}
 		//provera da li je ispravna stavka
 		Long numb = (long) listOfInvoiceItems.size();
-		newInvoiceItem.setRedniBroj(numb+1);
-		newlistOfInvoiceItems.add(newInvoiceItem);
-		invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
+		newInvoiceItem.setRedniBroj(numb+1L);
+		invoice.getStavkaFakture().add(newInvoiceItem);
+		em.update(invoice, invoice.procitajId());
 		return "201";
 
 	}
@@ -228,14 +227,14 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		//firma 1
 		TFirma firma1 = new TFirma();
 		firma1.setAdresaKupca("Beograd");
-		firma1.setNazivKupca("MMO");
+		firma1.setNazivKupca("MMORPG");
 		firma1.setPIBKupca("PIBKupca001");
 		pib1.setPib(firma1.getPIBKupca());
 		partneri.getPibPartnera().add(pib1);
 		//firma 2
 		TFirma firma2 = new TFirma();
 		firma2.setAdresaKupca("Novi Sad");
-		firma2.setNazivKupca("ARAM");
+		firma2.setNazivKupca("ARAMDM");
 		firma2.setPIBKupca("PIBKupca002");
 		pib1 = new PibPartnera();
 		pib1.setPib(firma2.getPIBKupca());
@@ -243,7 +242,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		//firma 3
 		TFirma firma3 = new TFirma();
 		firma3.setAdresaKupca("Novi Sad");
-		firma3.setNazivKupca("Normal");
+		firma3.setNazivKupca("Normalni");
 		firma3.setPIBKupca("PIBKupca003");
 		//Racun 1
 		Racun racun1 = new Racun();

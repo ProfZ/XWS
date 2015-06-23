@@ -40,8 +40,9 @@ public abstract class GenericDaoBean<T extends Identifiable, ID extends Serializ
 	}
 
 	public T persist(T entity) throws JAXBException, IOException {
-		Long id = em.getIdentity();
-		entity.postaviID(id);
+		/*Long id = em.getIdentity();
+		entity.postaviID(id);*/
+		Long id = entity.procitajId();
 		em.persist(entity, id);
 		return entity;
 	}

@@ -202,7 +202,7 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		 * Generate HTTP POST body.
 		 */
 		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');
-		InputStream is = conn.getInputStream();
+		//InputStream is = conn.getInputStream();
 		
 		/*if (is != null) {
 			//String string = IOUtils.toString(is);
@@ -215,12 +215,15 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		if (responseCode == HttpURLConnection.HTTP_OK)
 			result = conn.getInputStream();
 		
+		
 		return result;
 	}
 	
 	public void persist(T entity, Long id) throws JAXBException, IOException {
 
 		String resourceId = String.valueOf(id);
+		
+		System.out.println("Persisting " + entity.getClass().getSimpleName() + " with id " + id);
 		
 		url = new URL(REST_URL + schemaName + "/" + resourceId);
 		conn = (HttpURLConnection) url.openConnection();
@@ -234,8 +237,14 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		int responseCode = conn.getResponseCode();
 		String message = conn.getResponseMessage();
 
-
-		
+		/*InputStream is = conn.getInputStream();
+		if (is != null)
+			System.out.println(IOUtils.toString(is));
+		else {
+			is = conn.getErrorStream();
+			if (is != null)
+				System.out.println(IOUtils.toString(is));
+		}*/
 		
 		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');
 		
@@ -268,11 +277,13 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 		conn.setRequestProperty ("Authorization", basicAuth);
 		conn.connect();
+
+		marshaller.marshal(entity, conn.getOutputStream());
+		
 		int responseCode = conn.getResponseCode();
 		String message = conn.getResponseMessage();
 
 
-		marshaller.marshal(entity, conn.getOutputStream());
 		
 		
 		System.out.println("\n* HTTP response: " + responseCode + " (" + message + ')');
