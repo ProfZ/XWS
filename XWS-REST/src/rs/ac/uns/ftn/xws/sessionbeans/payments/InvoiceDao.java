@@ -25,8 +25,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.basex.rest.Result;
-import org.basex.rest.Results;
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -36,6 +35,7 @@ import xml.project.faktura.Faktura;
 import xml.project.faktura.Faktura.StavkaFakture;
 import xml.project.faktura.Faktura.ZaglavljeFakture;
 import xml.project.faktura.Faktura.ZaglavljeFakture.Racun;
+import xml.project.faktura.Fakture;
 import xml.project.faktura.TFirma;
 import xml.project.partneri.Partneri;
 import xml.project.partneri.Partneri.PibPartnera;
@@ -62,10 +62,8 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 
 	@Override
 	public List<StavkaFakture> findAllItems(Long idFakture)  throws IOException, JAXBException {
-		List<StavkaFakture> result = new ArrayList<Faktura.StavkaFakture>();
-		Faktura fakt = em.find(idFakture);
-		result.addAll(fakt.getStavkaFakture());
-		return result;
+		Faktura fakt = findById(idFakture);
+		return fakt.getStavkaFakture();
 	}
 	
 	@Override
@@ -126,17 +124,20 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		Faktura invoice;
 		invoice = findById(idInvoice);
 		if(invoice==null){
+			System.out.println("Invoice is null");
 			return null;
 		}
 		if(!testValidationInvoice(invoice)){
+			System.out.println("Invoice is invalid");
 			return null;
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		//if(!invoice.getZaglavljeFakture().getKupac().equals(idDobavljaca)){
 		//	return null;
 		//}
-		for(int i = 0; i < listOfInvoiceItems.size(); ++i){
+		for(int i = 0; i < listOfInvoiceItems.size(); i++){
 			Long temp = listOfInvoiceItems.get(i).getRedniBroj();
+			System.out.println(temp);
 			if(temp.equals(idInvoiceItem)){
 				//proveta ispravnosti stavke
 				return listOfInvoiceItems.get(i);
@@ -170,22 +171,40 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	}
 
 	@Override
-	public List<Faktura> findAllInvoicesByPartner(String partnerID) throws IOException, JAXBException {
-		//String xQuery = "for $x in collection('fakture')//*:Faktura where $x//*:Dobavljac/*:PIB = " + partnerID + "' return $x";
-		InputStream is = em.executeQuery(partnerID, true);
+	public Fakture findAllInvoicesByPartner(String partnerID) throws IOException, JAXBException {
+		//String xQuery = "<Fakture xmlns="http://www.project.xml/fakture">{for $x in collection()//*:Faktura return $x}</Fakture>";
+		String query = "<Fakture%20xmlns='http://www.project.xml/fakture'>{for%20$x%20in%20collection%28fakture%29//*:Faktura%20return%20$x}</Fakture>";
+		InputStream is = em.executeQuery(query, true);
 		
-		List<Faktura> fakture = new ArrayList<Faktura>();
+		Fakture fakture = null;
 		if (is != null) {
 			System.out.println();
-			Faktura fakt = (Faktura) JAXBContext.newInstance("xml.project.faktura").createUnmarshaller().unmarshal(is);
-			fakture.add(fakt);
+			String isS = IOUtils.toString(is);
+			System.out.println(isS);
+			fakture = (Fakture) JAXBContext.newInstance("xml.project.faktura").createUnmarshaller().unmarshal(IOUtils.toInputStream(isS));
 			//for (Faktura fakt: fakture){
-				System.out.println(fakt);
+				System.out.println(fakture.getFaktura().size());
 			//}
 		}
 		return fakture;
 	}
 	
+	@Override
+	public Faktura findById(Long id) throws IOException, JAXBException {
+		String query = "for%20$x%20in%20collection%28fakture%29//*:Faktura%20where%20$x//*:ID_poruke=" + id + "%20return%20$x";
+		InputStream is = em.executeQuery(query, true);
+		Faktura faktura = null;
+		if (is != null) {
+			System.out.println();
+			String isS = IOUtils.toString(is);
+			System.out.println(isS);
+			faktura = (Faktura) JAXBContext.newInstance("xml.project.faktura").createUnmarshaller().unmarshal(IOUtils.toInputStream(isS));
+			//for (Faktura fakt: fakture){
+			//}
+		}
+		return faktura;
+	}
+
 	public static void init(){
 		//partneri
 		Partneri partneri = new Partneri();
@@ -210,14 +229,14 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		TFirma firma1 = new TFirma();
 		firma1.setAdresaKupca("Beograd");
 		firma1.setNazivKupca("MMO");
-		firma1.setPIBKupca("PIBKupca1");
+		firma1.setPIBKupca("PIBKupca001");
 		pib1.setPib(firma1.getPIBKupca());
 		partneri.getPibPartnera().add(pib1);
 		//firma 2
 		TFirma firma2 = new TFirma();
 		firma2.setAdresaKupca("Novi Sad");
 		firma2.setNazivKupca("ARAM");
-		firma2.setPIBKupca("PIBKupca2");
+		firma2.setPIBKupca("PIBKupca002");
 		pib1 = new PibPartnera();
 		pib1.setPib(firma2.getPIBKupca());
 		partneri.getPibPartnera().add(pib1);
@@ -225,7 +244,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		TFirma firma3 = new TFirma();
 		firma3.setAdresaKupca("Novi Sad");
 		firma3.setNazivKupca("Normal");
-		firma3.setPIBKupca("PIBKupca3");
+		firma3.setPIBKupca("PIBKupca003");
 		//Racun 1
 		Racun racun1 = new Racun();
 		racun1.setBrojRacuna(new BigInteger("1"));
@@ -236,31 +255,36 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		racun2.setDatumRacuna(date2);
 		//faktura 1
 		Faktura faktura = new Faktura();
-		faktura.setZaglavljeFakture(createHeaderOfInvoice(date1, firma1, "idPoruka1", new BigDecimal(5000), firma2, "RSD", racun1, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "0", new BigDecimal(800), new BigDecimal(900)));
+		faktura.setZaglavljeFakture(createHeaderOfInvoice(date1, firma1, "idPoruka1", new BigDecimal(5000), firma2, "RSD", racun1, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "001-1234567890123-12", new BigDecimal(800), new BigDecimal(900)));
 
-		faktura.setId(new Long(12390));
+		faktura.postaviID(new Long(12390));
 		long val1 = 0;
 		//stavke1 faktura1
 		faktura.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"krompir",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(100),new BigDecimal(600)));
 		//faktura 1
 		Faktura faktura1 = new Faktura();
-		faktura1.setZaglavljeFakture(createHeaderOfInvoice(date2, firma3, "idPoruka2", new BigDecimal(5600), firma2, "RSD", racun2, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "0", new BigDecimal(800), new BigDecimal(900)));
+		faktura1.setZaglavljeFakture(createHeaderOfInvoice(date2, firma3, "idPoruka2", new BigDecimal(5600), firma2, "RSD", racun2, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "002-1234567890123-12", new BigDecimal(800), new BigDecimal(900)));
 
-		faktura1.setId(new Long(12391));//stavke1 faktura1
+		faktura1.postaviID(new Long(12391));//stavke1 faktura1
 		val1++;
 		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"pekmez",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(100),new BigDecimal(600)));
 		//stavke2 faktura1
 		val1++;
 		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(80),"kg",new BigDecimal(80),new BigDecimal(4),"kupus",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(90),new BigDecimal(600)));
 		
+		Fakture fakture = new Fakture();
+		fakture.getFaktura().add(faktura1);
+		fakture.getFaktura().add(faktura);
+		
+		
 		try {
 			EntityManagerBaseX.createSchema("fakture");
 			EntityManagerBaseX<Faktura, Long> emf = new EntityManagerBaseX<Faktura, Long>("fakture", "xml.project.faktura");
-			emf.persist(faktura1, faktura1.getId());
-			emf.persist(faktura, faktura.getId());
+			emf.persist(faktura1, faktura1.procitajId());
+			emf.persist(faktura, faktura.procitajId());
 			
 			EntityManagerBaseX<Partneri, Long> emp = new EntityManagerBaseX<Partneri, Long>("fakture", "xml.project.partneri");
-			emp.persist(partneri, partneri.getId());
+			emp.persist(partneri, partneri.procitajId());
 		} catch (JAXBException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -268,12 +292,13 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
+		/*try {
+			convertToXML("xml.project.faktura", fakture);
 			convertToXML("xml.project.faktura", faktura);
 			convertToXML("xml.project.faktura", faktura1);
 		} catch (JAXBException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	public static ZaglavljeFakture createHeaderOfInvoice(XMLGregorianCalendar date, TFirma firmaDobavljac, String idPoruke, BigDecimal iznosZaUplatu, TFirma firmaKupac, String oznakaValute, Racun racun, 
@@ -329,7 +354,14 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		if (classTheIsConverted instanceof Faktura) {
 	    	Faktura temp = (Faktura) classTheIsConverted;
 	    	jaxbMarshaller.marshal(temp, System.out);
-		    jaxbMarshaller.marshal(temp, new File("./xml/Faktura"+temp.getId()+".xml"));
+		    jaxbMarshaller.marshal(temp, new File("./xml/Faktura"+temp.procitajId()+".xml"));
+		}
+		
+
+		if (classTheIsConverted instanceof Fakture) {
+			Fakture temp = (Fakture) classTheIsConverted;
+	    	jaxbMarshaller.marshal(temp, System.out);
+		    jaxbMarshaller.marshal(temp, new File("./xml/Fakture.xml"));
 		}
 		
 	}
@@ -344,17 +376,18 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			//W3C sema
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			//lokacija seme
-			Schema schema = schemaFactory.newSchema(new File("./xsd/Faktura.xsd"));
+			Schema schema = schemaFactory.newSchema(new File("C:/xws/XWS/XWS-REST/xsd/Faktura.xsd"));
 			 //setuje se sema
 			jaxbMarshaller.setSchema(schema);
 			//EventHandler, koji obradjuje greske, ako se dese prilikom validacije
 			jaxbMarshaller.setEventHandler(new rs.ac.uns.ftn.xws.util.MyValidationEventHandler());
             //ucitava se objektni model, a da se pri tome radi i validacija
-			jaxbMarshaller.marshal(invoice, new File("./xml/Faktura"+invoice.getId()+".xml"));
+			jaxbMarshaller.marshal(invoice, new File("C:/xws/XWS/XWS-REST//xml/Faktura"+invoice.procitajId()+".xml"));
 		} catch (JAXBException e) {	
 			e.printStackTrace();
 			return false;
 		} catch (SAXException e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;

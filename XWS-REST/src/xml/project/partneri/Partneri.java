@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.basex.rest.Identifiable;
+import xml.project.faktura.Identifiable;
 
 
 /**
@@ -152,15 +152,17 @@ public class Partneri extends Identifiable{
 
     public static Long id = 1L;
 
+
 	@Override
-	public Long getId() {
+	public Long procitajId() {
 		// TODO Auto-generated method stub
 		return id;
 	}
 
 
 	@Override
-	public void setId(Long id) {
+	public void postaviID(Long id) {
+		// TODO Auto-generated method stub
 		this.id = id;
 	}
 

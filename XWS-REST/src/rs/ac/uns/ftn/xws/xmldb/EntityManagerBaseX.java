@@ -18,12 +18,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.io.IOUtils;
-import org.basex.rest.Identifiable;
-import org.basex.rest.Result;
-import org.basex.rest.Results;
 import org.w3c.dom.Node;
 
 import xml.project.faktura.Faktura;
+import xml.project.faktura.Identifiable;
 
 public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable> {
 
@@ -32,7 +30,7 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 	 */
 	public static final String REST_URL = "http://localhost:8984/rest/";
 
-	public static final String BASEX_CONTEXT_PATH = "org.basex.rest";
+	public static final String BASEX_CONTEXT_PATH = "xml.project.faktura";
 	
 	private String schemaName;
 	
@@ -81,7 +79,11 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 	public T find(ID resourceId) throws IOException, JAXBException {
 		T entity = null;
 		
-		url = new URL(REST_URL + schemaName + "/" + resourceId);
+		/*StringBuilder builder = new StringBuilder(REST_URL);
+		builder.append(schemaName);
+		builder.append("?query=for%20in%20collection(fakture)//*:" + ((XmlRootElement) cls.getAnnotation(XmlRootElement.class)).name());
+
+		url = new URL(builder.substring(0));
 		conn = (HttpURLConnection) url.openConnection();
 
 		conn.setRequestMethod(RequestMethod.GET);
@@ -97,23 +99,22 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		if (responseCode == HttpURLConnection.HTTP_OK) 
 			return (T) unmarshaller.unmarshal(conn.getInputStream());
 		
-		conn.disconnect();
+		conn.disconnect();*/
 		return entity;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<T> findAll(Class cls) throws IOException, JAXBException {
-		Results wrappedResults = null;
+		/*Results wrappedResults = null;
 		List<T> results = new ArrayList<T>();
 		
 		StringBuilder builder = new StringBuilder(REST_URL);
 		builder.append(schemaName);
-		builder.append("?query=collection('" + ((XmlRootElement) cls.getAnnotation(XmlRootElement.class)).name() + "')");
-		builder.append("&wrap=yes");
+		builder.append("?query=collection(fakture)//*:" + ((XmlRootElement) cls.getAnnotation(XmlRootElement.class)).name());
 
 		url = new URL(builder.substring(0));
 		conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod(RequestMethod.POST);
+		conn.setRequestMethod(RequestMethod.GET);
 		String userpass = "admin:admin";
 		String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
 		conn.setRequestProperty ("Authorization", basicAuth);
@@ -129,8 +130,8 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 				results.add((T) unmarshaller.unmarshal((Node)result.getAny()));
 		}
 		
-		conn.disconnect();
-		return results;
+		conn.disconnect();*/
+		return null;
 	}
 	
 	public boolean exists(String query) throws IOException, JAXBException {
@@ -185,7 +186,7 @@ public class EntityManagerBaseX<T extends Identifiable, ID extends Serializable>
 		wrappedQuery = String.format(wrappedQuery, xQuery);*/
 		StringBuilder builder = new StringBuilder(REST_URL);
 		builder.append(schemaName);//for $x in collection('fakture')//*:Faktura where $x//*:Dobavljac/*:PIB = 'PIBKupca1' return $x
-		builder.append("?query=for%20$x%20in%20collection%28fakture%29//*:Faktura%20where%20$x//*:Dobavljac/*:PIB=%27" + xQuery + "%27%20return%20$x");
+		builder.append("?query=" + xQuery);
 		url = new URL(builder.substring(0));
 		conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod(RequestMethod.GET);

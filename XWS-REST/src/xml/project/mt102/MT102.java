@@ -13,8 +13,10 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.basex.rest.Identifiable;
 
+
+
+import xml.project.faktura.Identifiable;
 import xml.project.globals.TBanke;
 import xml.project.globals.TSequence;
 
@@ -278,13 +280,15 @@ public class MT102 extends Identifiable{
     }
 
 	@Override
-	public Long getId() {
+	public Long procitajId() {
+		// TODO Auto-generated method stub
 		return Long.valueOf(getIDPoruke());
 	}
 
 	@Override
-	public void setId(Long id) {
+	public void postaviID(Long id) {
 		setIDPoruke(String.valueOf(id));
+		
 	}
 
 }

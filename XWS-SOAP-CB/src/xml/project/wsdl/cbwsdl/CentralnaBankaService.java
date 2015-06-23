@@ -15,7 +15,7 @@ import javax.xml.ws.Service;
  * 
  */
 @WebServiceClient(name = "CentralnaBankaService", 
-                  wsdlLocation = "file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/wsdl/CentralnaBanka.wsdl",
+                  wsdlLocation = "WEB-INF/wsdl/CentralnaBanka.wsdl",
                   targetNamespace = "http://www.project.xml/wsdl/CBwsdl") 
 public class CentralnaBankaService extends Service {
 
@@ -26,11 +26,11 @@ public class CentralnaBankaService extends Service {
     static {
         URL url = null;
         try {
-            url = new URL("file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/wsdl/CentralnaBanka.wsdl");
+            url = new URL("WEB-INF/wsdl/CentralnaBanka.wsdl");
         } catch (MalformedURLException e) {
             java.util.logging.Logger.getLogger(CentralnaBankaService.class.getName())
                 .log(java.util.logging.Level.INFO, 
-                     "Can not initialize the default wsdl from {0}", "file:/C:/Users/Alexandra/Documents/GitHub/XWS/XWS-SOAP/WEB-INF/wsdl/CentralnaBanka.wsdl");
+                     "Can not initialize the default wsdl from {0}", "WEB-INF/wsdl/CentralnaBanka.wsdl");
         }
         WSDL_LOCATION = url;
     }

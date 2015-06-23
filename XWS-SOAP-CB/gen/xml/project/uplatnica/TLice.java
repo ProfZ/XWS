@@ -32,8 +32,8 @@ import javax.xml.bind.annotation.XmlType;
     "adresa"
 })
 @XmlSeeAlso({
-    TPravnoLice.class,
-    TFicikoLice.class
+    TFicikoLice.class,
+    TPravnoLice.class
 })
 public class TLice {
 

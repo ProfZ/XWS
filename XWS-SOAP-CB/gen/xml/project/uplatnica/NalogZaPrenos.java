@@ -124,9 +124,9 @@ public class NalogZaPrenos {
     @XmlElement(name = "Iznos", required = true)
     protected BigDecimal iznos;
     @XmlElementRefs({
+        @XmlElementRef(name = "Racun", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
         @XmlElementRef(name = "Broj_modela", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
-        @XmlElementRef(name = "Poziv_na_broj", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class),
-        @XmlElementRef(name = "Racun", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class)
+        @XmlElementRef(name = "Poziv_na_broj", namespace = "http://www.project.xml/uplatnica", type = JAXBElement.class)
     })
     protected List<JAXBElement<? extends Serializable>> brojModelaAndPozivNaBrojAndRacun;
     @XmlElement(name = "Mesto_Datum_prijema", required = true)

@@ -34,6 +34,10 @@ public class ObjectFactory {
      */
     public ObjectFactory() {
     }
+    
+    public Fakture createFakture() {
+        return new Fakture();
+    }
 
     /**
      * Create an instance of {@link Faktura }
