@@ -44,6 +44,8 @@ import xml.project.mt103.MT103;
 import xml.project.mt900.MT900;
 import xml.project.mt910.MT910;
 import xml.project.presek.Presek;
+import xml.project.presek.Presek.Zaglavlje;
+import xml.project.presek.TPromene;
 import xml.project.presek.Presek.Stavka;
 import xml.project.racuni.Racuni;
 import xml.project.racuni.Racuni.FirmaRacun;
@@ -71,6 +73,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static final String MT103_Putanja = "BMT103"+ID;
 	public static final String MT102_Putanja = "BMT102"+ID;
 	public static final String Racuni_Putanja = "BRacuni"+ID;
+	public static final int Broj_stavki_u_preseku = 10;
 
 
 	public static final String CB = "http://www.project.xml/wsdl/CBwsdl";
@@ -371,10 +374,10 @@ public class FirmaBanciImpl implements FirmaBanci {
 		System.out.println(zaDatum);
 		try {
 			Presek _return = new Presek();
-			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja,
+			InputStream in = RESTUtil.retrieveResource("*", MT103_Putanja,
 					RequestMethod.GET);
-			JAXBContext context = JAXBContext.newInstance(Racuni.class,
-					Racuni.class);
+			JAXBContext context = JAXBContext.newInstance(MT103.class,
+					MT103.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			Marshaller marshaller = context.createMarshaller();
 			// set optional properties
@@ -386,14 +389,23 @@ public class FirmaBanciImpl implements FirmaBanci {
 				xml = xml + line + "\n";
 			}
 			
+			int presek_count = 0;
+			int stavka_count = 0;
+			ArrayList<ArrayList<Stavka>> p = new ArrayList<ArrayList<Stavka>>();
+			p.add(new ArrayList<Presek.Stavka>());
+			
 			String[] tempMT103 = xml.split("<ns2:MT103 xmlns:ns2=\"http://www.project.xml/MT103\" xmlns=\"http://basex.org/rest\" xmlns:ns3=\"http://www.project.xml/globals\">");			
 			for (String mt103 : tempMT103){
 				if (mt103.trim().equals(""))
 					continue;
-				StringReader reader = new StringReader("<ns2:MT103 xmlns:ns2=\"http://www.project.xml/MT103\" xmlns=\"http://basex.org/rest\" xmlns:ns3=\"http://www.project.xml/globals\">" + tempMT103[1]);
+				
+				if(stavka_count == 0){
+					presek_count ++;
+					p.add(new ArrayList<Stavka>());
+				}
+				
+				StringReader reader = new StringReader("<ns2:MT103 xmlns:ns2=\"http://www.project.xml/MT103\" xmlns=\"http://basex.org/rest\" xmlns:ns3=\"http://www.project.xml/globals\">" + mt103);
 				MT103 test = (MT103) unmarshaller.unmarshal(reader);
-				
-				
 				
 				// odliv sa racuna
 				if (test.getDuznikNalogodavac().getRacun().equals(zaDatum.getBrojRacuna()) && test.getDatumNaloga().equals(zaDatum.getDatum())){
@@ -409,11 +421,67 @@ public class FirmaBanciImpl implements FirmaBanci {
 					uplatnica.setSvrhaPlacanja(test.getSvrhaPlacanja());
 					stavka.setRacun(uplatnica);
 					
-					
+					stavka_count ++;
+					p.get(presek_count).add(stavka);
 				}
 				
+				// priliv na racun
+				if (test.getPrimalacPoverilac().getRacun().equals(zaDatum.getBrojRacuna()) && test.getDatumNaloga().equals(zaDatum.getDatum())){
+					Stavka stavka = new Stavka();
+					stavka.setDatumValute(test.getDatumValute());
+					stavka.setSmer("1"); // 0 je odliv, a 1 je priliv
+					IzgledUplatnice uplatnica = new IzgledUplatnice();
+					uplatnica.setDatumNaloga(test.getDatumNaloga());
+					uplatnica.setDuznikNalogodavac(test.getDuznikNalogodavac());
+					uplatnica.setIznos(test.getIznos());
+					uplatnica.setPrimalacPoverilac(test.getPrimalacPoverilac());
+					uplatnica.setSifraValute(test.getValuta());
+					uplatnica.setSvrhaPlacanja(test.getSvrhaPlacanja());
+					stavka.setRacun(uplatnica);	
+					
+					stavka_count ++;
+					p.get(presek_count).add(stavka);
+				}
+				
+				
+				if (stavka_count == Broj_stavki_u_preseku){
+					stavka_count = 0;
+				}
 			}
 			
+			Zaglavlje zaglavlje = new Zaglavlje();
+			zaglavlje.setBrojPreseka(zaDatum.getRedniBrojPreseka());
+			zaglavlje.setBrojRacuna(zaDatum.getBrojRacuna());
+			zaglavlje.setDatumNaloga(zaDatum.getDatum());
+			
+			BigDecimal priliv = new BigDecimal(0);
+			BigDecimal odliv = new BigDecimal(0);
+			Integer broj_priliva = 0;
+			Integer broj_odliva = 0;
+			
+			//priliv i odliv za odredjeni presek
+			for (Stavka s : p.get(zaDatum.getRedniBrojPreseka().intValue())){
+				if (s.getRacun().getPrimalacPoverilac().getRacun().equals(zaDatum.getBrojRacuna())){
+					priliv.add(s.getRacun().getIznos());
+					broj_priliva ++;
+				}
+				if (s.getRacun().getDuznikNalogodavac().getRacun().equals(zaDatum.getBrojRacuna())){
+					odliv.add(s.getRacun().getIznos());
+					broj_odliva ++;
+				}
+			}
+			
+			TPromene promPriliv = new TPromene();
+			TPromene promOdliv = new TPromene();
+			promPriliv.setBrojPromena(new BigInteger(broj_priliva.toString()));
+			promPriliv.setUkupnoNa(priliv);
+			promOdliv.setBrojPromena(new BigInteger(broj_odliva.toString()));
+			promOdliv.setUkupnoNa(odliv);
+			
+			zaglavlje.setKorist(promPriliv);
+			zaglavlje.setTeret(promOdliv);
+			
+			_return.setZaglavlje(zaglavlje);
 			
 			return _return;
 		} catch (Exception ex) {
@@ -454,8 +522,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 			System.out.println(this.cetralnaBanka.TEST());
 			System.out.println(this.cetralnaBanka.getSWIFT(ID));
 			InputStream in = RESTUtil.retrieveResource("*", Racuni_Putanja, RequestMethod.GET);
-			JAXBContext context = JAXBContext.newInstance(MT103.class,
-					MT103.class);
+			JAXBContext context = JAXBContext.newInstance(Racuni.class,
+					Racuni.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
 			Marshaller marshaller = context.createMarshaller();
 			// set optional properties
