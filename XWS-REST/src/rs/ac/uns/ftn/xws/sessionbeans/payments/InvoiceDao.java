@@ -77,18 +77,19 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			return "400";
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
-		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
 		//if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
 		//	return "403";
 		//}
-		for(StavkaFakture temp : listOfInvoiceItems){
-			Long result = temp.getRedniBroj();
-			if(result.equals(idInvoiceItem)){
-				newlistOfInvoiceItems.remove(idInvoice);
-				invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
-				return "204";
+		if (listOfInvoiceItems.size() > 1) {
+			for(StavkaFakture temp : listOfInvoiceItems){
+				Long result = temp.getRedniBroj();
+				if(result.equals(idInvoiceItem)){
+					invoice.getStavkaFakture().remove(temp);
+					em.update(invoice, idInvoice);
+					return "204";
+				}
 			}
-		}
+		} else return "400";
 		return "404";
 	}
 	
@@ -103,16 +104,16 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			return "400";
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
-		List<Faktura.StavkaFakture> newlistOfInvoiceItems = invoice.getStavkaFakture();
+		newInvoiceItem.setRedniBroj(idInvoiceItem);
 		//if(!invoice.getZaglavljeFakture().getKupac().getPIBKupca().equals(idDobavljaca)){
 		//	return "403";
 		//}
 		for(StavkaFakture temp : listOfInvoiceItems){
 			Long result = temp.getRedniBroj();
 			if(result.equals(idInvoiceItem)){
-				newlistOfInvoiceItems.remove(idInvoice);
-				newlistOfInvoiceItems.add(newInvoiceItem);
-				invoice.getStavkaFakture().addAll(newlistOfInvoiceItems);
+				invoice.getStavkaFakture().remove(temp);
+				invoice.getStavkaFakture().add(newInvoiceItem);
+				em.update(invoice, idInvoice);
 				return "200";
 			}
 		}
