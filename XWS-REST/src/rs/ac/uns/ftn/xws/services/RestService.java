@@ -151,9 +151,9 @@ public class RestService implements RestServerRemote{
 		return r;
 	}
 	
-	@PUT
+	@PUT//Done
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override
 	public Response izmeniStavke(@PathParam("id_dobavljaca") String id_dobavljaca,
@@ -176,14 +176,14 @@ public class RestService implements RestServerRemote{
 		}else if(result.equalsIgnoreCase("403")){
 			r = Response.status(403).build();
 		}else if(result.equalsIgnoreCase("200")){
-			r = Response.ok().type("application/xml").entity(newInvoiceItem).build();
+			r = Response.ok().entity(newInvoiceItem).build();
 		}else if(result.equalsIgnoreCase("400")){
 			r = Response.status(400).build();
 		}
 		return r;
 	}
 
-	@DELETE
+	@DELETE//Done
 	@Path("/{id_dobavljaca}/fakture/{id_fakture}/stavke/{redni_broj}")
 	@Override
 	public Response obrisiStavku(@PathParam("id_dobavljaca") String id_dobavljaca,
