@@ -95,17 +95,16 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 	public MT900 acceptMT103(MT103 mt103) throws AcceptMT103Fault {
 		LOG.info("Executing operation acceptMT103");
 		System.out.println(mt103);
-		BankaChecker bc = new BankaChecker();
 		MT900 _return = new MT900();
 		try {
 			String adresaPrimaoca = mt103.getBankaPoverilac().getObracunskiRacunBanke().substring(0, 3);
 			if (!checkBanka(mt103.getBankaDuznik().getObracunskiRacunBanke()
 					.substring(0, 3), mt103.getBankaDuznik().getSWIFTKodBanke())) {
-				throw new Exception("Invalid sender bank");
+				throw new Exception("Invalid sender bank.");
 			}
 			if (!checkBanka(adresaPrimaoca, mt103.getBankaPoverilac()
 					.getSWIFTKodBanke())) {
-				throw new Exception("Invalid reciever bank");
+				throw new Exception("Invalid reciever bank.");
 			}
 			this.cbwsdl = new URL(adreseBanki.get(adresaPrimaoca));
 			this.serviceName = new QName(B, BSERVICE);
@@ -115,9 +114,12 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			
 			StatusCode code = banka.acceptMT103(mt103);
 			if(code.getCode() != 200) {
-				return null;
+				throw new Exception("Not found account in reciever bank.");
 			}
 			FirmaRacun r1 = nadjiRacun(mt103.getBankaDuznik().getObracunskiRacunBanke());
+			if(r1.getRaspoloziviNovac().compareTo(mt103.getIznos()) == -1 ){
+				throw new Exception("Invalid balance.");
+			}
 			r1.setRaspoloziviNovac(r1.getRaspoloziviNovac().subtract(mt103.getIznos()));
 			
 			MT910 mt910 = new MT910();
@@ -134,7 +136,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			if(code2.getCode() != 200) {
 				r1.setRaspoloziviNovac(r1.getRaspoloziviNovac().add(mt103.getIznos()));
 				saveRacuni();
-				return null;
+				throw new Exception("Problem in reciever bank with recieving money. Try later :D");
 			}
 			saveRacuni();
 			
@@ -149,6 +151,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 					mt103);
 			return _return;
 		} catch (java.lang.Exception ex) {
+			_return.setIDPoruke("__"+ex.getMessage());
 			return _return;
 			//ex.printStackTrace();
 			//throw new RuntimeException(ex);

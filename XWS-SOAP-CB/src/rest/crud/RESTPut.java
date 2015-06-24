@@ -2,6 +2,7 @@ package rest.crud;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,7 +18,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
