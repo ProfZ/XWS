@@ -34,6 +34,7 @@ import rest.bundle.RequestMethod;
 import rest.util.Converter;
 import rest.util.RESTUtil;
 import rest.util.Validation;
+import xml.pojedinacna_placanja.PojedinacnaPlacanja;
 import xml.project.globals.IzgledUplatnice;
 import xml.project.globals.StatusCode;
 import xml.project.globals.TBanke;
@@ -69,6 +70,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static final String MT102_Putanja = "BMT102" + ID;
 	public static final String Racuni_Putanja = "BRacuni" + ID;
 	public static final int Broj_stavki_u_preseku = 10;
+	public static final String Pojedinacna_placanja_putanja = "BPojedinacnaPlacanja" + ID;
 
 	public static final String CB = "http://www.project.xml/wsdl/CBwsdl";
 	public static final String CBSERVICE = "CentralnaBankaService";
@@ -95,6 +97,29 @@ public class FirmaBanciImpl implements FirmaBanci {
 		LOG.info("Executing operation doClearing");
 		try {
 			StatusCode _return = new StatusCode();
+			
+			InputStream in = RESTUtil.retrieveResource("*", Pojedinacna_placanja_putanja,
+					RequestMethod.GET);
+			JAXBContext context = JAXBContext.newInstance(PojedinacnaPlacanja.class,
+					PojedinacnaPlacanja.class);
+			Unmarshaller unmarshaller = context.createUnmarshaller();
+			Marshaller marshaller = context.createMarshaller();
+			// set optional properties
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			String xml = "";
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			for (String line; (line = br.readLine()) != null;) {
+				xml = xml + line + "\n";
+			}
+
+			StringReader reader = new StringReader(xml);
+			PojedinacnaPlacanja rac = (PojedinacnaPlacanja) unmarshaller.unmarshal(reader);
+			for (TSequence k : rac.getPlacanje()) {
+				// sreca sreca radost
+			}
+			
+			// stari kod
 			Iterator it = sekvence102.entrySet().iterator();
 			while (it.hasNext()) {
 				MT102 mt102 = new MT102();
@@ -381,14 +406,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 				// Clearing & Settlement
 				TSequence seq = Converter
 						.convertNalogTo102PojedinacnoPlacanje(nalogZaPrenos);
-				String racunBanke = ""; // TODO
-				if (!(sekvence102.containsKey(racunBanke))) {
-					ArrayList<TSequence> tempList = new ArrayList<TSequence>();
-					tempList.add(seq);
-					sekvence102.put(racunBanke, tempList);
-				} else {
-					sekvence102.get(racunBanke).add(seq);
-				}
+				RESTUtil.objectToDB("//" + Pojedinacna_placanja_putanja, seq.getIDNalogaZaPlacanje(), seq);
 			}
 			_return.setMessage("OK");
 			return _return;

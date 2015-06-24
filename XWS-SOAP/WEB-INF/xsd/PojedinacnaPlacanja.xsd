@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:global="http://www.project.xml/globals" targetNamespace="http://www.project.xml/pojedinacnaplacanja"
+	elementFormDefault="qualified">
+	<xs:import namespace="http://www.project.xml/globals" schemaLocation="Globals.xsd" id="globals"/>
+	<xs:element name="PojedinacnaPlacanja">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Placanje" maxOccurs="unbounded" type="global:TSequence">
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
