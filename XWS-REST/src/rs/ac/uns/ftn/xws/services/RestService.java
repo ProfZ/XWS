@@ -32,14 +32,14 @@ public class RestService implements RestServerRemote{
 	
 	@POST//Done
 	@Path("/{id_dobavljaca}/fakture")
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
 	public Response slanjeFakture(@PathParam("id_dobavljaca") String id_dobavljaca, Faktura faktura) throws IOException, JAXBException {
 		ResponseBuilder rb;
 		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
-			if (!invoiceDao.testValidationInvoice(faktura)) {
+			if (!invoiceDao.testValidationInvoice(faktura, id_dobavljaca)) {
 				rb = Response.status(Status.BAD_REQUEST);
 			} else {
 				Faktura retFakt = invoiceDao.persist(faktura);

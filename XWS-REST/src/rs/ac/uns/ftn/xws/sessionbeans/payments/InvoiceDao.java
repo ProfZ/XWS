@@ -73,7 +73,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		if(invoice==null){
 			return "404";
 		}
-		if(!testValidationInvoice(invoice)){
+		if(!testValidationInvoice(invoice, invoice.getZaglavljeFakture().getDobavljac().getPIBKupca())){
 			return "400";
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
@@ -100,7 +100,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		if(invoice==null){
 			return "404";
 		}
-		if(!testValidationInvoice(invoice)){
+		if(!testValidationInvoice(invoice, invoice.getZaglavljeFakture().getDobavljac().getPIBKupca())){
 			return "400";
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
@@ -128,7 +128,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			System.out.println("Invoice is null");
 			return null;
 		}
-		if(!testValidationInvoice(invoice)){
+		if(!testValidationInvoice(invoice, invoice.getZaglavljeFakture().getDobavljac().getPIBKupca())){
 			System.out.println("Invoice is invalid");
 			return null;
 		}
@@ -154,7 +154,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		if(invoice==null){
 			return "404";
 		}
-		if(!testValidationInvoice(invoice)){
+		if(!testValidationInvoice(invoice, invoice.getZaglavljeFakture().getDobavljac().getPIBKupca())){
 			return "400";
 		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
@@ -367,7 +367,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	}
 	
 	@Override
-	public boolean testValidationInvoice(Faktura invoice){
+	public boolean testValidationInvoice(Faktura invoice, String id_dobavljaca){
 		JAXBContext jaxbContext;
 		try {
 			jaxbContext = JAXBContext.newInstance("xml.project.faktura");
@@ -383,6 +383,9 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			jaxbMarshaller.setEventHandler(new rs.ac.uns.ftn.xws.util.MyValidationEventHandler());
             //ucitava se objektni model, a da se pri tome radi i validacija
 			jaxbMarshaller.marshal(invoice, new File("C:/xws/XWS/XWS-REST//xml/Faktura"+invoice.procitajId()+".xml"));
+			
+			if (!invoice.getZaglavljeFakture().getDobavljac().getPIBKupca().equals(id_dobavljaca) || !invoice.semanticallyValid())
+				return false;
 		} catch (JAXBException e) {	
 			e.printStackTrace();
 			return false;

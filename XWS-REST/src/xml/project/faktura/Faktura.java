@@ -253,6 +253,26 @@ public class Faktura extends Identifiable{
     protected Faktura.ZaglavljeFakture zaglavljeFakture;
     @XmlElement(name = "Stavka_fakture", namespace = "http://www.project.xml/faktura", required = true)
     protected List<Faktura.StavkaFakture> stavkaFakture;
+    
+    public boolean semanticallyValid() {
+    	BigDecimal sumaStavki = new BigDecimal(0), sumaPorez = new BigDecimal(0), sumaRabat = new BigDecimal(0);
+    	for (StavkaFakture stavka: stavkaFakture) {
+    		if (!stavka.semanticallyValid())
+    			return false;
+    		sumaStavki.add(stavka.vrednost);
+    		sumaPorez.add(stavka.ukupanPorez);
+    		sumaRabat.add(stavka.iznosRabata);
+    	}
+    	if (sumaStavki.compareTo(zaglavljeFakture.ukupnoRobaIUsluge) != 0) 
+    		return false;
+    	if (zaglavljeFakture.vrednostRobe.add(zaglavljeFakture.vrednostUsluga).compareTo(zaglavljeFakture.ukupnoRobaIUsluge) != 0)
+    		return false;
+    	if (sumaPorez.compareTo(zaglavljeFakture.ukupnoPorez) != 0)
+    		return false;
+    	if (sumaRabat.compareTo(zaglavljeFakture.ukupnoRabat) != 0)
+    		return false;
+    	return true;
+    }
 
     /**
      * Gets the value of the zaglavljeFakture property.
@@ -449,6 +469,16 @@ public class Faktura extends Identifiable{
         protected BigDecimal umanjenoZaRabat;
         @XmlElement(name = "Ukupan_porez", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal ukupanPorez;
+        
+        public boolean semanticallyValid() {
+        	if (kolicina.multiply(jedinicnaCena).compareTo(vrednost) != 0)
+        		return false;
+        	if (vrednost.multiply(procenatRabata.divide(new BigDecimal(100.0f))).compareTo(iznosRabata) != 0)
+        		return false;
+        	if (iznosRabata.add(umanjenoZaRabat).compareTo(vrednost) != 0)
+        		return false;
+        	return true;
+        }
 
         /**
          * Gets the value of the redniBroj property.
