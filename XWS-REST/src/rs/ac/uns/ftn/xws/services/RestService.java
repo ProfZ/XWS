@@ -8,12 +8,14 @@ import java.net.URISyntaxException;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -34,11 +36,14 @@ public class RestService implements RestServerRemote{
 	@Path("/{id_dobavljaca}/fakture")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Override
-	public Response slanjeFakture(@PathParam("id_dobavljaca") String id_dobavljaca, Faktura faktura) throws IOException, JAXBException {
+	public Response slanjeFakture(@PathParam("id_dobavljaca") String id_dobavljaca, @DefaultValue("no") @QueryParam("semantic") String sem, Faktura faktura) throws IOException, JAXBException {
 		ResponseBuilder rb;
 		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
+			System.out.println(sem);
+			if (sem.equalsIgnoreCase("yes"))
+				faktura.makeSemanticallyValid();
 			if (!invoiceDao.testValidationInvoice(faktura, id_dobavljaca)) {
 				rb = Response.status(Status.BAD_REQUEST);
 			} else {
@@ -99,7 +104,7 @@ public class RestService implements RestServerRemote{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public Response novaStavka(@PathParam("id_dobavljaca") String id_dobavljaca, @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {
+	public Response novaStavka(@PathParam("id_dobavljaca") String id_dobavljaca, @DefaultValue("no") @QueryParam("semantic") String sem, @PathParam("id_fakture") long id_fakture, StavkaFakture newInvoiceItem) throws URISyntaxException {
 		String result = "";
 		Response r = null;
 		try {
@@ -107,6 +112,9 @@ public class RestService implements RestServerRemote{
 				r = Response.status(403).build();
 				return r;
 			}
+			System.out.println(sem);
+			if (sem.equalsIgnoreCase("yes"))
+				newInvoiceItem.makeSemanticallyValid();
 			result = invoiceDao.addInvoiceItem(id_fakture, newInvoiceItem);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -156,7 +164,7 @@ public class RestService implements RestServerRemote{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override
-	public Response izmeniStavke(@PathParam("id_dobavljaca") String id_dobavljaca,
+	public Response izmeniStavke(@PathParam("id_dobavljaca") String id_dobavljaca, @DefaultValue("no") @QueryParam("semantic") String sem,
 			 @PathParam("id_fakture") long id_fakture, @PathParam("redni_broj") long redni_broj, StavkaFakture newInvoiceItem) {
 		String result = "";
 		Response r = null;
@@ -165,6 +173,9 @@ public class RestService implements RestServerRemote{
 				r = Response.status(403).build();
 				return r;
 			}
+			System.out.println(sem);
+			if (sem.equalsIgnoreCase("yes"))
+				newInvoiceItem.makeSemanticallyValid();
 			result = invoiceDao.modifyInvoiceItemFromInvoice(newInvoiceItem, id_fakture, redni_broj);
 		} catch (IOException e) {
 			e.printStackTrace();
