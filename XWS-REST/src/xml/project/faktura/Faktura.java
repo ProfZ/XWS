@@ -273,6 +273,24 @@ public class Faktura extends Identifiable{
     		return false;
     	return true;
     }
+    
+    public void makeSemanticallyValid() {
+    	BigDecimal sumaStavki = new BigDecimal(0), sumaPorez = new BigDecimal(0), sumaRabat = new BigDecimal(0);
+    	for (StavkaFakture stavka: stavkaFakture) {
+    		stavka.makeSemanticallyValid();
+    		sumaStavki = sumaStavki.add(stavka.getVrednost());
+    		sumaPorez = sumaPorez.add(stavka.getUkupanPorez());
+    		sumaRabat = sumaRabat.add(stavka.getIznosRabata());
+    	}
+    	if (sumaStavki.compareTo(zaglavljeFakture.getUkupnoRobaIUsluge()) != 0) 
+    		zaglavljeFakture.setUkupnoRobaIUsluge(sumaStavki);
+    	if (zaglavljeFakture.vrednostRobe.add(zaglavljeFakture.vrednostUsluga).compareTo(zaglavljeFakture.ukupnoRobaIUsluge) != 0)
+    		zaglavljeFakture.setVrednostRobe(zaglavljeFakture.getUkupnoRobaIUsluge().subtract(zaglavljeFakture.getVrednostUsluga()));
+    	if (sumaPorez.compareTo(zaglavljeFakture.ukupnoPorez) != 0)
+    		zaglavljeFakture.setUkupnoPorez(sumaPorez);
+    	if (sumaRabat.compareTo(zaglavljeFakture.ukupnoRabat) != 0)
+    		zaglavljeFakture.setUkupnoRabat(sumaRabat);
+    }
 
     /**
      * Gets the value of the zaglavljeFakture property.
@@ -478,6 +496,15 @@ public class Faktura extends Identifiable{
         	if (iznosRabata.add(umanjenoZaRabat).compareTo(vrednost) != 0)
         		return false;
         	return true;
+        }
+        
+        public void makeSemanticallyValid() {
+        	if (kolicina.multiply(jedinicnaCena).compareTo(vrednost) != 0)
+        		vrednost = kolicina.multiply(jedinicnaCena);
+        	if (vrednost.multiply(procenatRabata.divide(new BigDecimal(100.0f))).compareTo(iznosRabata) != 0)
+        		iznosRabata = vrednost.multiply(procenatRabata.divide(new BigDecimal(100.0f)));
+        	if (iznosRabata.add(umanjenoZaRabat).compareTo(vrednost) != 0)
+        		umanjenoZaRabat = vrednost.subtract(iznosRabata);
         }
 
         /**

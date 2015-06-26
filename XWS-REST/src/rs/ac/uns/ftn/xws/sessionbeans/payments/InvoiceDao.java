@@ -128,10 +128,6 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			System.out.println("Invoice is null");
 			return null;
 		}
-		if(!testValidationInvoice(invoice, invoice.getZaglavljeFakture().getDobavljac().getPIBKupca())){
-			System.out.println("Invoice is invalid");
-			return null;
-		}
 		List<Faktura.StavkaFakture> listOfInvoiceItems = invoice.getStavkaFakture();
 		//if(!invoice.getZaglavljeFakture().getKupac().equals(idDobavljaca)){
 		//	return null;
@@ -255,26 +251,25 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		racun2.setDatumRacuna(date2);
 		//faktura 1
 		Faktura faktura = new Faktura();
-		faktura.setZaglavljeFakture(createHeaderOfInvoice(date1, firma1, "idPoruka1", new BigDecimal(5000), firma2, "RSD", racun1, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "001-1234567890123-12", new BigDecimal(800), new BigDecimal(900)));
+		faktura.setZaglavljeFakture(createHeaderOfInvoice(date1, firma1, "idPoruka1", new BigDecimal(5000), firma2, "RSD", racun1, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "001-1234567890123-12", new BigDecimal(800), new BigDecimal(100)));
 
 		faktura.postaviID(new Long(12390));
-		long val1 = 0;
+		long val1 = 1;
 		//stavke1 faktura1
-		faktura.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"krompir",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(100),new BigDecimal(600)));
+		faktura.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"krompir",new BigDecimal(15), val1,new BigDecimal(10),new BigDecimal(100),new BigDecimal(600)));
 		//faktura 1
 		Faktura faktura1 = new Faktura();
-		faktura1.setZaglavljeFakture(createHeaderOfInvoice(date2, firma3, "idPoruka2", new BigDecimal(5600), firma2, "RSD", racun2, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "002-1234567890123-12", new BigDecimal(800), new BigDecimal(900)));
+		faktura1.setZaglavljeFakture(createHeaderOfInvoice(date2, firma3, "idPoruka2", new BigDecimal(5600), firma2, "RSD", racun2, new BigDecimal(0), new BigDecimal(2), new BigDecimal(4), "002-1234567890123-12", new BigDecimal(800), new BigDecimal(100)));
 
 		faktura1.postaviID(new Long(12391));//stavke1 faktura1
-		val1++;
-		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"pekmez",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(100),new BigDecimal(600)));
+		val1 = 1;
+		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(90),"kg",new BigDecimal(70),new BigDecimal(3),"pekmez",new BigDecimal(10), val1,new BigDecimal(30),new BigDecimal(100),new BigDecimal(600)));
 		//stavke2 faktura1
 		val1++;
-		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(80),"kg",new BigDecimal(80),new BigDecimal(4),"kupus",new BigDecimal(0), val1,new BigDecimal(0),new BigDecimal(90),new BigDecimal(600)));
+		faktura1.getStavkaFakture().add(createInvoiceItem(new BigDecimal(80),"kg",new BigDecimal(80),new BigDecimal(4),"kupus",new BigDecimal(7), val1,new BigDecimal(20),new BigDecimal(90),new BigDecimal(600)));
 		
-		Fakture fakture = new Fakture();
-		fakture.getFaktura().add(faktura1);
-		fakture.getFaktura().add(faktura);
+		faktura.makeSemanticallyValid();
+		faktura1.makeSemanticallyValid();
 		
 		
 		try {
