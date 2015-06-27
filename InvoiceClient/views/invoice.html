@@ -85,7 +85,7 @@
 				<tr ng-repeat="item in invoice.stavkaFakture" ng-click="openModal(item)">
 					<td>{{item.nazivRobeUsluge}}</td>
 					<td>{{item.kolicina}} {{item.jedinicaMere}}</td>
-					<td>{{item.kolicina*item.jedinicnaCena}}</td>
+					<td>{{item.vrednost}}</td>
 				</tr>
 			</table>
 		</div>
