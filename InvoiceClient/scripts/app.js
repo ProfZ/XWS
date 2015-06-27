@@ -51,6 +51,8 @@ var app = angular
 });
 app.service("userService", function() {
   this.user = {pib: ""};
+  this.invId = "";
+  this.itemId = "";
 })
  //tricky deo
 //  .factory('authHttpResponseInterceptor',['$q','$location',function($q,$location){// fabrika koja pravi interceptor

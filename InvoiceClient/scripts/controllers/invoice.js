@@ -6,7 +6,7 @@ angular.module('invoice', [
 	'invoiceItem',
 	'resource.invoiceItem'])
 
-.controller('invoiceCtrl', function (Invoice, $scope, $routeParams, $modal, $log, $location, InvoiceItem) {
+.controller('invoiceCtrl', function (Invoice, $scope, $routeParams, $modal, $log, $location, InvoiceItem, userService) {
 	//ako pozivamo edit postojece fakture
 	if($routeParams.invoiceId!='new'){
 		//preuzimanje parametra iz URL
@@ -31,7 +31,8 @@ angular.module('invoice', [
 
 	//modalni dijalog za stavku fakutre
 	$scope.openModal = function (invoiceItem, size) {
-
+		$scope.oldItem = invoiceItem;
+		userService.invId = $scope.invoice.zaglavljeFakture.idPoruke;
 		var modalInstance = $modal.open({
 			templateUrl: 'views/invoice-item.html',
 			controller: 'invoiceItemCtrl',
@@ -43,37 +44,40 @@ angular.module('invoice', [
 			}
 		});
 		modalInstance.result.then(function (data) {
-			var invoiceItem = data.invoiceItem;
+			//var invoiceItem = data.invoiceItem;
 			//ako stavka fakture nema id i ako je akcija 'save' znaci da je nova i dodaje se u listu. ako ima, svakako se manja u listi
-			$log.info('Invoice item :'+invoiceItem);
+			//$log.info('Invoice item :'+invoiceItem);
 			// if(!invoiceItem.redniBroj && data.action==='updateStavka'){
 			// 	$scope.invoice.invoiceItems.push(invoiceItem);				
 			// }
+			if(data.action==='cancel'){
+				$window.location.reload();
+			}
 			if(data.action==='updateStavka'){
-				if(invoiceItem.redniBroj){
-					//zbog cega redirekcija ide na callback?
-					// InvoiceItem.update({invoiceItemId:invoiceItem.redniBroj},function () {
-					// 	$location.path('/invoice/:invoiceId');
-					// });
-					InvoiceItem.putInvoiceItem({'invoiceId':$scope.invoice.zaglavljeFakture.idPoruke, 'invoiceId':invoiceItem.redniBroj});//.$promise.then(function (data) {
-						//$scope.invoice = data;
-					//});
-				}
-				else{
-					$scope.invoiceItem.$saveNew(function () {	
-						$location.path('/invoice/:invoiceId');
-					});
-				}
-				$log.info("update stavka");
+				// if(invoiceItem.redniBroj){
+				// 	//zbog cega redirekcija ide na callback?
+				// 	// InvoiceItem.update({invoiceItemId:invoiceItem.redniBroj},function () {
+				// 	// 	$location.path('/invoice/:invoiceId');
+				// 	// });
+				// 	InvoiceItem.putInvoiceItem();//.$promise.then(function (data) {
+				// 		//$scope.invoice = data;
+				// 	//});
+				// }
+				// else{
+				// 	$scope.invoiceItem.$saveNew(function () {	
+				// 		$location.path('/invoice/:invoiceId');
+				// 	});
+				// }
+				// $log.info("update stavka");
 			}
 			//ako stavka treba da se obrise izbaci se iz niza
 			if(data.action==='delete'){
 				var index = $scope.invoice.invoiceItems.redniBroj;
 				$scope.invoice.invoiceItems.splice(index, 1);
 				//ako je stavka imala i id, treba da se obrise i na serveru (da li je to dobro?)
-				if(invoiceItem.redniBroj){
-					InvoiceItem.delete({invoiceItemId:invoiceItem.redniBroj});
-				}
+				// if(invoiceItem.redniBroj){
+				// 	InvoiceItem.delete({invoiceItemId:invoiceItem.redniBroj});
+				// }
 			}
 		}, function () {
 			$log.info('Modal dismissed at: ' + new Date());
@@ -89,9 +93,13 @@ angular.module('invoice', [
 			});
 		}
 		else{
-			$scope.invoice.$save(function () {
-				$location.path('/invoiceList');
+			$http.post('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/'+userService.invId+'?semantic=yes', $scope.invoice)
+			.success(function (data){
+				$location.path('/invoice/'+invId);
 			});
+			// $scope.invoice.$save(function () {
+			// 	$location.path('/invoiceList');
+			// });
 		}
 		$log.info("save");
 	}
