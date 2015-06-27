@@ -71,6 +71,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static final String Racuni_Putanja = "BRacuni" + ID;
 	public static final int Broj_stavki_u_preseku = 10;
 	public static final String Pojedinacna_placanja_putanja = "BPojedinacnaPlacanja" + ID;
+	public static final String Transakcije_za_izvod = "BTransakcije" + ID; // cuvaju se obrasci mt103
 
 	public static final String CB = "http://www.project.xml/wsdl/CBwsdl";
 	public static final String CBSERVICE = "CentralnaBankaService";
@@ -301,6 +302,13 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			RESTUtil.objectToDB(MT102_Putanja, mt102.getIDPoruke().toString(),
 					mt102);
+			
+			// upis transakcija
+			ArrayList<MT103> tempTransakcije = Converter.convertMT102toMT103List(mt102);
+			for (MT103 t : tempTransakcije){
+				RESTUtil.objectToDB(Transakcije_za_izvod, t.getIDPoruke().toString(), t);
+			}
+
 			_return.setCode(200);
 			_return.setMessage("OK");
 			return _return;
@@ -348,6 +356,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			RESTUtil.objectToDB(MT103_Putanja, mt103.getIDPoruke().toString(),
 					mt103);
+			RESTUtil.objectToDB(Transakcije_za_izvod, mt103.getIDPoruke().toString(),
+					mt103);
 			_return.setCode(200);
 			_return.setMessage("OK");
 			return _return;
@@ -377,8 +387,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 				_return.setMessage("Bad Request");
 				return _return;
 			}
-			// Ista banka
 			
+			// Ista banka
 			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac()
 					.getRacun());
 			if( cetralnaBanka == null) {
@@ -429,7 +439,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 		System.out.println(zaDatum);
 		Presek _return = new Presek();
 		try {
-			InputStream in = RESTUtil.retrieveResource("*", MT103_Putanja,
+			InputStream in = RESTUtil.retrieveResource("*", Transakcije_za_izvod,
 					RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(MT103.class,
 					MT103.class);
@@ -457,7 +467,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 				if (stavka_count == 0) {
 					presek_count++;
-					p.add(new ArrayList<Stavka>());
+					p.add(new ArrayList<Stavka>()); //p.get(0) je prazan posto redni broj preseka krece od 1
 				}
 
 				StringReader reader = new StringReader(
@@ -484,6 +494,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 					stavka_count++;
 					p.get(presek_count).add(stavka);
 				}
+				
 				// priliv na racun
 				if (test.getPrimalacPoverilac().getRacun()
 						.equals(zaDatum.getBrojRacuna())
@@ -517,6 +528,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			BigDecimal odliv = new BigDecimal(0);
 			Integer broj_priliva = 0;
 			Integer broj_odliva = 0;
+			
 			// priliv i odliv za odredjeni presek
 			for (Stavka s : p.get(zaDatum.getRedniBrojPreseka().intValue())) {
 				if (s.getRacun().getPrimalacPoverilac().getRacun()
@@ -530,6 +542,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 					broj_odliva++;
 				}
 			}
+			
 			TPromene promPriliv = new TPromene();
 			TPromene promOdliv = new TPromene();
 			promPriliv.setBrojPromena(new BigInteger(broj_priliva.toString()));
@@ -539,7 +552,20 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 			zaglavlje.setKorist(promPriliv);
 			zaglavlje.setTeret(promOdliv);
+			
+			BigDecimal stanjeTemp = null;
+			for (FirmaRacun r : racuni){
+				if (r.getRacun().equals(zaDatum.getBrojRacuna())){
+					stanjeTemp = new BigDecimal(zaDatum.getBrojRacuna());
+					break;
+				}
+			}
 
+			if (stanjeTemp != null){
+				zaglavlje.setPrethodnoStanje(stanjeTemp.add(odliv).subtract(priliv));
+				zaglavlje.setNovoStanje(stanjeTemp);
+			}
+			
 			_return.setZaglavlje(zaglavlje);
 			return _return;
 		} catch (Exception ex) {
