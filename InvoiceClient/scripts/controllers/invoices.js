@@ -71,7 +71,7 @@
 	//kada smo kliknuli na red u tabeli prelazimo na stranicu za editovanje fakture sa zadatim id-om
  	$scope.insertOrEditInvoice = function (invoice) {
  		if(invoice){
- 			$location.path('/invoice/'+invoice.zaglavljeFakture.idporuke);
+ 			$location.path('/invoice/'+invoice.zaglavljeFakture.idPoruke);
  		}
  		else{
 			$location.path('/invoice/new');

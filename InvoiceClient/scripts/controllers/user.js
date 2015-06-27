@@ -30,8 +30,9 @@ app.controller('userCtrl',  ['$scope', function($scope, $routeProvider)
 		$routeProvider = '#/login.html';
 	};
 	$scope.logged = function () {
-		if ($scope.user == null)
-			return false;
-    	return $scope.user.username !=  '';
+		// if ($scope.user == null)
+		// 	return false;
+  //   	return $scope.user.username !=  '';
+  return true;
   	};
 }]);
