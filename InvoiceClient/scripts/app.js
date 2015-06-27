@@ -48,6 +48,9 @@ var app = angular
   .otherwise({
     redirectTo: '/'
   });
+});
+app.service("userService", function() {
+  this.user = {pib: ""};
 })
  //tricky deo
 //  .factory('authHttpResponseInterceptor',['$q','$location',function($q,$location){// fabrika koja pravi interceptor
