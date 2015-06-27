@@ -116,7 +116,14 @@ public class FirmaBanciImpl implements FirmaBanci {
 			StringReader reader = new StringReader(xml);
 			PojedinacnaPlacanja rac = (PojedinacnaPlacanja) unmarshaller.unmarshal(reader);
 			for (TSequence k : rac.getPlacanje()) {
-				// sreca sreca radost
+				String sw = cetralnaBanka.getSWIFT(k.getDuznikNalogodavac().getRacun().substring(0,3)); // kljuc za mt102
+				if (!sekvence102.containsKey(sw)){
+					ArrayList<TSequence> temp = new ArrayList<>();
+					temp.add(k);
+					sekvence102.put(sw, temp);
+				} else {
+					sekvence102.get(sw).add(k);
+				}
 			}
 			
 			// stari kod
@@ -126,15 +133,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 				Map.Entry ent = (Map.Entry) it.next();
 				List<TSequence> tempSeq = (ArrayList<TSequence>) ent.getValue();
 				mt102.getSekvenca().addAll(tempSeq);
-				mt102.setDatum(tempSeq.get(0).getDatumNaloga()); // mozda treba
-																	// danasnji
-																	// (za sada
-																	// pretpostavka
-																	// da se bar
-																	// jednom
-																	// dnevno
-																	// adi
-																	// clearing)
+				mt102.setDatum(tempSeq.get(0).getDatumNaloga());
 				mt102.setDatumValute(tempSeq.get(0).getDatumNaloga());
 				mt102.setSifraValute(tempSeq.get(0).getValuta());
 				BigDecimal ukupnaSuma = new BigDecimal(0);
@@ -379,6 +378,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 				return _return;
 			}
 			// Ista banka
+			
 			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac()
 					.getRacun());
 			if( cetralnaBanka == null) {
