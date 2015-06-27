@@ -52,7 +52,7 @@ import xml.project.globals.TBanke;
     "idPorukeNaloga"
 })
 @XmlRootElement(name = "MT900")
-public class MT900 extends Identifiable{
+public class MT900 {
 
     @XmlElement(name = "ID_poruke", required = true)
     protected String idPoruke;
@@ -238,13 +238,4 @@ public class MT900 extends Identifiable{
     public void setIDPorukeNaloga(String value) {
         this.idPorukeNaloga = value;
     }
-	@Override
-	public Long getId() {
-		return Long.valueOf(getIDPoruke());
-	}
-
-	@Override
-	public void setId(Long id) {
-		setIDPoruke(String.valueOf(id));
-	}
 }

@@ -59,7 +59,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 	public static final String MT103_PUTANJA = "CBMT103";
 	public static final String CLEARING_PUTANJA = "CBClearing";
 
-	public static final String B = "http://www.project.xml/wsdl/CBwsdl";
+	public static final String B = "http://www.project.xml/wsdl/bwsdl";
 	public static final String BSERVICE = "FirmaBankaService";
 	public static final String BPORT = "FirmaBanci";
 
@@ -94,6 +94,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 		try {
 			String adresaPrimaoca = mt103.getBankaPoverilac()
 					.getObracunskiRacunBanke().substring(0, 3);
+			System.out.println(mt103.getBankaDuznik().getSWIFTKodBanke());
 			if (!checkBanka(mt103.getBankaDuznik().getObracunskiRacunBanke()
 					.substring(0, 3), mt103.getBankaDuznik().getSWIFTKodBanke())) {
 				throw new Exception("Invalid sender bank.");
@@ -112,7 +113,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			this.portName = new QName(B, BPORT);
 			this.service = Service.create(this.cbwsdl, this.serviceName);
 			this.banka = service.getPort(this.portName, FirmaBanci.class);
-
+			System.out.println("ID JE: " + mt103.getIDPoruke());
 			StatusCode code = banka.acceptMT103(mt103);
 			if (code.getCode() != 200) {
 				throw new Exception("Not found account in reciever bank.");
@@ -124,7 +125,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			}
 			r1.setRaspoloziviNovac(r1.getRaspoloziviNovac().subtract(
 					mt103.getIznos()));
-
+			System.out.println("skinuo je novac");
 			MT910 mt910 = new MT910();
 			mt910.setBankaPoverilac(mt103.getBankaPoverilac());
 			mt910.setDatum(mt103.getDatumNaloga());
@@ -144,7 +145,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 						"Problem in reciever bank with recieving money. Try later :D");
 			}
 			saveRacuni();
-
+			System.out.println("sacuvali smo, sad return");
 			_return.setBankaDuznik(mt103.getBankaDuznik());
 			_return.setDatum(mt103.getDatumNaloga());
 			_return.setDatumValute(mt103.getDatumValute());
@@ -152,7 +153,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			_return.setIDPorukeNaloga(mt103.getIDPoruke());
 			_return.setIznos(mt103.getIznos());
 			_return.setSifraValute(mt103.getValuta());
-			RESTUtil.objectToDB(MT103_PUTANJA, mt103.getIDPoruke().toString(),
+			RESTUtil.objectToDB("//" + MT103_PUTANJA, mt103.getIDPoruke().toString(),
 					mt103);
 			return _return;
 		} catch (java.lang.Exception ex) {
@@ -165,16 +166,19 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 	}
 
 	public void saveRacuni() {
-		RESTUtil.objectToDB("//" + RACUNI_PUTANJA, "", racuni);
+		Racuni rac = new Racuni();
+		rac.setFirmaRacun(racuni);
+		RESTUtil.objectToDB("//" + RACUNI_PUTANJA, "", rac);
 	}
 
 	public boolean checkBanka(String ID, String swift) {
 		if (ID == null || ID.trim().equals("") || !adreseBanki.containsKey(ID))
 			return false;
-		String SW = this.getSWIFT(ID);
-		if (SW == null || !SW.equals(swift))
+		String SW = this.getSWIFT(ID).split(",")[0];
+		if (SW == null || !SW.equals(swift)){
+			System.out.println("ovde puklo2" + SW);
 			return false;
-
+		}
 		return true;
 	}
 
@@ -464,7 +468,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 
 	public static void main(String[] args) {
 		CentralnaBankaImpl cbi = new CentralnaBankaImpl();
-		// cbi.createInitial();
-		cbi.init();
+		cbi.createInitial();
+		//cbi.init();
 	}
 }

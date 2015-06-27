@@ -6,7 +6,7 @@ public class Validation {
 		if(number == null || number.trim().equals("")) 
 			return false;
 		try{
-			int n = Integer.parseInt(number.substring(0, 16));
+			long n = Long.parseLong(number.substring(0, 16));
 			int checksum = Integer.parseInt(number.substring(16, 18));
 			return (checksum == (98 - (n * 100) % 97));
 		}catch (NumberFormatException e){
@@ -19,10 +19,14 @@ public class Validation {
 			return "";
 		try{
 			long n = Long.parseLong(number);
-			return Long.toString(98 - (n * 100) % 97);
+			String st = Long.toString(98 - (n * 100) % 97);
+			if (st.length() == 1) {
+				return "0"+st;
+			} else {
+				return st;
+			}
 		}catch (NumberFormatException e){
-			return "fail";
+			return "";
 		}
 	}
-
 }

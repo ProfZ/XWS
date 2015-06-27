@@ -66,7 +66,7 @@ import xml.project.globals.TOsobe;
     "valuta"
 })
 @XmlRootElement(name = "MT103")
-public class MT103 extends Identifiable {
+public class MT103 {
 
     @XmlElement(name = "ID_poruke", required = true)
     protected String idPoruke;
@@ -330,13 +330,4 @@ public class MT103 extends Identifiable {
     public void setValuta(String value) {
         this.valuta = value;
     }
-	@Override
-	public Long getId() {
-		return Long.valueOf(getIDPoruke());
-	}
-
-	@Override
-	public void setId(Long id) {
-		setIDPoruke(String.valueOf(id));
-	}
 }

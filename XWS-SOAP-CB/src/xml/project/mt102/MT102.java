@@ -59,7 +59,7 @@ import xml.project.globals.TSequence;
     "datum"
 })
 @XmlRootElement(name = "MT102")
-public class MT102 extends Identifiable{
+public class MT102 {
 
     @XmlElement(name = "ID_poruke", required = true)
     protected String idPoruke;
@@ -276,15 +276,4 @@ public class MT102 extends Identifiable{
     public void setDatum(XMLGregorianCalendar value) {
         this.datum = value;
     }
-
-	@Override
-	public Long getId() {
-		return Long.valueOf(getIDPoruke());
-	}
-
-	@Override
-	public void setId(Long id) {
-		setIDPoruke(String.valueOf(id));
-	}
-
 }

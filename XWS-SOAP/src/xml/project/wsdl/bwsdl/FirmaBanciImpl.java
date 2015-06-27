@@ -152,7 +152,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 				StatusCode code = cetralnaBanka.acceptMT102(mt102);
 				if (code.getCode() == 200) {
-					RESTUtil.objectToDB(MT102_PUTANJA, mt102.getIDPoruke(),
+					RESTUtil.objectToDB("//" + MT102_PUTANJA, mt102.getIDPoruke(),
 							mt102);
 				} else {
 					// ovde ako nije dobro stiglo?
@@ -191,13 +191,13 @@ public class FirmaBanciImpl implements FirmaBanci {
 				return _return;
 				// throw new Exception("Invalid banks in transaction.");
 			}
-			RESTUtil.objectToDB(MT910_PUTANJA, mt910.getIDPoruke(), mt910);
+			RESTUtil.objectToDB("//" + MT910_PUTANJA, mt910.getIDPoruke(), mt910);
 			if (mt910.getIDPoruke().startsWith("cc")) {
 				return uradiClearing(mt910);
 			}
 			MT103 mt103Temp = new MT103();
 			// rtgs nalog
-			mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_PUTANJA
+			mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_PUTANJA +"/"
 					+ mt910.getIDPorukeNaloga(), mt103Temp);
 			BigDecimal iznos = mt103Temp.getIznos();
 			// update racuna banke
@@ -235,7 +235,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			MT102 mt102 = new MT102();
 			mt102 = (MT102) RESTUtil.doUnmarshall("*",
-					STIGLE_MT102 + mt910.getIDPorukeNaloga(), mt102);
+					STIGLE_MT102 +"/"+ mt910.getIDPorukeNaloga(), mt102);
 			if (mt102 == null
 					|| !mt102.getIDPoruke().equals(mt910.getIDPorukeNaloga())) {
 				_return.setCode(403);
@@ -246,7 +246,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 					procitajSveMT102(STIGLE_MT102), mt102);
 			RESTUtil.createSchema(STIGLE_MT102);
 			for (MT102 mt : listaMT102) {
-				RESTUtil.objectToDB(STIGLE_MT102, mt.getIDPoruke(), mt);
+				RESTUtil.objectToDB("//" + STIGLE_MT102, mt.getIDPoruke(), mt);
 			}
 			if (listaMT102.size() == 0) {
 				// obrisi pojedinacna placanja
@@ -326,17 +326,17 @@ public class FirmaBanciImpl implements FirmaBanci {
 				return _return;
 				// throw new Exception("Invalid banks in transaction.");
 			}
-			RESTUtil.objectToDB(MT900_PUTANJA, mt900.getIDPoruke(), mt900);
+			RESTUtil.objectToDB("//" + MT900_PUTANJA, mt900.getIDPoruke(), mt900);
 			if (mt900.getIDPoruke().startsWith("cc")) {
 				return uradiClearing(mt900);
 			}
 			MT103 mt103Temp = new MT103();
 			// rtgs nalog
-			mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_PUTANJA
+			mt103Temp = (MT103) RESTUtil.doUnmarshall("*", MT103_PUTANJA +"/"
 					+ mt900.getIDPorukeNaloga(), mt103Temp);
 			if (mt103Temp == null) {
 				MT102 mt102Temp = new MT102();
-				mt102Temp = (MT102) RESTUtil.doUnmarshall("*", MT102_PUTANJA
+				mt102Temp = (MT102) RESTUtil.doUnmarshall("*", MT102_PUTANJA +"/"
 						+ mt900.getIDPorukeNaloga(), mt102Temp);
 				for (TSequence seq : mt102Temp.getSekvenca()) {
 					TOsobe t1 = (seq.getPrimalacPoverilac());
@@ -387,7 +387,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			MT102 mt102 = new MT102();
 			mt102 = (MT102) RESTUtil.doUnmarshall("*",
-					MT102_PUTANJA + mt900.getIDPorukeNaloga(), mt102);
+					MT102_PUTANJA +"/"+ mt900.getIDPorukeNaloga(), mt102);
 			if (mt102 == null
 					|| !mt102.getIDPoruke().equals(mt900.getIDPorukeNaloga())) {
 				_return.setCode(403);
@@ -405,7 +405,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 					procitajSveMT102(MT102_PUTANJA), mt102);
 			RESTUtil.createSchema(MT102_PUTANJA);
 			for (MT102 mt : listaMT102) {
-				RESTUtil.objectToDB(MT102_PUTANJA, mt.getIDPoruke(), mt);
+				RESTUtil.objectToDB("//" + MT102_PUTANJA, mt.getIDPoruke(), mt);
 			}
 			if (listaMT102.size() == 0) {
 				// OVDE MORA da bude razdvojeno placanja poslata
@@ -456,14 +456,14 @@ public class FirmaBanciImpl implements FirmaBanci {
 					// throw new Exception("Not existing firma.");
 				}
 			}
-			RESTUtil.objectToDB(STIGLE_MT102, mt102.getIDPoruke().toString(),
+			RESTUtil.objectToDB("//" + STIGLE_MT102, mt102.getIDPoruke().toString(),
 					mt102);
 
 			// upis transakcija
 			ArrayList<MT103> tempTransakcije = Converter
 					.convertMT102toMT103List(mt102);
 			for (MT103 t : tempTransakcije) {
-				RESTUtil.objectToDB(TRANSAKCIJE_ZA_IZVOD, t.getIDPoruke()
+				RESTUtil.objectToDB("//" + TRANSAKCIJE_ZA_IZVOD, t.getIDPoruke()
 						.toString(), t);
 			}
 
@@ -512,9 +512,10 @@ public class FirmaBanciImpl implements FirmaBanci {
 				return _return;
 				// throw new Exception("Not existing firma.");
 			}
-			RESTUtil.objectToDB(MT103_PUTANJA, mt103.getIDPoruke().toString(),
+			System.out.println(mt103.getIDPoruke());
+			RESTUtil.objectToDB("//" + MT103_PUTANJA, mt103.getIDPoruke().toString(),
 					mt103);
-			RESTUtil.objectToDB(TRANSAKCIJE_ZA_IZVOD, mt103.getIDPoruke()
+			RESTUtil.objectToDB("//" + TRANSAKCIJE_ZA_IZVOD, mt103.getIDPoruke()
 					.toString(), mt103);
 			_return.setCode(200);
 			_return.setMessage("OK");
@@ -545,7 +546,9 @@ public class FirmaBanciImpl implements FirmaBanci {
 				_return.setMessage("Bad Request");
 				return _return;
 			}
-
+			FirmaRacun duznik = findFirmu(nalogZaPrenos.getDuznikNalogodavac().getRacun());
+			duznik.setRaspoloziviNovac(duznik.getRaspoloziviNovac().subtract(nalogZaPrenos.getIznos()));
+			
 			// Ista banka
 			FirmaRacun racun = findFirmu(nalogZaPrenos.getPrimalacPoverilac()
 					.getRacun());
@@ -572,7 +575,14 @@ public class FirmaBanciImpl implements FirmaBanci {
 				// RTGS
 				MT103 mt103 = Converter.convertNalogToMT103(nalogZaPrenos,
 						cetralnaBanka);
-				cetralnaBanka.acceptMT103(mt103);
+				RESTUtil.objectToDB("//" + MT103_PUTANJA, mt103.getIDPoruke(),
+						mt103);
+				MT900 mt900 = cetralnaBanka.acceptMT103(mt103);
+				System.out.println(mt900.getIDPoruke());
+				if (mt900.getIDPoruke().startsWith("__")) {
+					// povracaj novca sirotinji
+					duznik.setRaspoloziviNovac(duznik.getRaspoloziviNovac().add(nalogZaPrenos.getIznos()));
+				}
 			} else {
 				// Clearing & Settlement
 				TSequence seq = Converter
@@ -580,11 +590,13 @@ public class FirmaBanciImpl implements FirmaBanci {
 				RESTUtil.objectToDB("//" + POJEDINACNA_PLACANJA_PUTANJA,
 						seq.getIDNalogaZaPlacanje(), seq);
 			}
+			saveRacuni();
 			_return.setMessage("OK");
 			return _return;
 		} catch (java.lang.Exception ex) {
 			_return.setCode(400);
 			_return.setMessage("Bad Request");
+			ex.printStackTrace();
 			return _return;
 		}
 	}
@@ -861,7 +873,6 @@ public class FirmaBanciImpl implements FirmaBanci {
 			osoba.setPozivNaBroj("12345");
 			osoba.setRacun(RACUN_BANKE);
 			mt103.setDuznikNalogodavac(osoba);
-			mt103.setId(new Long(12345));
 			mt103.setIDPoruke("1234567");
 			mt103.setIznos(new BigDecimal(129));
 			mt103.setPrimalacPoverilac(osoba);
@@ -869,7 +880,6 @@ public class FirmaBanciImpl implements FirmaBanci {
 			mt103.setValuta("rsd");
 			RESTUtil.objectToDB("//" + MT103_PUTANJA, mt103.getIDPoruke(),
 					mt103);
-			mt103.setId(new Long(123456));
 			mt103.setIDPoruke("12345678");
 			RESTUtil.objectToDB("//" + MT103_PUTANJA, mt103.getIDPoruke(),
 					mt103);
@@ -893,15 +903,22 @@ public class FirmaBanciImpl implements FirmaBanci {
 			nalog.setIznos(new BigDecimal(1000.00));
 			nalog.setSvrhaPlacanja("Prijava ispita");
 			nalog.setValuta("RSD");
+			TOsobe osoba2 = new TOsobe();
 			TOsobe osoba1 = new TOsobe();
 			osoba1.setNaziv("Pejak");
+			osoba2.setNaziv("Pejak2");
+			osoba2.setPozivNaBroj("21000");
 			osoba1.setPozivNaBroj("21000");
 			String deoRac = "1004567890123456";
+			String deoRac2 = "1014567890123456";
+			osoba2.setRacun(new BigInteger(deoRac2
+					+ Validation.generateChecksum(deoRac2)).toString());
 			osoba1.setRacun(new BigInteger(deoRac
 					+ Validation.generateChecksum(deoRac)).toString());
 			osoba1.setModel(new BigInteger("911"));
+			osoba2.setModel(new BigInteger("911"));
 			nalog.setDuznikNalogodavac(osoba1);
-			nalog.setPrimalacPoverilac(osoba1);
+			nalog.setPrimalacPoverilac(osoba2);
 			StatusCode code = imp.primiNalog(nalog);
 			System.out.println(code.getCode() + "  " + code.getMessage());
 		} catch (DatatypeConfigurationException e) {
@@ -914,7 +931,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
 		imp.createInitial();
-		// imp.init();
+		imp.init();
 		imp.test1();
 	}
 

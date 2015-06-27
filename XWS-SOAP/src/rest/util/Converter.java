@@ -14,16 +14,6 @@ public class Converter {
 	public static MT103 convertNalogToMT103(NalogZaPrenos nalog, CentralnaBanka cetralnaBanka){
 		MT103 mt103 = new MT103();
 		
-		TBanke bankaDuznik = new TBanke();
-		bankaDuznik.setObracunskiRacunBanke(null);
-		bankaDuznik.setSWIFTKodBanke("");
-		mt103.setBankaDuznik(bankaDuznik);
-		
-		TBanke bankaPoverilac = new TBanke();
-		bankaPoverilac.setObracunskiRacunBanke(null);
-		bankaDuznik.setSWIFTKodBanke("");
-		mt103.setBankaPoverilac(bankaPoverilac);
-		
 		String sw1 = cetralnaBanka.getSWIFT(nalog.getDuznikNalogodavac().getRacun().substring(0,3));
 		String sw2 = cetralnaBanka.getSWIFT(nalog.getPrimalacPoverilac().getRacun().substring(0,3));
 		TBanke duznik = new TBanke();
