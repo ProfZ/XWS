@@ -1,15 +1,12 @@
 <div>
 	<form>
 		<div class="form-group">
-			<label >username:</label>
-			<input class="form-control" ng-model="user.username" id="username"></input>
+			<label >PIB:</label>
+			<input class="form-control" id="pib"></input>
 		</div>
+		<p ng-bind="user.pib"> </p>
 		<div class="form-group">
-			<label>password:</label>
-			<input type="password" class="form-control" ng-model="user.password" id="password"></input>
-		</div>
-		<div class="form-group">
-			<button class="btn btn-default" ng-click="login()">login</button>
+			<button class="btn btn-default" ng-click="login()">Login</button>
 		</div>
 	</form>
 </div>

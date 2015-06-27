@@ -43,10 +43,28 @@ angular.module('invoice', [
 			}
 		});
 		modalInstance.result.then(function (data) {
-			var invoiceItem = data.stavkaFakture;
+			var invoiceItem = data.invoiceItem;
 			//ako stavka fakture nema id i ako je akcija 'save' znaci da je nova i dodaje se u listu. ako ima, svakako se manja u listi
-			if(!invoiceItem.redniBroj && data.action==='save'){
-				$scope.invoice.invoiceItems.push(invoiceItem);				
+			$log.info('Invoice item :'+invoiceItem);
+			// if(!invoiceItem.redniBroj && data.action==='updateStavka'){
+			// 	$scope.invoice.invoiceItems.push(invoiceItem);				
+			// }
+			if(data.action==='updateStavka'){
+				if(invoiceItem.redniBroj){
+					//zbog cega redirekcija ide na callback?
+					// InvoiceItem.update({invoiceItemId:invoiceItem.redniBroj},function () {
+					// 	$location.path('/invoice/:invoiceId');
+					// });
+					InvoiceItem.putInvoiceItem({'invoiceId':$scope.invoice.zaglavljeFakture.idPoruke, 'invoiceId':invoiceItem.redniBroj});//.$promise.then(function (data) {
+						//$scope.invoice = data;
+					//});
+				}
+				else{
+					$scope.invoiceItem.$saveNew(function () {	
+						$location.path('/invoice/:invoiceId');
+					});
+				}
+				$log.info("update stavka");
 			}
 			//ako stavka treba da se obrise izbaci se iz niza
 			if(data.action==='delete'){
@@ -66,7 +84,7 @@ angular.module('invoice', [
 	$scope.save = function () {
 		if($scope.invoice.zaglavljeFakture.idPoruke){
 			//zbog cega redirekcija ide na callback?
-			$scope.invoice.$update({invoiceId:$scope.invoice.idPoruke},function () {
+			$scope.invoice.$update({invoiceId:$scope.invoice.zaglavljeFakture.idPoruke},function () {
 				$location.path('/invoiceList');
 			});
 		}
@@ -80,10 +98,9 @@ angular.module('invoice', [
 
 	$scope.delete = function () {
 		if($scope.invoice.idPoruke){
-			$scope.invoice.$delete({invoiceId:$scope.invoice.idPoruke}, function () {
+			$scope.invoice.$delete({invoiceId:$scope.invoice.zaglavljeFakture.idPoruke}, function () {
 				$location.path('invoiceList');
 			});
 		}
 	}
-
 });

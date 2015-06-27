@@ -6,8 +6,8 @@
 			<th>total amount</th>
 		</tr>
 		<tr ng-repeat="invoice in invoices" ng-click="insertOrEditInvoice(invoice)">
-			<td>{{invoice.zaglavljeFakture.dobavljac.nazivKupca}}</td>
-			<td>{{invoice.zaglavljeFakture.dobavljac.adresaKupca}}</td>
+			<td>{{invoice.zaglavljeFakture.dobavljac.naziv}}</td>
+			<td>{{invoice.zaglavljeFakture.dobavljac.adresa}}</td>
 			<td>{{invoice.zaglavljeFakture.iznosZaUplatu}}</td>
 		</tr>
 	</table>
