@@ -10,6 +10,7 @@ import java.text.Bidi;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Properties;
 
 import javax.ejb.Init;
 import javax.ejb.Local;
@@ -50,7 +51,17 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 	
 	public InvoiceDao() {
 		super("xml.project.faktura", "fakture");
+		Properties props = new Properties();
+		try {
+			props.load(getClass().getClassLoader().getResourceAsStream("tomee.properties"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		xsdFolderPath = props.getProperty("tomee.dir") + "/webapps/" + props.getProperty("dir.name") + "/WEB-INF/xsd";
 	}
+	
+	String xsdFolderPath;
 
 
 	public List<Faktura> findAll() throws IOException, JAXBException {
@@ -306,7 +317,7 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 		ZaglavljeFakture temp = new ZaglavljeFakture();
 		temp.setDatumValute(date);
 		temp.setDobavljac(firmaDobavljac);
-		temp.setIDPoruke(idPoruke);
+		temp.setIdPoruke(idPoruke);
 		temp.setIznosZaUplatu(iznosZaUplatu);
 		temp.setKupac(firmaKupac);
 		temp.setOznakaValute(oznakaValute);
@@ -376,13 +387,13 @@ public class InvoiceDao extends GenericDaoBean<Faktura, Long> implements Invoice
 			//W3C sema
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			//lokacija seme
-			Schema schema = schemaFactory.newSchema(new File("C:/xws/XWS/XWS-REST/xsd/Faktura.xsd"));
+			Schema schema = schemaFactory.newSchema(new File(xsdFolderPath + "/Faktura.xsd"));
 			 //setuje se sema
 			jaxbMarshaller.setSchema(schema);
 			//EventHandler, koji obradjuje greske, ako se dese prilikom validacije
 			jaxbMarshaller.setEventHandler(new rs.ac.uns.ftn.xws.util.MyValidationEventHandler());
             //ucitava se objektni model, a da se pri tome radi i validacija
-			jaxbMarshaller.marshal(invoice, new File("C:/xws/XWS/XWS-REST//xml/Faktura"+invoice.procitajId()+".xml"));
+			jaxbMarshaller.marshal(invoice, new File("C:/xws/XWS/XWS-REST/xml/Faktura"+invoice.procitajId()+".xml"));
 			
 			if (!invoice.getZaglavljeFakture().getDobavljac().getPib().equals(id_dobavljaca) || !invoice.semanticallyValid())
 				return false;

@@ -72,16 +72,19 @@
 		</copy>
 	</target>
 	
-	<target name="war" depends="compile">
+	<target name="war" depends="copy-non-java">
 		<delete file="${war.name}"/>
-		<war warfile="${dist.dir}/${war.name}" webxml="${webinf.dir}/web.xml">
+		<war destfile="${dist.dir}/${war.name}" webxml="${webinf.dir}/web.xml">
 			<classes dir="${bin.dir}">
 				<exclude name="**/client/*.class"/>
 				<include name="**/*.class"/>
+				<include name="**/*.properties"/>
 			</classes>
 			<lib dir="${weblib.dir}">
 				<include name="*.jar"/>
 			</lib>
+			<webinf dir="${basedir}" includes="/xsd/**/*.xsd">
+			</webinf>
 		</war>
 	</target>
 

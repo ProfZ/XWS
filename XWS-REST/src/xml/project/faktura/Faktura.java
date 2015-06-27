@@ -932,7 +932,7 @@ public class Faktura extends Identifiable{
          *     {@link String }
          *     
          */
-        public String getIDPoruke() {
+        public String getIdPoruke() {
             return idPoruke;
         }
 
@@ -944,7 +944,7 @@ public class Faktura extends Identifiable{
          *     {@link String }
          *     
          */
-        public void setIDPoruke(String value) {
+        public void setIdPoruke(String value) {
             this.idPoruke = value;
         }
 
@@ -1331,13 +1331,13 @@ public class Faktura extends Identifiable{
 	@Override
 	public Long procitajId() {
 		// TODO Auto-generated method stub
-		return Long.valueOf(zaglavljeFakture.getIDPoruke());
+		return Long.valueOf(zaglavljeFakture.getIdPoruke());
 	}
 
 	@Override
 	public void postaviID(Long id) {
 		// TODO Auto-generated method stub
-		zaglavljeFakture.setIDPoruke(String.valueOf(id));
+		zaglavljeFakture.setIdPoruke(String.valueOf(id));
 	}
 
 }

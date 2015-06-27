@@ -60,6 +60,7 @@ public class RestService implements RestServerRemote{
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response pribaviFakture(@PathParam("id_dobavljaca") String id_dobavljaca) throws IOException, JAXBException {
 		ResponseBuilder rb;
+		System.out.println();
 		if (!invoiceDao.isPartner(id_dobavljaca)) {
 			rb = Response.status(Status.FORBIDDEN);
 		} else {
