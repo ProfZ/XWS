@@ -1,9 +1,11 @@
 package rest.util;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import xml.project.globals.TBanke;
 import xml.project.globals.TSequence;
+import xml.project.mt102.MT102;
 import xml.project.mt103.MT103;
 import xml.project.uplatnica.NalogZaPrenos;
 import xml.project.wsdl.cbwsdl.CentralnaBanka;
@@ -57,4 +59,25 @@ public class Converter {
 		return seq;
 	}
 	
+	public static ArrayList<MT103> convertMT102toMT103List(MT102 mt102){
+		ArrayList<MT103> list = new ArrayList<MT103>();
+		
+		for (TSequence seq : mt102.getSekvenca()){
+			MT103 mt103 = new MT103();
+			mt103.setBankaDuznik(mt102.getBankaDuznik());
+			mt103.setBankaPoverilac(mt102.getBankaPoverilac());
+			mt103.setDatumNaloga(seq.getDatumNaloga());
+			mt103.setDatumValute(seq.getDatumNaloga());
+			mt103.setDuznikNalogodavac(seq.getDuznikNalogodavac());
+			mt103.setIznos(seq.getIznos());
+			mt103.setPrimalacPoverilac(seq.getPrimalacPoverilac());
+			mt103.setSvrhaPlacanja(seq.getSvrhaPlacanja());
+			mt103.setValuta(seq.getValuta());
+			Random rnd = new Random();
+			mt103.setIDPoruke(rnd.nextInt(100000000)+"");
+			list.add(mt103);
+		}
+		
+		return list;
+	}
 }

@@ -48,13 +48,7 @@ import xml.project.racuni.Racuni.FirmaRacun.Racun;
  * 
  */
 
-
-@javax.jws.WebService(
-                      serviceName = "CentralnaBankaService",
-                      portName = "CentralnaBankaPort",
-                      targetNamespace = "http://www.project.xml/wsdl/CBwsdl",
-                      wsdlLocation = "WEB-INF/wsdl/CentralnaBanka.wsdl",
-                      endpointInterface = "xml.project.wsdl.cbwsdl.CentralnaBanka")
+@javax.jws.WebService(serviceName = "CentralnaBankaService", portName = "CentralnaBankaPort", targetNamespace = "http://www.project.xml/wsdl/CBwsdl", wsdlLocation = "WEB-INF/wsdl/CentralnaBanka.wsdl", endpointInterface = "xml.project.wsdl.cbwsdl.CentralnaBanka")
 public class CentralnaBankaImpl implements CentralnaBanka {
 
 	private static final Logger LOG = Logger.getLogger(CentralnaBankaImpl.class
@@ -64,7 +58,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 	public static final String RACUNI_PUTANJA = "CBRacuni";
 	public static final String MT103_PUTANJA = "CBMT103";
 	public static final String CLEARING_PUTANJA = "CBClearing";
-	
+
 	public static final String B = "http://www.project.xml/wsdl/CBwsdl";
 	public static final String BSERVICE = "FirmaBankaService";
 	public static final String BPORT = "FirmaBanci";
@@ -171,9 +165,9 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 	}
 
 	public void saveRacuni() {
-		RESTUtil.objectToDB("//"+RACUNI_PUTANJA, "", racuni);
+		RESTUtil.objectToDB("//" + RACUNI_PUTANJA, "", racuni);
 	}
-	
+
 	public boolean checkBanka(String ID, String swift) {
 		if (ID == null || ID.trim().equals("") || !adreseBanki.containsKey(ID))
 			return false;
@@ -283,9 +277,28 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 				this.service = Service.create(this.cbwsdl, this.serviceName);
 				this.banka = service.getPort(this.portName, FirmaBanci.class);
 				StatusCode code = this.banka.acceptMT102(test);
+				MT900 mt900 = new MT900();
 				if (code.getCode() != 200) {
-					//poruka banki C za lose
+					// poruka banki C za lose
+					mt900.setIDPoruke("cce" + rnd.nextInt(10000000) + "");
+					mt900.setBankaDuznik(test.getBankaDuznik());
+					mt900.setDatum(test.getDatum());
+					mt900.setDatumValute(test.getDatumValute());
+					mt900.setIDPorukeNaloga(test.getIDPoruke());
+					mt900.setIznos(test.getUkupanIznos());
+					mt900.setSifraValute(test.getSifraValute());
+
 					System.out.println("Something is wrong: "
+							+ code.getMessage());
+					this.cbwsdl = new URL(adreseBanki.get(test
+							.getBankaPoverilac().getObracunskiRacunBanke()
+							.substring(0, 3)));
+					this.service = Service
+							.create(this.cbwsdl, this.serviceName);
+					this.banka = service.getPort(this.portName,
+							FirmaBanci.class);
+					code = this.banka.acceptMT900(mt900);
+					System.out.println("Ona banka koja je poslala: "
 							+ code.getMessage());
 					continue;
 				}
@@ -300,12 +313,29 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 				mt910.setSifraValute(test.getSifraValute());
 				StatusCode code2 = this.banka.acceptMT910(mt910);
 				if (code2.getCode() != 200) {
-					//poruka banki C za lose
+					// poruka banki C za lose
+					mt900.setIDPoruke("cce" + rnd.nextInt(10000000) + "");
+					mt900.setBankaDuznik(test.getBankaDuznik());
+					mt900.setDatum(test.getDatum());
+					mt900.setDatumValute(test.getDatumValute());
+					mt900.setIDPorukeNaloga(test.getIDPoruke());
+					mt900.setIznos(test.getUkupanIznos());
+					mt900.setSifraValute(test.getSifraValute());
+
 					System.out.println("Something is wrong: "
-							+ code2.getMessage());
+							+ code.getMessage());
+					this.cbwsdl = new URL(adreseBanki.get(test
+							.getBankaPoverilac().getObracunskiRacunBanke()
+							.substring(0, 3)));
+					this.service = Service
+							.create(this.cbwsdl, this.serviceName);
+					this.banka = service.getPort(this.portName,
+							FirmaBanci.class);
+					code = this.banka.acceptMT900(mt900);
+					System.out.println("Ona banka koja je poslala: "
+							+ code.getMessage());
 					continue;
 				}
-				MT900 mt900 = new MT900();
 				mt900.setIDPoruke("cc" + rnd.nextInt(10000000) + "");
 				mt900.setBankaDuznik(test.getBankaDuznik());
 				mt900.setDatum(test.getDatum());
@@ -329,7 +359,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void init() {
 		try {
 			this.racuni = new ArrayList<FirmaRacun>();
