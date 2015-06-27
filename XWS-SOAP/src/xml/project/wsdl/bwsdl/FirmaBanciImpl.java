@@ -118,7 +118,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			for (TSequence k : rac.getPlacanje()) {
 				String sw = cetralnaBanka.getSWIFT(k.getDuznikNalogodavac().getRacun().substring(0,3)); // kljuc za mt102
 				if (!sekvence102.containsKey(sw)){
-					ArrayList<TSequence> temp = new ArrayList<>();
+					ArrayList<TSequence> temp = new ArrayList<TSequence>();
 					temp.add(k);
 					sekvence102.put(sw, temp);
 				} else {
