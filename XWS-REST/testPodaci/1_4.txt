@@ -1,0 +1,42 @@
+{
+  "zaglavljeFakture": {
+    "dobavljac": {
+      "nazivKupca": "MMORPG",
+      "adresaKupca": "Beograd",
+      "pibkupca": "PIBKupca004"
+    },
+    "kupac": {
+      "nazivKupca": "ARAMDM",
+      "adresaKupca": "Novi Sad",
+      "pibkupca": "PIBKupca002"
+    },
+    "racun": {
+      "brojRacuna": 1,
+      "datumRacuna": 1434578400000
+    },
+    "vrednostRobe": 300,
+    "vrednostUsluga": 100,
+    "ukupnoRobaIUsluge": 400,
+    "ukupnoRabat": 44,
+    "ukupnoPorez": 30,
+    "oznakaValute": "RSD",
+    "iznosZaUplatu": 5000,
+    "uplataNaRacun": "001-1234567890123-12",
+    "datumValute": 1434578400000,
+    "idporuke": "12390"
+  },
+  "stavkaFakture": [
+    {
+      "redniBroj": 1,
+      "nazivRobeUsluge": "dzemovi",
+      "kolicina": 5,
+      "jedinicaMere": "kg",
+      "jedinicnaCena": 80,
+      "vrednost": 400,
+      "procenatRabata": 11,
+      "iznosRabata": 44,
+      "umanjenoZaRabat": 356,
+      "ukupanPorez": 30
+    }
+  ]
+}

@@ -19,7 +19,7 @@ public interface InvoiceDaoLocal extends GenericDao<Faktura, Long> {
 	String addInvoiceItem(Long idInvoice, StavkaFakture newInvoiceItem) throws IOException, JAXBException;
 	public Fakture findAllInvoicesByPartner(String partnerID) throws IOException, JAXBException;
 	public boolean isPartner(String partnerID) throws IOException;
-	boolean testValidationInvoice(Faktura invoice);
+	boolean testValidationInvoice(Faktura invoice, String id_dobavljaca);
 }
 
 

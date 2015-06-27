@@ -249,10 +249,58 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @XmlRootElement(name = "Faktura", namespace = "http://www.project.xml/faktura")
 public class Faktura extends Identifiable{
 
-    @XmlElement(name = "Zaglavlje_fakture", namespace = "http://www.project.xml/faktura", required = true)
+    @XmlElement(name = "zaglavljeFakture", namespace = "http://www.project.xml/faktura", required = true)
     protected Faktura.ZaglavljeFakture zaglavljeFakture;
-    @XmlElement(name = "Stavka_fakture", namespace = "http://www.project.xml/faktura", required = true)
+    @XmlElement(name = "stavkaFakture", namespace = "http://www.project.xml/faktura", required = true)
     protected List<Faktura.StavkaFakture> stavkaFakture;
+    
+    public boolean semanticallyValid() {
+    	BigDecimal sumaStavki = new BigDecimal(0), sumaPorez = new BigDecimal(0), sumaRabat = new BigDecimal(0);
+    	for (StavkaFakture stavka: stavkaFakture) {
+    		if (!stavka.semanticallyValid())
+    			return false;
+    		sumaStavki = sumaStavki.add(stavka.vrednost);
+    		sumaPorez = sumaPorez.add(stavka.ukupanPorez);
+    		sumaRabat = sumaRabat.add(stavka.iznosRabata);
+    	}
+    	if (sumaStavki.compareTo(zaglavljeFakture.ukupnoRobaIUsluge) != 0){
+    		System.out.println("sumaStavki(" + sumaStavki + ") != ukupnoRobaIUsluge(" + zaglavljeFakture.ukupnoRobaIUsluge + ") ");
+    		return false;
+    	}
+    	if (zaglavljeFakture.vrednostRobe.add(zaglavljeFakture.vrednostUsluga).compareTo(zaglavljeFakture.ukupnoRobaIUsluge) != 0){
+    		System.out.println("vrednostRobe(" + zaglavljeFakture.vrednostRobe + ") + vrednostUsluga(" + zaglavljeFakture.vrednostUsluga + ") != ukupnoRobaIUsluge(" + zaglavljeFakture.ukupnoRobaIUsluge + ") ");
+    		return false;
+    	}
+    	if (sumaPorez.compareTo(zaglavljeFakture.ukupnoPorez) != 0){
+    		System.out.println("sumaStavki(" + sumaPorez + ") != ukupnoPorez(" + zaglavljeFakture.ukupnoPorez + ") ");
+    		return false;
+    	}
+    	if (sumaRabat.compareTo(zaglavljeFakture.ukupnoRabat) != 0){
+    		System.out.println("sumaRabat(" + sumaRabat + ") != ukupnoRabat(" + zaglavljeFakture.ukupnoRabat + ") ");
+    		return false;
+    	}
+    	System.out.println("Invoice " + zaglavljeFakture.idPoruke + " is semantically correct");
+    	return true;
+    }
+    
+    public void makeSemanticallyValid() {
+    	BigDecimal sumaStavki = new BigDecimal(0), sumaPorez = new BigDecimal(0), sumaRabat = new BigDecimal(0);
+    	System.out.println("Making faktura " + zaglavljeFakture.idPoruke + " semantically valid.");
+    	for (StavkaFakture stavka: stavkaFakture) {
+    		stavka.makeSemanticallyValid();
+    		sumaStavki = sumaStavki.add(stavka.getVrednost());
+    		sumaPorez = sumaPorez.add(stavka.getUkupanPorez());
+    		sumaRabat = sumaRabat.add(stavka.getIznosRabata());
+    	}
+    	if (sumaStavki.compareTo(zaglavljeFakture.getUkupnoRobaIUsluge()) != 0) 
+    		zaglavljeFakture.setUkupnoRobaIUsluge(sumaStavki);
+    	if (zaglavljeFakture.vrednostRobe.add(zaglavljeFakture.vrednostUsluga).compareTo(zaglavljeFakture.ukupnoRobaIUsluge) != 0)
+    		zaglavljeFakture.setVrednostRobe(zaglavljeFakture.getUkupnoRobaIUsluge().subtract(zaglavljeFakture.getVrednostUsluga()));
+    	if (sumaPorez.compareTo(zaglavljeFakture.ukupnoPorez) != 0)
+    		zaglavljeFakture.setUkupnoPorez(sumaPorez);
+    	if (sumaRabat.compareTo(zaglavljeFakture.ukupnoRabat) != 0)
+    		zaglavljeFakture.setUkupnoRabat(sumaRabat);
+    }
 
     /**
      * Gets the value of the zaglavljeFakture property.
@@ -429,26 +477,53 @@ public class Faktura extends Identifiable{
     })
     public static class StavkaFakture {
 
-        @XmlElement(name = "Redni_broj", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "redniBroj", namespace = "http://www.project.xml/faktura", required = true)
         protected long redniBroj;
-        @XmlElement(name = "Naziv_robe_usluge", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "nazivRobeUsluge", namespace = "http://www.project.xml/faktura", required = true)
         protected String nazivRobeUsluge;
-        @XmlElement(name = "Kolicina", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "kolicina", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal kolicina;
-        @XmlElement(name = "Jedinica_mere", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "jedinicaMere", namespace = "http://www.project.xml/faktura", required = true)
         protected String jedinicaMere;
-        @XmlElement(name = "Jedinicna_cena", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "jedinicnaCena", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal jedinicnaCena;
-        @XmlElement(name = "Vrednost", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "vrednost", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal vrednost;
-        @XmlElement(name = "Procenat_rabata", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "procenatRabata", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal procenatRabata;
-        @XmlElement(name = "Iznos_rabata", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "iznosRabata", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal iznosRabata;
-        @XmlElement(name = "Umanjeno_za_rabat", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "umanjenoZaRabat", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal umanjenoZaRabat;
-        @XmlElement(name = "Ukupan_porez", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "ukupanPorez", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal ukupanPorez;
+        
+        public boolean semanticallyValid() {
+        	if (kolicina.multiply(jedinicnaCena).compareTo(vrednost) != 0) {
+        		System.out.println("kolicina(" + kolicina + ") * jedinicnaCena(" + jedinicnaCena + ") != vrednost(" + vrednost + ") ");
+        		return false;
+        	}
+        	if (vrednost.multiply(procenatRabata.divide(new BigDecimal(100.0f))).compareTo(iznosRabata) != 0) {
+        		System.out.println("vrednost(" + vrednost + ") * procenatRabata(" + procenatRabata.divide(new BigDecimal(100.0f)) + ") != iznosRabata(" + iznosRabata + ") ");
+        		return false;
+        	}
+        	if (iznosRabata.add(umanjenoZaRabat).compareTo(vrednost) != 0) {
+        		System.out.println("iznosRabata(" + iznosRabata + ") + umanjenoZaRabat(" + umanjenoZaRabat + ") != vrednost(" + vrednost + ") ");
+        		return false;
+        	}
+        	System.out.println("item " + redniBroj + " is semantically correct");
+        	return true;
+        }
+        
+        public void makeSemanticallyValid() {
+        	System.out.println("making item " + redniBroj + " semantically correct");
+        	if (kolicina.multiply(jedinicnaCena).compareTo(vrednost) != 0)
+        		vrednost = kolicina.multiply(jedinicnaCena);
+        	if (vrednost.multiply(procenatRabata.divide(new BigDecimal(100.0f))).compareTo(iznosRabata) != 0)
+        		iznosRabata = vrednost.multiply(procenatRabata.divide(new BigDecimal(100.0f)));
+        	if (iznosRabata.add(umanjenoZaRabat).compareTo(vrednost) != 0)
+        		umanjenoZaRabat = vrednost.subtract(iznosRabata);
+        }
 
         /**
          * Gets the value of the redniBroj property.
@@ -821,31 +896,31 @@ public class Faktura extends Identifiable{
     })
     public static class ZaglavljeFakture {
 
-        @XmlElement(name = "ID_poruke", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "idPoruke", namespace = "http://www.project.xml/faktura", required = true)
         protected String idPoruke;
-        @XmlElement(name = "Dobavljac", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "dobavljac", namespace = "http://www.project.xml/faktura", required = true)
         protected TFirma dobavljac;
-        @XmlElement(name = "Kupac", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "kupac", namespace = "http://www.project.xml/faktura", required = true)
         protected TFirma kupac;
-        @XmlElement(name = "Racun", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "racun", namespace = "http://www.project.xml/faktura", required = true)
         protected Faktura.ZaglavljeFakture.Racun racun;
-        @XmlElement(name = "Vrednost_robe", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "vrednostRobe", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal vrednostRobe;
-        @XmlElement(name = "Vrednost_usluga", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "vrednostUsluga", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal vrednostUsluga;
-        @XmlElement(name = "Ukupno_roba_i_usluge", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "ukupnoRobaIUsluge", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal ukupnoRobaIUsluge;
-        @XmlElement(name = "Ukupno_rabat", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "ukupnoRabat", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal ukupnoRabat;
-        @XmlElement(name = "Ukupno_porez", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "ukupnoPorez", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal ukupnoPorez;
-        @XmlElement(name = "Oznaka_valute", namespace = "http://www.project.xml/faktura", required = true, defaultValue = "rsd")
+        @XmlElement(name = "oznakaValute", namespace = "http://www.project.xml/faktura", required = true, defaultValue = "rsd")
         protected String oznakaValute;
-        @XmlElement(name = "Iznos_za_uplatu", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "iznosZaUplatu", namespace = "http://www.project.xml/faktura", required = true)
         protected BigDecimal iznosZaUplatu;
-        @XmlElement(name = "Uplata_na_racun", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "uplataNaRacun", namespace = "http://www.project.xml/faktura", required = true)
         protected String uplataNaRacun;
-        @XmlElement(name = "Datum_valute", namespace = "http://www.project.xml/faktura", required = true)
+        @XmlElement(name = "datumValute", namespace = "http://www.project.xml/faktura", required = true)
         @XmlSchemaType(name = "date")
         protected XMLGregorianCalendar datumValute;
 
@@ -1195,9 +1270,9 @@ public class Faktura extends Identifiable{
         })
         public static class Racun {
 
-            @XmlElement(name = "Broj_racuna", namespace = "http://www.project.xml/faktura", required = true)
+            @XmlElement(name = "brojRacuna", namespace = "http://www.project.xml/faktura", required = true)
             protected BigInteger brojRacuna;
-            @XmlElement(name = "Datum_racuna", namespace = "http://www.project.xml/faktura", required = true)
+            @XmlElement(name = "datumRacuna", namespace = "http://www.project.xml/faktura", required = true)
             @XmlSchemaType(name = "date")
             protected XMLGregorianCalendar datumRacuna;
 

@@ -57,18 +57,18 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TFirma", namespace = "http://www.project.xml/faktura", propOrder = {
-    "nazivKupca",
-    "adresaKupca",
-    "pibKupca"
+    "naziv",
+    "adresa",
+    "pib"
 })
 public class TFirma {
 
-    @XmlElement(name = "Naziv", required = true)
-    protected String nazivKupca;
-    @XmlElement(name = "Adresa", required = true)
-    protected String adresaKupca;
-    @XmlElement(name = "PIB", required = true)
-    protected String pibKupca;
+    @XmlElement(name = "naziv", required = true)
+    protected String naziv;
+    @XmlElement(name = "adresa", required = true)
+    protected String adresa;
+    @XmlElement(name = "pib", required = true)
+    protected String pib;
 
     /**
      * Gets the value of the nazivKupca property.
@@ -78,8 +78,8 @@ public class TFirma {
      *     {@link String }
      *     
      */
-    public String getNazivKupca() {
-        return nazivKupca;
+    public String getNaziv() {
+        return naziv;
     }
 
     /**
@@ -90,8 +90,8 @@ public class TFirma {
      *     {@link String }
      *     
      */
-    public void setNazivKupca(String value) {
-        this.nazivKupca = value;
+    public void setNaziv(String value) {
+        this.naziv = value;
     }
 
     /**
@@ -102,8 +102,8 @@ public class TFirma {
      *     {@link String }
      *     
      */
-    public String getAdresaKupca() {
-        return adresaKupca;
+    public String getAdresa() {
+        return adresa;
     }
 
     /**
@@ -114,8 +114,8 @@ public class TFirma {
      *     {@link String }
      *     
      */
-    public void setAdresaKupca(String value) {
-        this.adresaKupca = value;
+    public void setAdresa(String value) {
+        this.adresa = value;
     }
 
     /**
@@ -126,8 +126,8 @@ public class TFirma {
      *     {@link String }
      *     
      */
-    public String getPIBKupca() {
-        return pibKupca;
+    public String getPib() {
+        return pib;
     }
 
     /**
@@ -138,8 +138,8 @@ public class TFirma {
      *     {@link String }
      *     
      */
-    public void setPIBKupca(String value) {
-        this.pibKupca = value;
+    public void setPib(String value) {
+        this.pib = value;
     }
 
 }
