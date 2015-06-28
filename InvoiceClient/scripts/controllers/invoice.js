@@ -111,4 +111,14 @@ angular.module('invoice', [
 			});
 		}
 	}
+	$scope.minValue1 = userService.minValue;
+	$scope.maxValue1 = userService.maxValue;
+	$scope.isEnable = userService.isEnable1;
+	$scope.date_less_account = userService.date;
+	//$scope.jednako1 = userService.jednako;
+ 	// $filter('vece')($scope.invoice.invoiceItems);
+ 	manjeFilter($scope.minValue1, $scope.invoice.invoiceItems, $scope.isEnable);
+ 	veceFilter($scope.maxValue1, $scope.invoice.invoiceItems, $scope.isEnable);
+ 	//dateLessFilter($scope.date_less_account, $scope.invoice.invoiceItems, $scope.isEnable);
+ 	//jednakoFilter(userService.jednako1, $scope.invoice.invoiceItems);
 });

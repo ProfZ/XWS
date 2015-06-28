@@ -53,7 +53,81 @@ app.service("userService", function() {
   this.user = {pib: ""};
   this.invId = "";
   this.itemId = "";
+  this.minValue = 0;
+  this.maxValue = 10000;
+  this.isEnable1 = false;
+  // this.jednako = 5000;
 })
+
+// app.filter('manje', function ( ) {
+//       return function ( iznosZaUplatu, value ) {
+//            var filteredItems = []
+//         angular.forEach(iznosZaUplatu, function ( item ) {
+//             if ( item.zaglavljeFakture.iznosZaUplatu > value ) {
+//                 filteredItems.push(item);
+//             }
+//         });
+//         return filteredItems;
+//     }
+//   })
+
+app.filter('manje', function ( ) {
+      return function ( iznos, value, enable ) {
+        if(enable){
+             var filteredItems = []
+              angular.forEach(iznos, function ( item ) {
+                if ( item.zaglavljeFakture.iznosZaUplatu < value ) {
+                    filteredItems.push(item);
+                }
+          });
+          return filteredItems;
+        }else{
+          return iznos;
+        }
+    }
+  })
+app.filter('vece', function ( ) {
+      return function ( iznos, value, enable ) {
+         if(enable){
+           var filteredItems = []
+            angular.forEach(iznos, function ( item ) {
+              if ( item.zaglavljeFakture.iznosZaUplatu >= value ) {
+                  filteredItems.push(item);
+              }
+          });
+          return filteredItems;
+        }else{
+           return iznos;
+        }
+    }
+  })
+
+app.filter('dateLess', function ( ) {
+      return function ( iznos, value, enable ) {
+         if(enable){
+           var filteredItems = []
+            angular.forEach(iznos, function ( item ) {
+              if ( item.zaglavljeFakture.racun.datumRacuna <= value ) {
+                  filteredItems.push(item);
+              }
+          });
+          return filteredItems;
+        }else{
+           return iznos;
+        }
+    }
+  })
+// app.filter('jednako', function ( ) {
+//       return function ( iznos, value ) {
+//            var filteredItems = []
+//             angular.forEach(iznos, function ( item ) {
+//               if ( item.zaglavljeFakture.iznosZaUplatu == value ) {
+//                   filteredItems.push(item);
+//               }
+//         });
+//         return filteredItems;
+//     }
+//   })
  //tricky deo
 //  .factory('authHttpResponseInterceptor',['$q','$location',function($q,$location){// fabrika koja pravi interceptor
 //   return {

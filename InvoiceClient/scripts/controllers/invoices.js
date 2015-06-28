@@ -3,7 +3,7 @@
  angular.module('invoices', ['resource.invoice',
  	'angular-md5'])
 
- .controller('invoicesListCtrl', function (Invoice, $scope, $location, md5, $log) {
+ .controller('invoicesListCtrl', function (Invoice, $scope, $location, md5, $log, $filter) {
  	//postavljanje niza invoices u kodu
  	/*$scope.invoices = [
  	{
