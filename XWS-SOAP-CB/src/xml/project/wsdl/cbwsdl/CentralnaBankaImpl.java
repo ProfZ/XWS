@@ -188,7 +188,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 	 * @see xml.project.wsdl.cbwsdl.CentralnaBanka#acceptMT102(MT102 mt102 )*
 	 */
 	public StatusCode acceptMT102(MT102 mt102) {
-		LOG.info("Executing operation acceptMT102");
+		LOG.info("Executing operation acceptMT102 " + mt102.getUkupanIznos());
 		System.out.println(mt102);
 		StatusCode _return = new StatusCode();
 		try {
@@ -266,7 +266,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 			for (String line; (line = br.readLine()) != null;) {
 				xml = xml + line + "\n";
 			}
-			String splitString = "<ns2:MT102 xmlns:ns2=\"http://www.project.xml/MT102\" xmlns=\"http://basex.org/rest\" xmlns:ns3=\"http://www.project.xml/globals\">";
+			String splitString = "<MT102 xmlns=\"http://www.project.xml/MT102\" xmlns:ns2=\"http://www.project.xml/globals\">";
 			String[] tempMT102 = xml.split(splitString);
 			this.serviceName = new QName(B, BSERVICE);
 			this.portName = new QName(B, BPORT);
@@ -276,12 +276,33 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 					continue;
 				StringReader reader = new StringReader(splitString + mt102);
 				MT102 test = (MT102) unmarshaller.unmarshal(reader);
+				FirmaRacun racun = nadjiRacun(test.getBankaDuznik().getObracunskiRacunBanke());
+				MT900 mt900 = new MT900();
+				if(racun.getRaspoloziviNovac().compareTo(test.getUkupanIznos()) == -1) {
+					// nema banka para
+					// sirotinjo i bogu si teska
+					mt900.setIDPoruke("cce" + rnd.nextInt(10000000) + "");
+					mt900.setBankaDuznik(test.getBankaDuznik());
+					mt900.setDatum(test.getDatum());
+					mt900.setDatumValute(test.getDatumValute());
+					mt900.setIDPorukeNaloga(test.getIDPoruke());
+					mt900.setIznos(test.getUkupanIznos());
+					mt900.setSifraValute(test.getSifraValute());
+					this.cbwsdl = new URL(adreseBanki.get(test
+							.getBankaPoverilac().getObracunskiRacunBanke()
+							.substring(0, 3)));
+					this.service = Service
+							.create(this.cbwsdl, this.serviceName);
+					this.banka = service.getPort(this.portName,
+							FirmaBanci.class);
+					continue;
+				}
 				this.cbwsdl = new URL(adreseBanki.get(test.getBankaPoverilac()
 						.getObracunskiRacunBanke().substring(0, 3)));
 				this.service = Service.create(this.cbwsdl, this.serviceName);
 				this.banka = service.getPort(this.portName, FirmaBanci.class);
 				StatusCode code = this.banka.acceptMT102(test);
-				MT900 mt900 = new MT900();
+				System.out.println(code.getCode() + " " + code.getMessage());
 				if (code.getCode() != 200) {
 					// poruka banki C za lose
 					mt900.setIDPoruke("cce" + rnd.nextInt(10000000) + "");
@@ -316,6 +337,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 				mt910.setIznos(test.getUkupanIznos());
 				mt910.setSifraValute(test.getSifraValute());
 				StatusCode code2 = this.banka.acceptMT910(mt910);
+				System.out.println(code2.getCode() + " " + code2.getMessage());
 				if (code2.getCode() != 200) {
 					// poruka banki C za lose
 					mt900.setIDPoruke("cce" + rnd.nextInt(10000000) + "");
@@ -352,11 +374,17 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 				this.service = Service.create(this.cbwsdl, this.serviceName);
 				this.banka = service.getPort(this.portName, FirmaBanci.class);
 				code = this.banka.acceptMT900(mt900);
+				System.out.println(code.getCode() + " " + code.getMessage());
 				if (code.getCode() != 200) {
 					System.out.println("Something is wrong: "
 							+ code.getMessage());
 					continue;
 				}
+				racun = nadjiRacun(mt900.getBankaDuznik().getObracunskiRacunBanke());
+				racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().subtract(mt900.getIznos()));
+				racun = nadjiRacun(mt910.getBankaPoverilac().getObracunskiRacunBanke());
+				racun.setRaspoloziviNovac(racun.getRaspoloziviNovac().add(mt910.getIznos()));
+				saveRacuni();
 			}
 			RESTUtil.createSchema(CLEARING_PUTANJA);
 		} catch (Exception e) {
@@ -468,7 +496,8 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 
 	public static void main(String[] args) {
 		CentralnaBankaImpl cbi = new CentralnaBankaImpl();
-		cbi.createInitial();
-		//cbi.init();
+//		cbi.createInitial();
+		cbi.init();
+		cbi.doClearing();
 	}
 }

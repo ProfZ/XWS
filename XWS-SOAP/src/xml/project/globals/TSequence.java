@@ -2,9 +2,11 @@
 package xml.project.globals;
 
 import java.math.BigDecimal;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -52,6 +54,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "valuta",
     "idNalogaZaPlacanje"
 })
+@XmlRootElement(name = "TSequence")
 public class TSequence {
 
     @XmlElement(name = "Duznik_nalogodavac", required = true)

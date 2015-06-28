@@ -105,8 +105,12 @@ public class FirmaBanciImpl implements FirmaBanci {
 		try {
 			StatusCode _return = new StatusCode();
 
-			InputStream in = RESTUtil.retrieveResource("*",
-					POJEDINACNA_PLACANJA_PUTANJA, RequestMethod.GET);
+			InputStream in = RESTUtil
+					.retrieveResource(
+							"<PojedinacnaPlacanja xmlns='http://www.project.xml/pojedinacnaplacanja'> {for $x in collection('"
+									+ POJEDINACNA_PLACANJA_PUTANJA
+									+ "') return $x} </PojedinacnaPlacanja>",
+							POJEDINACNA_PLACANJA_PUTANJA, RequestMethod.GET);
 			JAXBContext context = JAXBContext.newInstance(
 					PojedinacnaPlacanja.class, PojedinacnaPlacanja.class);
 			Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -119,11 +123,16 @@ public class FirmaBanciImpl implements FirmaBanci {
 			for (String line; (line = br.readLine()) != null;) {
 				xml = xml + line + "\n";
 			}
-
 			StringReader reader = new StringReader(xml);
 			PojedinacnaPlacanja rac = (PojedinacnaPlacanja) unmarshaller
 					.unmarshal(reader);
-			for (TSequence k : rac.getPlacanje()) {
+			if (rac == null) {
+				_return.setCode(404);
+				_return.setMessage("Nema pojedinacnih placanja");
+				return _return;
+			}
+			for (TSequence k : rac.gettSequence()) {
+				System.out.println("Prolazi kroz placanja");
 				String sw = cetralnaBanka.getSWIFT(k.getDuznikNalogodavac()
 						.getRacun().substring(0, 3)); // kljuc za mt102
 				if (!sekvence102.containsKey(sw)) {
@@ -137,6 +146,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 			// stari kod
 			Iterator it = sekvence102.entrySet().iterator();
+			Random rnd = new Random();
 			while (it.hasNext()) {
 				MT102 mt102 = new MT102();
 				Map.Entry ent = (Map.Entry) it.next();
@@ -145,9 +155,23 @@ public class FirmaBanciImpl implements FirmaBanci {
 				mt102.setDatum(tempSeq.get(0).getDatumNaloga());
 				mt102.setDatumValute(tempSeq.get(0).getDatumNaloga());
 				mt102.setSifraValute(tempSeq.get(0).getValuta());
+				mt102.setIDPoruke("" + rnd.nextInt(1000000));
+				String swiftDuznik = this.cetralnaBanka.getSWIFT(tempSeq.get(0)
+						.getDuznikNalogodavac().getRacun().substring(0, 3));
+				TBanke duznik = new TBanke();
+				duznik.setObracunskiRacunBanke(swiftDuznik.split(",")[1]);
+				duznik.setSWIFTKodBanke(swiftDuznik.split(",")[0]);
+				mt102.setBankaDuznik(duznik);
+				TBanke poverilac = new TBanke();
+				String swiftPoverilac = this.cetralnaBanka.getSWIFT(tempSeq
+						.get(0).getPrimalacPoverilac().getRacun()
+						.substring(0, 3));
+				poverilac.setObracunskiRacunBanke(swiftPoverilac.split(",")[1]);
+				poverilac.setSWIFTKodBanke(swiftPoverilac.split(",")[0]);
+				mt102.setBankaPoverilac(poverilac);
 				BigDecimal ukupnaSuma = new BigDecimal(0);
 				for (TSequence s : tempSeq) {
-					ukupnaSuma.add(s.getIznos());
+					ukupnaSuma = ukupnaSuma.add(s.getIznos());
 				}
 				mt102.setUkupanIznos(ukupnaSuma);
 
@@ -248,6 +272,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			List<MT102> listaMT102 = srediSveMT102(
 					procitajSveMT102(STIGLE_MT102), mt102);
+			System.out.println("Sredjena lista: " + listaMT102.size());
 			RESTUtil.createSchema(STIGLE_MT102);
 			for (MT102 mt : listaMT102) {
 				RESTUtil.objectToDB("//" + STIGLE_MT102, mt.getIDPoruke(), mt);
@@ -259,6 +284,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			rac.setRaspoloziviNovac(rac.getRaspoloziviNovac().add(
 					mt910.getIznos()));
+			saveRacuni();
 			_return.setCode(200);
 			_return.setMessage("Moo! Are you happy now? ");
 			return _return;
@@ -273,7 +299,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 		int remove = -1;
 		for (int i = 0; i < list.size(); ++i) {
 			if (list.get(i).getIDPoruke().equals(mt102.getIDPoruke())) {
-				remove = -1;
+				remove = i;
 				break;
 			}
 		}
@@ -313,6 +339,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 		} catch (Exception e) {
 			return _return;
 		}
+		System.out.println("size mt102-ova je: " + _return.size());
 		return _return;
 	}
 
@@ -404,6 +431,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 						mt900.getIznos()));
 				_return.setCode(200);
 				_return.setMessage("Returned money to acc: " + racun.getNaziv());
+				saveRacuni();
 				return _return;
 			}
 			List<MT102> listaMT102 = srediSveMT102(
@@ -418,6 +446,8 @@ public class FirmaBanciImpl implements FirmaBanci {
 				RESTUtil.createSchema(POJEDINACNA_PLACANJA_PUTANJA);
 			}
 			// TO-DO
+			_return.setCode(200);
+			_return.setMessage("Pecemo prase kod enjaka");
 		} catch (Exception e) {
 
 		}
@@ -452,7 +482,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 				// throw new Exception("Invalid participants in transaction.");
 			}
 			for (TSequence sequence : mt102.getSekvenca()) {
-				FirmaRacun racun = findFirmu(sequence.getDuznikNalogodavac()
+				FirmaRacun racun = findFirmu(sequence.getPrimalacPoverilac()
 						.getRacun());
 				if (racun == null) {
 					_return.setCode(404);
@@ -463,7 +493,7 @@ public class FirmaBanciImpl implements FirmaBanci {
 			}
 			RESTUtil.objectToDB("//" + STIGLE_MT102, mt102.getIDPoruke()
 					.toString(), mt102);
-
+			System.out.println("Upisao je u stigle: " + mt102.getIDPoruke());
 			// upis transakcija
 			ArrayList<MT103> tempTransakcije = Converter
 					.convertMT102toMT103List(mt102);
@@ -947,6 +977,44 @@ public class FirmaBanciImpl implements FirmaBanci {
 
 	}
 
+	public void testMT102() {
+		FirmaBanciImpl imp = new FirmaBanciImpl();
+		GregorianCalendar c = new GregorianCalendar();
+		c.setTime(new Date());
+		XMLGregorianCalendar date2;
+		try {
+			date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+			NalogZaPrenos nalog = new NalogZaPrenos();
+			nalog.setDatumNaloga(date2);
+			nalog.setDatumValute(date2);
+			nalog.setHitno(false);
+			nalog.setIDPoruke("123456789");
+			nalog.setIznos(new BigDecimal(1000.00));
+			nalog.setSvrhaPlacanja("Prijava ispita");
+			nalog.setValuta("RSD");
+			TOsobe osoba2 = new TOsobe();
+			TOsobe osoba1 = new TOsobe();
+			osoba1.setNaziv("Pejak");
+			osoba2.setNaziv("Pejak2");
+			osoba2.setPozivNaBroj("21000");
+			osoba1.setPozivNaBroj("21000");
+			String deoRac = "1004567890123456";
+			String deoRac2 = "1014567890123456";
+			osoba2.setRacun(new BigInteger(deoRac2
+					+ Validation.generateChecksum(deoRac2)).toString());
+			osoba1.setRacun(new BigInteger(deoRac
+					+ Validation.generateChecksum(deoRac)).toString());
+			osoba1.setModel(new BigInteger("911"));
+			osoba2.setModel(new BigInteger("911"));
+			nalog.setDuznikNalogodavac(osoba1);
+			nalog.setPrimalacPoverilac(osoba2);
+			StatusCode code = imp.primiNalog(nalog);
+			System.out.println(code.getCode() + "  " + code.getMessage());
+		} catch (DatatypeConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void testPresek() {
 		try {
 			Zahtev zaDatum = new Zahtev();
@@ -969,8 +1037,10 @@ public class FirmaBanciImpl implements FirmaBanci {
 	public static void main(String[] args) {
 		FirmaBanciImpl imp = new FirmaBanciImpl();
 		imp.createInitial();
-		imp.init();
-		imp.test1();
+		//imp.init();
+		// imp.test1();
+		imp.testMT102();
+		imp.doClearing();
 	}
 
 }
