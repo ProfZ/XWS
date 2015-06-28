@@ -44,7 +44,6 @@ public class Validation {
 		}
 		if (sum.equals(mt102.getUkupanIznos()))
 			return true;
-		
 		return false;
 	}
 }

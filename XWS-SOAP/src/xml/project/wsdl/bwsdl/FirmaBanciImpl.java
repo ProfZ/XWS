@@ -491,6 +491,11 @@ public class FirmaBanciImpl implements FirmaBanci {
 					// throw new Exception("Not existing firma.");
 				}
 			}
+			if(!Validation.checkMT102(mt102)) {
+				_return.setCode(403);
+				_return.setMessage("A da malo pogledas sta saljes?");
+				return _return;
+			}
 			RESTUtil.objectToDB("//" + STIGLE_MT102, mt102.getIDPoruke()
 					.toString(), mt102);
 			System.out.println("Upisao je u stigle: " + mt102.getIDPoruke());

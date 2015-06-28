@@ -239,6 +239,11 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 					return _return;
 				}
 			}
+			if(!Validation.checkMT102(mt102)) {
+				_return.setCode(403);
+				_return.setMessage("A da malo pogledas sta saljes?");
+				return _return;
+			}
 			RESTUtil.objectToDB("//" + CLEARING_PUTANJA, mt102.getIDPoruke(),
 					mt102);
 			_return.setMessage("Accepted");
@@ -278,7 +283,7 @@ public class CentralnaBankaImpl implements CentralnaBanka {
 				MT102 test = (MT102) unmarshaller.unmarshal(reader);
 				FirmaRacun racun = nadjiRacun(test.getBankaDuznik().getObracunskiRacunBanke());
 				MT900 mt900 = new MT900();
-				if(racun.getRaspoloziviNovac().compareTo(test.getUkupanIznos()) == -1) {
+				if(racun.getRaspoloziviNovac().compareTo(test.getUkupanIznos()) == -1 || !Validation.checkMT102(test)) {
 					// nema banka para
 					// sirotinjo i bogu si teska
 					mt900.setIDPoruke("cce" + rnd.nextInt(10000000) + "");
