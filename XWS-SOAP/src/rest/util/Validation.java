@@ -1,5 +1,11 @@
 package rest.util;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import xml.project.globals.TSequence;
+import xml.project.mt102.MT102;
+
 public class Validation {
 	
 	public static boolean checkBankNumber(String number) {
@@ -28,5 +34,17 @@ public class Validation {
 		}catch (NumberFormatException e){
 			return "";
 		}
+	}
+	
+	public static boolean checkMT102(MT102 mt102){
+		ArrayList<TSequence> seq = (ArrayList<TSequence>) mt102.getSekvenca();
+		BigDecimal sum = new BigDecimal(0);
+		for (TSequence s : seq){
+			sum = sum.add(s.getIznos());
+		}
+		if (sum.equals(mt102.getUkupanIznos()))
+			return true;
+		
+		return false;
 	}
 }
