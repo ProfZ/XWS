@@ -5,7 +5,7 @@
 
  .controller('invoicesListCtrl', function (Invoice, $scope, $location, md5, $log, $http, userService) {
 	$scope.invoices = {};
-	$http.get('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/')
+	$http.get('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture')
 			.success(function (data){
 				$scope.invoices = data;
 			});	
