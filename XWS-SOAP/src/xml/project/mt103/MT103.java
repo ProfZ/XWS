@@ -11,8 +11,6 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.basex.rest.Identifiable;
-
 import xml.project.globals.TBanke;
 import xml.project.globals.TOsobe;
 

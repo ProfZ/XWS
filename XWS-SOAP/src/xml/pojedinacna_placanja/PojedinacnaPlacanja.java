@@ -41,13 +41,13 @@ import xml.project.globals.TSequence;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "placanje"
+    "tSequence"
 })
 @XmlRootElement(name = "PojedinacnaPlacanja", namespace = "http://www.project.xml/pojedinacnaplacanja")
 public class PojedinacnaPlacanja {
 
-    @XmlElement(name = "Placanje", namespace = "http://www.project.xml/pojedinacnaplacanja", required = true)
-    protected List<TSequence> placanje;
+    @XmlElement(name = "TSequence", namespace = "http://www.project.xml/globals", required = true)
+    protected List<TSequence> tSequence;
 
     /**
      * Gets the value of the placanje property.
@@ -71,11 +71,12 @@ public class PojedinacnaPlacanja {
      * 
      * 
      */
-    public List<TSequence> getPlacanje() {
-        if (placanje == null) {
-            placanje = new ArrayList<TSequence>();
-        }
-        return this.placanje;
-    }
+    public List<TSequence> gettSequence() {
+		return tSequence;
+	}
+
+	public void settSequence(List<TSequence> tSequence) {
+		this.tSequence = tSequence;
+	}
 
 }
