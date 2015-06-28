@@ -1,0 +1,53 @@
+<div class="modal-header">
+    <h3 class="modal-title">Invoice item</h3>
+</div>
+<div class="modal-body">
+    <form>
+        <div class="form-group">
+            <label>goods name:</label>
+            <input class="form-control" ng-model="invoiceItem.nazivRobeUsluge"></input>
+        </div>
+        <div class="form-group">
+            <label>quantity:</label>
+            <input class="form-control" ng-model="invoiceItem.kolicina"></input>
+        </div>
+        <div class="form-group">
+            <label>measure unit:</label>
+            <input class="form-control" ng-model="invoiceItem.jedinicaMere"></input>
+        </div>
+        <div class="form-group">
+            <label>price per unit:</label>
+            <input class="form-control" ng-model="invoiceItem.jedinicnaCena"></input>
+        </div>
+        <div class="form-group">
+            <label>amount:</label>
+            <input class="form-control" ng-model="invoiceItem.vrednost"></input>
+        </div>
+        <div class="form-group">
+            <label>rabate percentage:</label>
+            <input class="form-control" ng-model="invoiceItem.procenatRabata"></input>
+        </div>
+        <div class="form-group">
+            <label>rabate amount:</label>
+            <input class="form-control" ng-model="invoiceItem.iznosRabata"></input>
+        </div>
+        <div class="form-group">
+            <label>minus rabat:</label>
+            <input class="form-control" ng-model="invoiceItem.umanjenoZaRabat"></input>
+        </div>
+        <div class="form-group">
+            <label>total tax:</label>
+            <input class="form-control" ng-model="invoiceItem.ukupanPorez"></input>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <div ng-if="isNew"> 
+        <button class="btn" ng-click="add()">Add</button>
+        <button class="btn" ng-click="remove()">Remove</button>
+    </div>
+    <div ng-if="!isNew"> 
+        <button class="btn" ng-click="ok()">Add</button>
+        <button class="btn" ng-click="delete()">Remove</button>
+    </div>
+</div>

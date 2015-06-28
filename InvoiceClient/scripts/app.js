@@ -30,11 +30,11 @@ var app = angular
     controller: 'invoicesListCtrl'
   })
   .when('/invoice-list/:invoiceId', {
-    templateUrl: 'views/invoice-list.html',
+    templateUrl: 'views/invoice-item1.html',
     controller: 'invoicesListCtrl'
   })
   .when('/invoice/:invoiceId', {
-    templateUrl: 'views/invoice.html',
+    templateUrl: 'views/invoice1.html',
     controller: 'invoiceCtrl'
   })
   .when('/login', {

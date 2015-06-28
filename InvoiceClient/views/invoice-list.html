@@ -18,15 +18,16 @@
 			<th>total amount</th>
 			<th>account date</th>
 			<th>currency date</th>
-			<th></th>
+			<th>id</th>
 		</tr>
-		<!-- | dateLess:date_less_account:isEnable-->
-		<tr ng-repeat="invoice in invoices | filter:searchText | manje:minValue1:isEnable | vece:maxValue1:isEnable" ng-click="insertOrEditInvoice(invoice)">
+		<!-- | dateLess:date_less_account:isEnable | vece:maxValue1:isEnable | manje:minValue1:isEnable-->
+		<tr ng-repeat="invoice in invoices | filter:searchText" ng-click="insertOrEditInvoice(invoice)">
 			<td>{{invoice.zaglavljeFakture.dobavljac.naziv}}</td>
 			<td>{{invoice.zaglavljeFakture.dobavljac.adresa}}</td>
 			<td>{{invoice.zaglavljeFakture.iznosZaUplatu }}</td>
 			<td>{{invoice.zaglavljeFakture.racun.datumRacuna | date}}</td>
 			<td>{{invoice.zaglavljeFakture.datumValute | date}}</td>
+			<td>{{invoice.zaglavljeFakture.idPoruke }}</td>
 		</tr>
 	</table>
 	<div>

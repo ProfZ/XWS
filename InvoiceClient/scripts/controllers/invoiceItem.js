@@ -2,14 +2,17 @@
 
 angular.module('invoiceItem', [])
 
-.controller('invoiceItemCtrl', function ($scope, $modalInstance, invoiceItem, $http, userService, $location, $window) {
+.controller('invoiceItemCtrl', function ($scope, $modalInstance, invoiceItem, $http, userService, $location, $window, redniBroj, isNew, newInvoiceItem, $timeout) {
 	if(invoiceItem){
 		$scope.invoiceItem = invoiceItem;
 		
 	}
 	else{
-		$scope.invoiceItem = {};	
+		$scope.invoiceItem = {};
+		$scope.invoiceItem.redniBroj = redniBroj;	
 	}
+	$scope.isNew = isNew;
+	$scope.newInvoiceItem = newInvoiceItem;
 	// $scope.getItemId = function() {
 	// 	return userService.itemId;
 	// }
@@ -22,17 +25,36 @@ angular.module('invoiceItem', [])
 		// $modalInstance.close({'invoiceItem':$scope.invoiceItem,
 		// 						'action':'updateStavka'
 		// 					});
-		if($scope.invoiceItem.redniBroj){
+		if(!$scope.newInvoiceItem && !$scope.isNew){
 			$scope.putInvoiceItem();
 		}else{
 			$scope.postInvoiceItem();
 		}
 	};
 
+	$scope.add = function () {
+		var result = {
+			action: 'add',
+			invoiceItem: $scope.invoiceItem
+		}
+		$modalInstance.close(result);
+	};
+
+	$scope.remove = function() {
+		var result = {
+			action: 'remove',
+			redniBroj: $scope.invoiceItem.redniBroj
+		}
+		$modalInstance.close(result);
+	};
+
 	$scope.cancel = function () {
 		//$scope.invoiceItem = $scope.oldItem;
-		$window.location.reload();
-		//$modalInstance.close();
+		var result = {
+			action: 'cancel',
+		}
+		$modalInstance.close(result);
+		//$window.location.reload();
 	};
 
 	$scope.delete = function () {
@@ -43,22 +65,19 @@ angular.module('invoiceItem', [])
 	$scope.putInvoiceItem = function(){
 			$http.put('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/'+userService.invId+'/stavke/'+userService.itemId+'?semantic=yes', $scope.invoiceItem)
 			.success(function (data){
-				$location.path('/invoice/'+userService.invId);
-				$window.location.reload();
+				$timeout($scope.cancel(), 200);
 			});	
 	}
 	$scope.postInvoiceItem = function(){
 			$http.post('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/'+userService.invId+'/stavke?semantic=yes', $scope.invoiceItem)
 			.success(function (data){
-				$location.path('/invoice/'+userService.invId);
-				$window.location.reload();
+				$timeout($scope.cancel(), 200);
 			});	
 	}
 	$scope.deleteInvoiceItem = function(){
 			$http.delete('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/'+userService.invId+'/stavke/'+userService.itemId)
 			.success(function (data){
-				$location.path('/invoice/'+userService.invId);
-				$window.location.reload();
+				$timeout($scope.cancel(), 200);
 			});	
 	}
 });

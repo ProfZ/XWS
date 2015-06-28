@@ -6,7 +6,7 @@ angular.module('invoice', [
 	'invoiceItem',
 	'resource.invoiceItem'])
 
-.controller('invoiceCtrl', function (Invoice, $scope, $routeParams, $modal, $log, $location, InvoiceItem, userService) {
+.controller('invoiceCtrl', function (Invoice, $scope, $routeParams, $modal, $log, $location, InvoiceItem, userService, $http) {
 	//ako pozivamo edit postojece fakture
 	if($routeParams.invoiceId!='new'){
 		//preuzimanje parametra iz URL
@@ -19,8 +19,13 @@ angular.module('invoice', [
 	}
 	//ako kreiramo novu fakutru
 	else{
-		$scope.invoice = new Invoice();
-		$scope.invoice.invoiceItems = [];
+		$scope.invoice = {
+			stavkaFakture: [],
+			zaglavljeFakture: {
+				idPoruke: "0",
+			}
+		};
+		$scope.isNew = true;
 	}
 	//funkcija koja otvara datepicker
 	$scope.openDatepicker = function($event, opened) {
@@ -30,16 +35,27 @@ angular.module('invoice', [
 	};
 
 	//modalni dijalog za stavku fakutre
-	$scope.openModal = function (invoiceItem, size) {
+	$scope.openModal = function (invoiceItem) {
 		$scope.oldItem = invoiceItem;
+		$scope.oldInvoice = $scope.invoice;
 		userService.invId = $scope.invoice.zaglavljeFakture.idPoruke;
 		var modalInstance = $modal.open({
-			templateUrl: 'views/invoice-item.html',
+			templateUrl: 'views/invoice-item1.html',
 			controller: 'invoiceItemCtrl',
-			size: size,
 			resolve: {
 				invoiceItem: function () {
 					return invoiceItem;
+				},
+				redniBroj: function () {
+					return $scope.invoice.stavkaFakture.length + 1;
+				},
+				isNew: function () {
+					if ($scope.invoice.zaglavljeFakture.idPoruke == "0")
+						return true;
+					else return false;
+				},
+				newInvoiceItem: function() {
+					return invoiceItem == null;
 				}
 			}
 		});
@@ -51,7 +67,17 @@ angular.module('invoice', [
 			// 	$scope.invoice.invoiceItems.push(invoiceItem);				
 			// }
 			if(data.action==='cancel'){
-				$window.location.reload();
+				if (!$scope.isNew) {
+					$scope.reload();
+				}
+			}
+			if(data.action==='add'){
+				$scope.invoice.stavkaFakture.splice($scope.invoice.stavkaFakture.length, 0, data.invoiceItem);
+				//$window.location.reload();
+			}
+			if(data.action==='remove'){
+				$scope.invoice.stavkeFakture.splice(data.redniBroj - 1, 1);
+				//$window.location.reload();
 			}
 			if(data.action==='updateStavka'){
 				// if(invoiceItem.redniBroj){
@@ -73,7 +99,7 @@ angular.module('invoice', [
 			//ako stavka treba da se obrise izbaci se iz niza
 			if(data.action==='delete'){
 				var index = $scope.invoice.invoiceItems.redniBroj;
-				$scope.invoice.invoiceItems.splice(index, 1);
+				$scope.invoice.invoiceItems.splice(index - 1, 1);
 				//ako je stavka imala i id, treba da se obrise i na serveru (da li je to dobro?)
 				// if(invoiceItem.redniBroj){
 				// 	InvoiceItem.delete({invoiceItemId:invoiceItem.redniBroj});
@@ -86,39 +112,32 @@ angular.module('invoice', [
 
 	//cuvanje izmena
 	$scope.save = function () {
-		if($scope.invoice.zaglavljeFakture.idPoruke){
-			//zbog cega redirekcija ide na callback?
-			$scope.invoice.$update({invoiceId:$scope.invoice.zaglavljeFakture.idPoruke},function () {
-				$location.path('/invoiceList');
-			});
-		}
-		else{
-			$http.post('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/'+userService.invId+'?semantic=yes', $scope.invoice)
+			$http.post('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture?semantic=yes', $scope.invoice)
 			.success(function (data){
-				$location.path('/invoice/'+invId);
+				$scope.invoice = data;
 			});
 			// $scope.invoice.$save(function () {
 			// 	$location.path('/invoiceList');
 			// });
-		}
 		$log.info("save");
 	}
 
-	$scope.delete = function () {
-		if($scope.invoice.idPoruke){
-			$scope.invoice.$delete({invoiceId:$scope.invoice.zaglavljeFakture.idPoruke}, function () {
-				$location.path('invoiceList');
+	$scope.reload = function () {
+		$http.get('http://localhost:8080/XWS_AMAA_Firma/api/partneri/'+userService.user.pib+'/fakture/' + $scope.invoice.zaglavljeFakture.idPoruke + '?semantic=yes')
+			.success(function (data){
+				$scope.invoice = data;
+				console.log(data);
 			});
-		}
 	}
+
 	$scope.minValue1 = userService.minValue;
 	$scope.maxValue1 = userService.maxValue;
 	$scope.isEnable = userService.isEnable1;
 	$scope.date_less_account = userService.date;
 	//$scope.jednako1 = userService.jednako;
  	// $filter('vece')($scope.invoice.invoiceItems);
- 	manjeFilter($scope.minValue1, $scope.invoice.invoiceItems, $scope.isEnable);
- 	veceFilter($scope.maxValue1, $scope.invoice.invoiceItems, $scope.isEnable);
+ 	//manjeFilter($scope.minValue1, $scope.invoice.invoiceItems, $scope.isEnable);
+ 	//veceFilter($scope.maxValue1, $scope.invoice.invoiceItems, $scope.isEnable);
  	//dateLessFilter($scope.date_less_account, $scope.invoice.invoiceItems, $scope.isEnable);
  	//jednakoFilter(userService.jednako1, $scope.invoice.invoiceItems);
 });
