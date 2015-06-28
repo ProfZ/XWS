@@ -1,16 +1,21 @@
 <div ng-if="logged()">
-
-<div>
-	<label>Search: <input ng-model="searchText"></label>
-	<label>Less than:<input ng-model="minValue1"></label>
-	<label>Equals:(ne radi)<input ng-model="jednako1"></label>
-	<label>More than:(ne radi)<input ng-model="maxValue1"></label>
-	<label>Account date:(jos nije realizovano)<input type="date" ng-model="date_less_account"></label>
-	<label>Currency date:(jos nije realizovano)</label>
-	
+<input type="checkbox" ng-model="filterOption">Filter Option<br/>
+<div ng-show="filterOption">
+	<input type="checkbox" ng-model="isEnable">Search by<br/>
+	<div ng-show="isEnable">	
+		<label>Search total amount:<input ng-model="value1"></label>
+		<form>
+			<label><input type="radio" ng-model="znak1" value="manje"><(manje)</label><br/>
+		  	<label><input type="radio" ng-model="znak1" value="jednako">=(jednako)</label><br/>
+		  	<label><input type="radio" ng-model="znak1" value="vece">>(vece)</label><br/>
+	  	</form>
+	</div>
+	<input type="checkbox" ng-model="currencyDate">date:<br/>
+	<div ng-show="!isEnable">
+		<label ng-show="!currencyDate">Account date:(jos nije realizovano)<input type="date" ng-model="value1"></label>
+		<label ng-show="currencyDate">Currency date:(jos nije realizovano)<input type="date" ng-model="value1"></label>
+	</div>
 </div>
-<input type="checkbox" ng-model="isEnable">Custom Filters Enabled
-
 	<table class="table table-striped table-bordered table-condensed table-hover">
 		<tr>
 			<th>supplier name</th>
@@ -18,16 +23,14 @@
 			<th>total amount</th>
 			<th>account date</th>
 			<th>currency date</th>
-			<th>id</th>
 		</tr>
 		<!-- | dateLess:date_less_account:isEnable | vece:maxValue1:isEnable | manje:minValue1:isEnable-->
-		<tr ng-repeat="invoice in invoices | filter:searchText" ng-click="insertOrEditInvoice(invoice)">
+		<tr ng-repeat="invoice in invoices | filter:searchText | filtriranjeFak:value1:znak1:isEnable:filterOption:currencyDate" ng-click="insertOrEditInvoice(invoice)">
 			<td>{{invoice.zaglavljeFakture.dobavljac.naziv}}</td>
 			<td>{{invoice.zaglavljeFakture.dobavljac.adresa}}</td>
 			<td>{{invoice.zaglavljeFakture.iznosZaUplatu }}</td>
 			<td>{{invoice.zaglavljeFakture.racun.datumRacuna | date}}</td>
 			<td>{{invoice.zaglavljeFakture.datumValute | date}}</td>
-			<td>{{invoice.zaglavljeFakture.idPoruke }}</td>
 		</tr>
 	</table>
 	<div>

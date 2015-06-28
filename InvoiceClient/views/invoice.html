@@ -75,17 +75,30 @@
 			</div>
 		</div>
 		<div class="form-group">
+			<div>
+				<label>Search name: <input ng-model=""></label><br/>
+				<label>Search quantity:<input ng-model="kol"></label>
+				<form>
+					<label><input type="radio" ng-model="znak2" value="manje"><(manje)</label><br/>
+				  	<label><input type="radio" ng-model="znak2" value="jednako">=(jednako)</label><br/>
+				  	<label><input type="radio" ng-model="znak2" value="vece">>(vece)</label><br/>
+			  	</form>
+			</div>
+			<input type="checkbox" ng-model="isEnable2">Custom Filters Enabled<br/>
+		
 			<label>items:</label>
 			<table class="table table-striped table-bordered table-condensed table-hover">
 				<tr>
 					<th>goods name</th>
 					<th>quantity</th>
 					<th>price</th>
+					<th>minus rabat</th>
 				</tr>
-				<tr ng-repeat="item in invoice.stavkaFakture" ng-click="openModal(item)">
+				<tr ng-repeat="item in invoice.stavkaFakture | filtriranjeStavkeKol:kol:znak2:isEnable2" ng-click="openModal(item)">
 					<td>{{item.nazivRobeUsluge}}</td>
 					<td>{{item.kolicina}} {{item.jedinicaMere}}</td>
 					<td>{{item.vrednost}}</td>
+					<td>{{item.umanjenoZaRabat}}</td>
 				</tr>
 			</table>
 		</div>

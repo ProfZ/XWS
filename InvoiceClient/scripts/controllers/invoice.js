@@ -6,7 +6,7 @@ angular.module('invoice', [
 	'invoiceItem',
 	'resource.invoiceItem'])
 
-.controller('invoiceCtrl', function (Invoice, $scope, $routeParams, $modal, $log, $location, InvoiceItem, userService, $http) {
+.controller('invoiceCtrl', function (Invoice, $scope, $routeParams, $modal, $log, $location, InvoiceItem, userService, $http, $filter) {
 	//ako pozivamo edit postojece fakture
 	if($routeParams.invoiceId!='new'){
 		//preuzimanje parametra iz URL
@@ -76,7 +76,7 @@ angular.module('invoice', [
 				//$window.location.reload();
 			}
 			if(data.action==='remove'){
-				$scope.invoice.stavkeFakture.splice(data.redniBroj - 1, 1);
+				$scope.invoice.stavkaFakture.splice(data.redniBroj - 1, 1);
 				//$window.location.reload();
 			}
 			if(data.action==='updateStavka'){
@@ -130,14 +130,20 @@ angular.module('invoice', [
 			});
 	}
 
-	$scope.minValue1 = userService.minValue;
-	$scope.maxValue1 = userService.maxValue;
+	$scope.value1 = userService.value0;
 	$scope.isEnable = userService.isEnable1;
-	$scope.date_less_account = userService.date;
-	//$scope.jednako1 = userService.jednako;
- 	// $filter('vece')($scope.invoice.invoiceItems);
- 	//manjeFilter($scope.minValue1, $scope.invoice.invoiceItems, $scope.isEnable);
- 	//veceFilter($scope.maxValue1, $scope.invoice.invoiceItems, $scope.isEnable);
- 	//dateLessFilter($scope.date_less_account, $scope.invoice.invoiceItems, $scope.isEnable);
- 	//jednakoFilter(userService.jednako1, $scope.invoice.invoiceItems);
+	$scope.isEnable2 = userService.isEnable1;
+	$scope.znak1 = userService.znak;
+	$scope.kol = userService.kol0;
+	$scope.rabat = userService.rabat0;
+	$scope.isRabat = userService.isRabat1;
+	$scope.filterOption = userService.filterOption1;
+	$scope.dateCurrency = userService.dateCurrency1;
+	$scope.kg = userService.kg1; 
+	$scope.kgNaziv1 = userService.kgNaziv2;
+	$scope.value3= userService.value2;
+	//$filter.("filtriranjeFakFilter")($scope.value1, $scope.invoice.invoiceItems,$scope.znak1, $scope.isEnable);
+	//filtriranjeStavkeKolFilter($scope.kol,$scope.invoice.invoiceItems, $scope.znak2, $isEnable2);
+	//filtriranjeStavkeUmanjenoZaRabatFilter($scope.rabat,$scope.invoice.invoiceItems, $scope.znak3, $isEnable2);
+	// $scope.naziv = $scope.invoice.invoiceItems.nazivRobeUsluge;
 });

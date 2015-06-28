@@ -75,17 +75,44 @@
 			</div>
 		</div>
 		<div class="form-group">
+		<input type="checkbox" ng-model="isEnable2">Filter Options<br/>
+			<div ng-show="isEnable2">
+				<input type="checkbox" ng-model="kgNaziv1">Search by:<br/>
+				<div ng-show = "kgNaziv1">
+					<input type="checkbox" ng-model="kg"> Show measure unit/name:
+						<div ng-show="kg">
+							<label >measure unit: <input ng-model="value3"></label><br/>
+						</div>
+						<div ng-show="!kg">
+							<label >goods name: <input ng-model="value3"></label><br/>
+						</div>
+					</div>
+				<div ng-show="!kgNaziv1">
+					<input type="checkbox" ng-model="isRabat">Quantity or Minus Rabat<br/>
+					<label ng-show="!isRabat">Search quantity:<input ng-model="rabat"></label> <br/>
+					<label ng-show="isRabat">Search minus rabat:<input ng-model="rabat"></label> <br/>
+					<form>
+						<label><input type="radio" ng-model="znak2" value="manje"><(manje)</label><br/>
+					  	<label><input type="radio" ng-model="znak2" value="jednako">=(jednako)</label><br/>
+					  	<label><input type="radio" ng-model="znak2" value="vece">>(vece)</label><br/>
+				  	</form>
+				</div>	
+			</div>
+			
+
 			<label>items:</label>
 			<table class="table table-striped table-bordered table-condensed table-hover">
 				<tr>
 					<th>goods name</th>
 					<th>quantity</th>
 					<th>price</th>
+					<th>minus rabat</th>
 				</tr>
-				<tr ng-repeat="item in invoice.stavkaFakture" ng-click="openModal(item)">
+				<tr ng-repeat="item in invoice.stavkaFakture | filtriranjeStavki:rabat:znak2:isEnable2:isRabat:kgNaziv1:kg:value3" ng-click="openModal(item)">
 					<td>{{item.nazivRobeUsluge}}</td>
 					<td>{{item.kolicina}} {{item.jedinicaMere}}</td>
 					<td>{{item.vrednost}}</td>
+					<td>{{item.umanjenoZaRabat}}</td>
 				</tr>
 			</table>
 		</div>

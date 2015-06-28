@@ -53,53 +53,121 @@ app.service("userService", function() {
   this.user = {pib: ""};
   this.invId = "";
   this.itemId = "";
-  this.minValue = 0;
-  this.maxValue = 10000;
+  this.value0 = 0;
   this.isEnable1 = false;
-  // this.jednako = 5000;
+  this.znak = '';
+  this.kol0 = 0; 
+  this.rabat0 = 0;
+  this.isRabat1 = false;
+  this.filterOption1 = false;
+  this.dateCurrency1 = false;
+  this.kg1 = false; 
+  this.kgNaziv2 = false;
+  this.value2 = '';
 })
 
-// app.filter('manje', function ( ) {
-//       return function ( iznosZaUplatu, value ) {
-//            var filteredItems = []
-//         angular.forEach(iznosZaUplatu, function ( item ) {
-//             if ( item.zaglavljeFakture.iznosZaUplatu > value ) {
-//                 filteredItems.push(item);
-//             }
-//         });
-//         return filteredItems;
-//     }
-//   })
+app.filter('filtriranjeFak', function ( ) {
+      return function ( iznos, value, znak, nijeiznos, filterOp, dateCurrency ) {
+        if(filterOp){
+          if(!nijeiznos){
+            if(dateCurrency){
 
-app.filter('manje', function ( ) {
-      return function ( iznos, value, enable ) {
-        if(enable){
+            }else{
+
+            }
+          }else{
              var filteredItems = []
               angular.forEach(iznos, function ( item ) {
-                if ( item.zaglavljeFakture.iznosZaUplatu < value ) {
+                if(znak == 'manje'){
+                  if ( item.zaglavljeFakture.iznosZaUplatu < value ) {
                     filteredItems.push(item);
+                  }
+                }else if(znak == 'vece'){
+                  if ( item.zaglavljeFakture.iznosZaUplatu > value ) {
+                    filteredItems.push(item);
+                  }
+                }else if(znak == ''){
+                  return iznos;
+                }else if(znak == 'jednako'){
+                  if ( item.zaglavljeFakture.iznosZaUplatu == value ) {
+                    filteredItems.push(item);
+                  }
                 }
-          });
+            });
+          }
           return filteredItems;
-        }else{
-          return iznos;
-        }
-    }
+      }else{
+        return iznos;
+      }
+      }
   })
-app.filter('vece', function ( ) {
-      return function ( iznos, value, enable ) {
-         if(enable){
-           var filteredItems = []
-            angular.forEach(iznos, function ( item ) {
-              if ( item.zaglavljeFakture.iznosZaUplatu >= value ) {
-                  filteredItems.push(item);
-              }
-          });
-          return filteredItems;
-        }else{
-           return iznos;
+
+
+app.filter('filtriranjeStavki', function ( ) {
+      return function ( iznos, value, znak, enable, rabat, kgNaziv, kg, stringVal ) {
+        if(enable){
+          if(kgNaziv){
+            if(kg){
+                var filteredItems = []
+                angular.forEach(iznos, function ( item ) {
+                    if ( item.jedinicaMere.includes(stringVal)) {
+                      filteredItems.push(item);
+                    }
+              });
+            }else{
+                var filteredItems = []
+                angular.forEach(iznos, function ( item ) {
+                    if ( item.nazivRobeUsluge.includes(stringVal)) {
+                      filteredItems.push(item);
+                    }
+              });
+            }
+          }else{
+            if(rabat){
+               var filteredItems = []
+                angular.forEach(iznos, function ( item ) {
+                  if(znak == 'manje'){
+                    if ( item.umanjenoZaRabat < value ) {
+                      filteredItems.push(item);
+                    }
+                  }else if(znak == 'vece'){
+                    if ( item.umanjenoZaRabat > value ) {
+                      filteredItems.push(item);
+                    }
+                  }else if(znak == ''){
+                    return iznos;
+                  }else if(znak == 'jednako'){
+                    if ( item.umanjenoZaRabat == value ) {
+                      filteredItems.push(item);
+                    }
+                  }
+              });
+            }else{
+                var filteredItems = []
+                angular.forEach(iznos, function ( item ) {
+                  if(znak == 'manje'){
+                    if ( item.kolicina < value ) {
+                      filteredItems.push(item);
+                    }
+                  }else if(znak == 'vece'){
+                    if ( item.kolicina > value ) {
+                      filteredItems.push(item);
+                    }
+                  }else if(znak == ''){
+                    return iznos;
+                  }else if(znak == 'jednako'){
+                    if ( item.kolicina == value ) {
+                      filteredItems.push(item);
+                    }
+                  }
+            });
+          }
         }
-    }
+          return filteredItems;
+      }else{
+        return iznos;
+      }
+      }
   })
 
 app.filter('dateLess', function ( ) {
@@ -117,17 +185,6 @@ app.filter('dateLess', function ( ) {
         }
     }
   })
-// app.filter('jednako', function ( ) {
-//       return function ( iznos, value ) {
-//            var filteredItems = []
-//             angular.forEach(iznos, function ( item ) {
-//               if ( item.zaglavljeFakture.iznosZaUplatu == value ) {
-//                   filteredItems.push(item);
-//               }
-//         });
-//         return filteredItems;
-//     }
-//   })
  //tricky deo
 //  .factory('authHttpResponseInterceptor',['$q','$location',function($q,$location){// fabrika koja pravi interceptor
 //   return {
